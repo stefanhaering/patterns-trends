@@ -17,7 +17,7 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ## Research Questions
 In unserer Projektarbeit möchten wir unsere tägliche Wartezeit an Haltestellen von öffentlichen Verkehrsmitteln (ÖV) untersuchen. Dabei wird ausschliesslich der Beginn einer Reise betrachtet. Dafür sollten folgende Fragen beantwortet werden:
 Wie oft reisen wir mit den ÖV?
-Wie lange warten wir pro Reise an der Haltestelle des Startpunktes?
+Sind die Wartezeiten von Reise zu Reise unterschiedlich lang?
 Wer verbringt durchschnittlich mehr Wartezeit an den Haltestellen?
 
 
@@ -25,13 +25,19 @@ Wer verbringt durchschnittlich mehr Wartezeit an den Haltestellen?
 
 ## Results / products
 <!-- What do you expect, anticipate? -->
+Anhand der Startpunkte einer Reise erhalten wir die Gesamtanzahl unserer ÖV-Reisen. Miriams Anzahl wird höher sein als Stefans.
+Pro Startpunkt wird eine Wartezeit angegeben. Diese Daten zeigen, wie unterschiedlich die Wartezeiten der jeweiligen Person sind. Hier werden die Daten von Stefan eine grössere Streuung aufweisen als diejenigen von Miriam.
+Insgesamt ist der Mittelwert der Wartezeiten bei Stefan grösser als bei Miriam.
+
 
 ## Data
 <!-- What data will you use? Will you require additional context data? Where do you get this data from? Do you already have all the data? -->
-https://www.geocat.ch/geonetwork/srv/ger/catalog.search#/metadata/841d42ff-8177-4e07-a96b-e8e5455ae048
+Als Grundlage dienen Posmo-Daten von Miriam (3.5.-heute) und Stefan (28.4.-heute). 
 
 ## Analytical concepts
 <!-- Which analytical concepts will you use? What conceptual movement spaces and respective modelling approaches of trajectories will you be using? What additional spatial analysis methods will you be using? -->
+
+-Buffer um Bhf ->Validierung
 
 ## R concepts
 <!-- Which R concepts, functions, packages will you mainly use. What additional spatial analysis methods will you be using? -->
@@ -41,3 +47,4 @@ https://www.geocat.ch/geonetwork/srv/ger/catalog.search#/metadata/841d42ff-8177-
 
 ## Questions? 
 <!-- Which questions would you like to discuss at the coaching session? -->
+-Bahnhof-Layer für Validierung
