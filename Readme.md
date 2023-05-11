@@ -5,17 +5,22 @@ Analysis Geo 880**
 
 | Semester:      | FS23                                     |
 |:---------------|:---------------------------------------- |
-| **Data:**      | What type of data are you focussing on?  |
-| **Title:**     | The title of your project                |
-| **Student 1:** | Name of Student 1                        |
-| **Student 2:** | Name of Student 2                        |
+| **Data:**      | Posmo-Daten von Stefan (seit 28.4.) und Miriam (seit 3.5.)  |
+| **Title:**     | Wer verschwendet mehr Zeit mit Warten an ÖV-Haltestellen?                |
+| **Student 1:** | Stefan Häring                       |
+| **Student 2:** | Miriam Jakob                       |
 
 ## Abstract 
 xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 <!-- (50-60 words) -->
 
 ## Research Questions
-yyyyyyy
+In unserer Projektarbeit möchten wir unsere tägliche Wartezeit an Haltestellen von öffentlichen Verkehrsmitteln (ÖV) untersuchen. Dabei wird ausschliesslich der Beginn einer Reise betrachtet. Dafür sollten folgende Fragen beantwortet werden:
+Wie oft reisen wir mit den ÖV?
+Wie lange warten wir pro Reise an der Haltestelle des Startpunktes?
+Wer verbringt durchschnittlich mehr Wartezeit an den Haltestellen?
+
+
 <!-- (50-60 words) -->
 
 ## Results / products
