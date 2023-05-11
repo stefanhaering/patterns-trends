@@ -45,10 +45,31 @@ Um den Start einer Reise zu finden, werden die Daten auf eine bestimmte Abfolge 
 3. Wartezeit: Person am selben Ort (Difftime (Min(Segment schnell), Max(Segment langsam)))
 4. schnelle Bewegung: ÖV (Segmente mit Geschwindigkeit >=35 km/h)
 
--Buffer um Bhf ->Validierung
+(Langsame und schnelle Bewegungen werde in einer zusätzlichen Spalte mit "langsam" und "schnell benennt. Mit lag kann eine Bewegungsänderung von "langsam" zu "schnell" festgestellt werden. Diese werden mit "Ende Wartezeit" in einer separaten Spalte benannt.)
+
+
+
+????conceptual movement spaces -> Lagrangian/Euler?
+????modelling approaches of trajectories
+
+Zusätzliche räumliche Analyse: Die Positionen der Wartezeit werden auf ihre Übereinstimmigkeit mit Standorten von ÖV-Haltestellen überprüft. (Buffer um Haltestellen mit Positionsdaten der Wartezeit verschneiden.)
 
 ## R concepts
 <!-- Which R concepts, functions, packages will you mainly use. What additional spatial analysis methods will you be using? -->
+Segmente erstellen mit temporal window:
+- langsame Bewegung: Gehen/Fahrrad (Segmente mit Geschwindigkeit <35 km/h)
+- schnelle Bewegung: ÖV (Segmente mit Geschwindigkeit >=35 km/h)
+
+Zeit an Standort ermitteln:
+- keine Bewegung: Person über längere Zeit (difftime >10 min) am selben Ort  
+- Wartezeit: Person am selben Ort (Difftime (Min(Segment schnell), Max(Segment langsam)))
+
+Finden der Wartezeiten mit lag/lead:
+Langsame und schnelle Bewegungen werde in einer zusätzlichen Spalte mit "langsam" und "schnell benennt. Mit lag kann eine Bewegungsänderung von "langsam" zu "schnell" festgestellt werden. Diese werden mit "Ende Wartezeit" in einer separaten Spalte benannt. Die Zeile davor wird mit "Start Wartezeit" benannt.
+
+Zusätzliche Analyse mit Geoprocessing-Tools:
+Die Positionen der Wartezeit werden auf ihre Übereinstimmigkeit mit Standorten von ÖV-Haltestellen überprüft. Buffer um Haltestellen mit Positionsdaten der Wartezeit verschneiden.
+
 
 ## Risk analysis
 <!-- What could be the biggest challenges/problems you might face? What is your plan B? -->
@@ -57,3 +78,4 @@ Um den Start einer Reise zu finden, werden die Daten auf eine bestimmte Abfolge 
 <!-- Which questions would you like to discuss at the coaching session? -->
 -Wie finden wir die Wartezeit? (Es scheint ein Muster von 3 Punkten mit selben Datetime am Start des Wartens zu geben. Beim Start der Reise gibt es 2 Punkte mit selbem Datetime.)
 -Falls an der Haltestelle nicht gewartet wird (z.B. Zug fährt sofort los), ist dies in den 
+-Wie findet man Abfolge
