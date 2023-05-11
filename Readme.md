@@ -56,23 +56,26 @@ Zusätzliche räumliche Analyse: Die Positionen der Wartezeit werden auf ihre Ü
 
 ## R concepts
 <!-- Which R concepts, functions, packages will you mainly use. What additional spatial analysis methods will you be using? -->
-Segmente erstellen mit temporal window:
+Segmente erstellen mit moving window.
 - langsame Bewegung: Gehen/Fahrrad (Segmente mit Geschwindigkeit <35 km/h)
 - schnelle Bewegung: ÖV (Segmente mit Geschwindigkeit >=35 km/h)
 
-Zeit an Standort ermitteln:
+Zeit an Standort ermitteln mit difftime:
 - keine Bewegung: Person über längere Zeit (difftime >10 min) am selben Ort  
-- Wartezeit: Person am selben Ort (Difftime (Min(Segment schnell), Max(Segment langsam)))
+- Wartezeit: Person am selben Ort (difftime (Min(Segment schnell), Max(Segment langsam)))
 
-Finden der Wartezeiten mit lag/lead:
+Finden der Wartezeiten mit lag/lead (Package "dbplyr"):
 Langsame und schnelle Bewegungen werde in einer zusätzlichen Spalte mit "langsam" und "schnell benennt. Mit lag kann eine Bewegungsänderung von "langsam" zu "schnell" festgestellt werden. Diese werden mit "Ende Wartezeit" in einer separaten Spalte benannt. Die Zeile davor wird mit "Start Wartezeit" benannt.
 
 Zusätzliche Analyse mit Geoprocessing-Tools:
 Die Positionen der Wartezeit werden auf ihre Übereinstimmigkeit mit Standorten von ÖV-Haltestellen überprüft. Buffer um Haltestellen mit Positionsdaten der Wartezeit verschneiden.
 
+Auswertung zur Beantwortung der Fragestellung
 
 ## Risk analysis
 <!-- What could be the biggest challenges/problems you might face? What is your plan B? -->
+Möglicherweise gibt es bei Reisen mit Zwischenstops (z.B. Zug haltet an Bahnhof) zusätzliche Segmente, welche als "langsame Bewegung" zugeordnet werden. Dieses Problem könnte mit der Grösse des 
+
 
 ## Questions? 
 <!-- Which questions would you like to discuss at the coaching session? -->
