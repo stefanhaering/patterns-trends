@@ -74,11 +74,14 @@ Auswertung zur Beantwortung der Fragestellung
 
 ## Risk analysis
 <!-- What could be the biggest challenges/problems you might face? What is your plan B? -->
-Möglicherweise gibt es bei Reisen mit Zwischenstops (z.B. Zug haltet an Bahnhof) zusätzliche Segmente, welche als "langsame Bewegung" zugeordnet werden. Dieses Problem könnte mit der Grösse des 
-
+Möglicherweise gibt es bei Reisen mit Zwischenstops (z.B. Zug haltet an Bahnhof, Umsteigen) zusätzliche Segmente, welche als "langsame Bewegung" zugeordnet werden. Dieses Problem könnte mit der Grösse des moving window entgegengewirkt werden.
+Durch das Kriterium "1. keine Bewegung: Person über längere Zeit (difftime >10 min) am selben Ort" der Bewegungsabfolge könnten Reisezwischenstops relativ einfach entfernt werden. Die Umsetzung im R könnte jedoch eine Herausforderung darstellen, da die Daten nicht in Form von Segmenten vorliegen.
+Da wir die gauen Wartezeitpunkte erhalten möchten, ist es wichtig den genauen Endpunkt des Segments "langsame Bewegung" und den genauen Startpunkts des Segments "schnelle Bewegung" zu wissen. Mit einem moving window könnte dies eine Herausforderung darstellen.
 
 ## Questions? 
 <!-- Which questions would you like to discuss at the coaching session? -->
--Wie finden wir die Wartezeit? (Es scheint ein Muster von 3 Punkten mit selben Datetime am Start des Wartens zu geben. Beim Start der Reise gibt es 2 Punkte mit selbem Datetime.)
--Falls an der Haltestelle nicht gewartet wird (z.B. Zug fährt sofort los), ist dies in den 
--Wie findet man Abfolge
+- moving window: Wie erhalten wir einen genauen Start- und Endpunkt eines Segments?
+- Wie findet man eine Abfolge von relevanten Segmenten (Annahme: Zwischenstops der Zugreise verursachen Segmente mit "langsame Bewegung")
+- (Wie finden wir die Wartezeit? Es scheint ein Muster von 3 Punkten mit selben Datetime am Start des Wartens zu geben. Beim Start der Reise gibt es 2 Punkte mit selbem Datetime.)
+
+
