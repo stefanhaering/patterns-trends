@@ -39,8 +39,12 @@ https://data.geo.admin.ch/ch.bav.haltestellen-oev/haltestellen-oev/haltestellen-
 
 ## Analytical concepts
 <!-- Which analytical concepts will you use? What conceptual movement spaces and respective modelling approaches of trajectories will you be using? What additional spatial analysis methods will you be using? -->
+Um den Start einer Reise zu finden, werden die Daten auf eine bestimmte Abfolge von Bewegungen durchsucht:
+1. keine Bewegung: Person über längere Zeit (difftime >10 min) am selben Ort  
+2. langsame Bewegung: Gehen/Fahrrad (Segmente mit Geschwindigkeit <35 km/h)
+3. Wartezeit: Person am selben Ort (Difftime (Min(Segment schnell), Max(Segment langsam)))
+4. schnelle Bewegung: ÖV (Segmente mit Geschwindigkeit >=35 km/h)
 
--keine Bewegung ->langsame Bewegung (Gehen/Fahrrad)->Pause ->schnelle Bewegung ÖV
 -Buffer um Bhf ->Validierung
 
 ## R concepts
@@ -51,4 +55,5 @@ https://data.geo.admin.ch/ch.bav.haltestellen-oev/haltestellen-oev/haltestellen-
 
 ## Questions? 
 <!-- Which questions would you like to discuss at the coaching session? -->
--Bahnhof-Layer für Validierung
+-Wie finden wir die Wartezeit? (Es scheint ein Muster von 3 Punkten mit selben Datetime am Start des Wartens zu geben. Beim Start der Reise gibt es 2 Punkte mit selbem Datetime.)
+-Falls an der Haltestelle nicht gewartet wird (z.B. Zug fährt sofort los), ist dies in den 
