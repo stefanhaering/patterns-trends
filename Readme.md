@@ -11,6 +11,7 @@ Analysis Geo 880**
 | **Student 2:** | Name of Student 2                        |
 
 ## Abstract 
+xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 <!-- (50-60 words) -->
 
 ## Research Questions
