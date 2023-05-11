@@ -34,7 +34,7 @@ Insgesamt ist der Mittelwert der Wartezeiten bei Stefan grösser als bei Miriam.
 <!-- What data will you use? Will you require additional context data? Where do you get this data from? Do you already have all the data? -->
 Als Grundlage dienen Posmo-Daten von Miriam (3.5.23-heute) und Stefan (28.4.23-heute). Diese Daten liegen als CSV-Datei vor und beinhalten u.a. Datum & Zeit ("datetime") und x-Koordinaten ("long_x") und y-Koordinaten ("lat_y").
 Um ähnliche Ereignisse, welche nicht an ÖV-Haltestellen stattfinden, auszuschliessen, wird die Position der Haltestellen benötigt. Dafür verwenden wir den Datasatz "Haltestellen des öffentlichen Verkehrs" vom Bundesamt für Verkehr (BAV). Dieser steht öffentlich zur Verfügung:
-https://www.geocat.ch/geonetwork/srv/ger/catalog.search#/metadata/841d42ff-8177-4e07-a96b-e8e5455ae048
+https://data.geo.admin.ch/ch.bav.haltestellen-oev/haltestellen-oev/haltestellen-oev_2056_de.csv.zip
 
 
 ## Analytical concepts
