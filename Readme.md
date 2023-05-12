@@ -11,6 +11,8 @@ Analysis Geo 880**
 | **Student 2:** | Miriam Jakob                       |
 
 ## Abstract 
+Anhand unserer Posmodaten untersuchen wir unsere tägliche Wartezeit an Haltestellen von öffentlichen Verkehrsmitteln (ÖV). Mittels einer bestimmten Bewegungsabfolge werden die Reisestartpunkte eruiert. Diese Reisestartpunkte werden mit räumlich Haltestellendaten validiert. Pro Startpunkt wird die Wartezeit bestimmt und pro Person gemittelt. Es kann gezeigt werden, ob Miriam oder Stefan mehr Zeit an den Haltestellen verbringen.
+
 <!-- (50-60 words) -->
 
 ## Research Questions
@@ -18,7 +20,6 @@ In unserer Projektarbeit möchten wir unsere tägliche Wartezeit an Haltestellen
 - Wie oft reisen wir mit den ÖV?
 - Sind die Wartezeiten von Reise zu Reise unterschiedlich lang?
 - Wer verbringt durchschnittlich mehr Wartezeit an den Haltestellen?
-
 
 <!-- (50-60 words) -->
 
