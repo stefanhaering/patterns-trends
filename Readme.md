@@ -5,17 +5,16 @@ Analysis Geo 880**
 
 | Semester:      | FS23                                     |
 |:---------------|:---------------------------------------- |
-| **Data:**      | Posmo-Daten von Stefan (seit 28.4.23) und Miriam (seit 3.5.23)  |
+| **Data:**      | Posmo-Daten von Stefan und Miriam  |
 | **Title:**     | Wer verschwendet mehr Zeit mit Warten an ÖV-Haltestellen?                |
 | **Student 1:** | Stefan Häring                       |
 | **Student 2:** | Miriam Jakob                       |
 
 ## Abstract 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 <!-- (50-60 words) -->
 
 ## Research Questions
-In unserer Projektarbeit möchten wir unsere tägliche Wartezeit an Haltestellen von öffentlichen Verkehrsmitteln (ÖV) untersuchen. Dabei wird ausschliesslich der Beginn einer Reise betrachtet. Dafür sollten folgende Fragen beantwortet werden:
+In unserer Projektarbeit möchten wir unsere tägliche Wartezeit an Haltestellen von öffentlichen Verkehrsmitteln (ÖV) untersuchen. Dabei wird ausschliesslich der Beginn einer Reise betrachtet. Folgende Fragen sollten beantwortet werden:
 Wie oft reisen wir mit den ÖV?
 Sind die Wartezeiten von Reise zu Reise unterschiedlich lang?
 Wer verbringt durchschnittlich mehr Wartezeit an den Haltestellen?
@@ -39,18 +38,12 @@ https://data.geo.admin.ch/ch.bav.haltestellen-oev/haltestellen-oev/haltestellen-
 
 ## Analytical concepts
 <!-- Which analytical concepts will you use? What conceptual movement spaces and respective modelling approaches of trajectories will you be using? What additional spatial analysis methods will you be using? -->
-Um den Start einer Reise zu finden, werden die Daten auf eine bestimmte Abfolge von Bewegungen durchsucht:
+
+Um den Start einer Reise zu finden, werden die Daten auf eine bestimmte Abfolge von Bewegungen (Segmente) durchsucht. Diese Bewegungen werden durch deren Geschwindigkeit definiert und sollten in folgender Reihenfolge vorliegen:
 1. keine Bewegung: Person über längere Zeit (difftime >10 min) am selben Ort  
 2. langsame Bewegung: Gehen/Fahrrad (Segmente mit Geschwindigkeit <35 km/h)
 3. Wartezeit: Person am selben Ort (Difftime (Min(Segment schnell), Max(Segment langsam)))
 4. schnelle Bewegung: ÖV (Segmente mit Geschwindigkeit >=35 km/h)
-
-(Langsame und schnelle Bewegungen werde in einer zusätzlichen Spalte mit "langsam" und "schnell benennt. Mit lag kann eine Bewegungsänderung von "langsam" zu "schnell" festgestellt werden. Diese werden mit "Ende Wartezeit" in einer separaten Spalte benannt.)
-
-
-
-????conceptual movement spaces -> Lagrangian/Euler?
-????modelling approaches of trajectories
 
 Zusätzliche räumliche Analyse: Die Positionen der Wartezeit werden auf ihre Übereinstimmigkeit mit Standorten von ÖV-Haltestellen überprüft. (Buffer um Haltestellen mit Positionsdaten der Wartezeit verschneiden.)
 
