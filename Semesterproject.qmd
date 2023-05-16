@@ -1,0 +1,202 @@
+---
+title: "project-work"
+format: html
+---
+
+# Vorbereitung
+
+## Libraries laden
+
+```{r}
+library(readr)
+library(tidyr) 
+library(ggplot2)
+library(dplyr)
+library(sf)
+
+```
+
+## Daten einlesen
+
+```{r}
+# Daten von Stefan (ab 29.04.2023)
+stefan <- read_delim("posmo_stefan_230516.csv", delim = ",")
+stefan$person <- "Stefan"
+
+# Daten von Miriam (ab xx.05.2023)
+miriam <- read_delim("posmo_stefan_230516.csv", delim = ",")
+miriam$person <- "Miriam"
+
+# Daten zusammenführen
+posmo <- rbind(stefan, miriam)
+
+# nicht relevante Spalten entfernen
+posmo <- posmo |> 
+  select(-user_id, -weekday, -place_name, -transport_mode)
+
+# NA finden & entfernen
+posmo[!complete.cases(posmo), ] # Zeigt Zeilen mit NA an
+posmo <- drop_na(posmo)# Spalten mit NA entfernen
+
+# Geometrie hinzufügen
+posmo <- posmo |> 
+  st_as_sf(coords = c("lon_x", "lat_y"), crs = 4326, remove = FALSE) |>  # Geometrie hinzufügen
+  st_transform(2056) # transformieren CH1903+ LV95: 2056
+
+# Schweizer Koordinaten zu sf-Tabelle hinzufügen
+posmo_coordinates <- st_coordinates(posmo)
+posmo <- cbind(posmo, posmo_coordinates)
+
+# WGS Koordinaten entfernen 
+posmo <- posmo |> 
+  select(-lon_x, -lat_y)
+
+# Daten anschauen
+ggplot(posmo, aes(X, Y, color = person))+
+  geom_point()+
+  geom_path()+
+  coord_equal()+
+  theme_void()
+```
+
+# Geschwindigkeit
+
+```{r}
+# Geschwindigkeit herausfinden
+posmo <- posmo |> # Zeit
+  mutate(
+    time = as.numeric(difftime(lead(datetime), datetime, units = "secs")) # secs
+  ) # Hier gibt es manchmal 0er, also Datenpunkte zur selben Zeit. Die müssten auch selbe Koordinaten haben und sind für Geschwindigkeitsrechnung nicht zu gebrauchen. Also weg damit...
+
+posmo <- posmo |> # time = 0 entfernen
+  mutate(time = ifelse(time == 0, NA, time)) |> 
+  drop_na()
+
+posmo <- posmo |>
+  mutate(
+    steplength = round(sqrt((lead(X,1)-X)^2+(lead(Y,1)-Y)^2),1), # meter
+    velocity = round((steplength/1000)/(time/60/60),1) # km/h
+  )
+```
+
+# Moving Window
+
+Brauchen wir das Moving Window überhaupt??? anfänglich gedacht um Daten zu "glätten" eventuell nützlich, um ausreisser zu finden?
+
+```{r}
+# Geschwindigkeitsunterschied zu 2 Punkte vor und 2 Punkte nach Betrachtung
+movwin <- posmo |> 
+  mutate(
+    n_plus1 = sqrt((lead(velocity,1)-velocity)^2),
+    n_plus2 = sqrt((lead(velocity,2)-velocity)^2),
+    n_minus1 = sqrt((lag(velocity,1)-velocity)^2),
+    n_minus2 = sqrt((lag(velocity,2)-velocity)^2),
+    )
+
+# velocityMean der 4 Distanzen erstellen
+movwin <- movwin |> 
+  rowwise() |> 
+  mutate(velocityMean = mean(c(n_minus1, n_minus2, n_plus1, n_plus2), na.rm = TRUE)) |> 
+  ungroup()
+```
+
+# Einteilung stay/slow/fast
+
+```{r}
+# Erfahrungswerte:
+
+# Stefans Weg zum Bahnhof mit dem Fahrrad, maximale Geschwindigkeit:
+# 29.04.2023 09:09:40: 43.0 km/h
+# 08.05.2023 14:35:29: 36.0 km/h
+
+# Miriam wie schnell ist dein Bus??? Vielleicht müssen wir meine Velowege wegnehmen, da ich so schnell bin ;-) Bäh, dann wäre aber mein Velo fast und würde alles verfälschen, da ich nie auf mein Velo warte...
+
+# Schwellenwert setzen slow/fast, velocity: slow < 45 km/h <= fast
+# Schwellenwert setzen stay, time: stay >= 1800 (30 min)
+
+posmo <- posmo |> 
+  mutate(velocity_text = ifelse(velocity < 45, "slow", "fast"))
+posmo$velocity_text[posmo$time >= 1800] <- "stay"
+
+# Ausreisser entfernen
+# Mir ist nur derjenige vom 2023-04-29 09:43:01 aufgefallen...
+
+# Wie kann ich dieses Problem alternativ angegangen werden???
+
+# Vorgehen 1: Alle Punkte welche plötzlich einen Geschwindigkeitsunterschied von 30 km/h als benachbarte Punkte aufweisen, werden gelöscht
+# posmo$ausreisser[
+  # sqrt((posmo$velocity-lag(posmo$velocity))^2) > 30 & 
+  # sqrt((posmo$velocity-lead(posmo$velocity))^2) > 30
+  # ] <- "NA"
+# Fazit: nun gibt es bei jeder Beschleunigung einen Ausreisser, also nicht geeignet
+
+# Vorgehen 2: Alle Punkte, welche in velocity_text von den direkten Nachbarn abweichen werden als Ausreisser markiert, stay ist davon ausgenommen
+# posmo$ausreisser[
+  # posmo$velocity_text != lag(posmo$velocity_text) & 
+  # posmo$velocity_text != lead(posmo$velocity_text) &
+  # posmo$velocity_text != "stay"
+  # ] <- "NA" 
+# Fazit: hier werden kurze Bahn/Busstrecken weggelöschen, bei welcher die Geschwindigkeit immer um den Schwellenwert slow/fast liegt. Für die Auswertung ist dies etwa gleich Schlimm wie Vorgehen 1 (oder???)
+
+# Fazit Vorgehen 1&2: durch die Vorgehen gehen mehr korrekte Daten verloren als Ausreisser. Insgesamt habe ich sowieso nur einen Ausreisser gefunden. Vielleicht visuell machen?
+
+# Vorgehen 3: weiter unten werden durch Suche von Abfolge stay-slow-slow-fast-fast Aussreiser entfernt. Bzw. sie blockieren einige Startpunkte. Annahme: wir haben eine genügend grosse Stichprobengrösse, dass das wegfallen von Reisestartpunkten keine Rolle spielt.
+
+# evtl. Segmente einteilen, segment_id, ist dies hier nötig???
+
+```
+
+# Evente finden
+
+```{r}
+# Event finden (stay-slow-fast), event_id
+
+# Start und Enpunkte von Segment mit TRUE markieren
+event <- posmo |> 
+  mutate(find = ifelse(
+      posmo$velocity_text != lead(posmo$velocity_text) |
+      posmo$velocity_text != lag(posmo$velocity_text)
+      , TRUE, NA))
+
+# Nur Start und Enpunkte von Segment behalten
+event <- drop_na(event)
+event <- event |> 
+  select(-find) # unnötige Spalten entfernen
+
+# Abfolge stay-slow-slow-fast-fast finden, so werden auch Ausreisser eliminiert
+
+# if (velocity_text == stay & lead(velocity_text == "slow", 1) & lead(velocity_text == fast, 2)) {
+#  1
+#  } else {
+#  0
+#  }
+
+# neue Spalte: wenn lag( , 1) oder lag( , 2) 1 ist, dann 1
+
+# zwei Spalten addieren, Nullerspalten weglöschen
+
+# wide format pro event
+
+# Standort des Events bestimmen
+
+
+```
+
+# Evente validieren
+
+```{r}
+# Bahnhöfe einlesen
+
+# Buffer um Bahnhof
+
+# Intersect Buffer mit Event
+```
+
+# Wartezeit berechnen
+
+```{r}
+# pro Event: difftime(max(Segmentslow), min(segmentfast)
+
+
+```
+
