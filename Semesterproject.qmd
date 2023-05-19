@@ -65,8 +65,9 @@ ggplot(posmo, aes(X, Y, color = person))+
 # Geschwindigkeit herausfinden
 posmo <- posmo |> # Zeit
   mutate(
-    time = as.numeric(difftime(datetime, lag(datetime), units = "secs")) # secs
-  ) # Hier gibt es manchmal 0er, also Datenpunkte zur selben Zeit. Die müssten auch selbe Koordinaten haben und sind für Geschwindigkeitsrechnung nicht zu gebrauchen. Also weg damit... Hier macht "lag" mehr Sinn, da so der Standort des Bahnhofs besser gefunden werden kann
+    time = as.numeric(difftime(lead(datetime), datetime, units = "secs")) # secs
+  ) # Hier gibt es manchmal 0er, also Datenpunkte zur selben Zeit. Die müssten auch selbe Koordinaten haben und sind für Geschwindigkeitsrechnung nicht zu gebrauchen. Also weg damit... 
+# Hier muss "lead" anstatt "lag" benutzt werden
 
 posmo <- posmo |> # time = 0 entfernen
   mutate(time = ifelse(time == 0, NA, time)) |> 
@@ -74,7 +75,7 @@ posmo <- posmo |> # time = 0 entfernen
 
 posmo <- posmo |>
   mutate(
-    steplength = round(sqrt((lag(X,1)-X)^2+(lag(Y,1)-Y)^2),1), # meter
+    steplength = round(sqrt((lead(X,1)-X)^2+(lead(Y,1)-Y)^2),1), # meter
     velocity = round((steplength/1000)/(time/60/60),1) # km/h
   )
 ```
@@ -249,8 +250,9 @@ event <- event |>
 
 ```{r}
 # wartezeit pro Event: difftime(max(Segmentslow), min(segmentfast)
-event |> 
-  mutate(wartezeit = as.numeric(difftime(ende_warten, start_warten, units = "mins"))) # das ist eher unwahrscheinlich... shit... müssten wir für die Geschwindigkeit doch lead nehmen?
+event <- event |> 
+  mutate(wartezeit = as.numeric(difftime(ende_warten, start_warten, units = "mins"))) # ich glaube, die Daten sind nicht so gut...
+# Wir müssen slow slower machen ;-)... bäh... aber wie ohne, dass das Velo nichts verfälscht?!
 
 ```
 
