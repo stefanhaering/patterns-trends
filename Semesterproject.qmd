@@ -65,8 +65,8 @@ ggplot(posmo, aes(X, Y, color = person))+
 # Geschwindigkeit herausfinden
 posmo <- posmo |> # Zeit
   mutate(
-    time = as.numeric(difftime(lead(datetime), datetime, units = "secs")) # secs
-  ) # Hier gibt es manchmal 0er, also Datenpunkte zur selben Zeit. Die müssten auch selbe Koordinaten haben und sind für Geschwindigkeitsrechnung nicht zu gebrauchen. Also weg damit...
+    time = as.numeric(difftime(datetime, lag(datetime), units = "secs")) # secs
+  ) # Hier gibt es manchmal 0er, also Datenpunkte zur selben Zeit. Die müssten auch selbe Koordinaten haben und sind für Geschwindigkeitsrechnung nicht zu gebrauchen. Also weg damit... Hier macht "lag" mehr Sinn, da so der Standort des Bahnhofs besser gefunden werden kann
 
 posmo <- posmo |> # time = 0 entfernen
   mutate(time = ifelse(time == 0, NA, time)) |> 
@@ -74,7 +74,7 @@ posmo <- posmo |> # time = 0 entfernen
 
 posmo <- posmo |>
   mutate(
-    steplength = round(sqrt((lead(X,1)-X)^2+(lead(Y,1)-Y)^2),1), # meter
+    steplength = round(sqrt((lag(X,1)-X)^2+(lag(Y,1)-Y)^2),1), # meter
     velocity = round((steplength/1000)/(time/60/60),1) # km/h
   )
 ```
@@ -112,7 +112,7 @@ movwin <- movwin |>
 # Miriam wie schnell ist dein Bus??? Vielleicht müssen wir meine Velowege wegnehmen, da ich so schnell bin ;-) Bäh, dann wäre aber mein Velo fast und würde alles verfälschen, da ich nie auf mein Velo warte...
 
 # Schwellenwert setzen slow/fast, velocity: slow < 45 km/h <= fast
-# Schwellenwert setzen stay, time: stay >= 1800 (30 min)
+# Schwellenwert setzen stay, time: stay >= 1800 (30 min) # Schwellenwert evtl. nach oben setzen, da Stefan mal 40 min auf Zug wartete - Wenn jemand länger als Schwellenwert wartet, wird dies nicht als Reisestart gefunden.
 
 posmo <- posmo |> 
   mutate(velocity_text = ifelse(velocity < 45, "slow", "fast"))
@@ -154,8 +154,8 @@ posmo$velocity_text[posmo$time >= 1800] <- "stay"
 # Start und Enpunkte von Segment mit TRUE markieren
 event <- posmo |> 
   mutate(find = ifelse(
-      posmo$velocity_text != lead(posmo$velocity_text) |
-      posmo$velocity_text != lag(posmo$velocity_text)
+      velocity_text != lead(velocity_text) |
+      velocity_text != lag(velocity_text)
       , TRUE, NA))
 
 # Nur Start und Enpunkte von Segment behalten
@@ -164,22 +164,45 @@ event <- event |>
   select(-find) # unnötige Spalten entfernen
 
 # Abfolge stay-slow-slow-fast-fast finden, so werden auch Ausreisser eliminiert
+event <- event |> # Start der Abfolge finden, TRUE
+  mutate(find = ifelse(
+      velocity_text == "stay" &
+      lead(velocity_text, 1) == "slow" &
+      lead(velocity_text, 2) == "slow" &
+      lead(velocity_text, 3) == "fast" &
+      lead(velocity_text, 4) == "fast"
+      , TRUE, NA))
 
-# if (velocity_text == stay & lead(velocity_text == "slow", 1) & lead(velocity_text == fast, 2)) {
-#  1
-#  } else {
-#  0
-#  }
+# nur Start Wartezeit und Ende Wartezeit behalten
 
-# neue Spalte: wenn lag( , 1) oder lag( , 2) 1 ist, dann 1
+event <- event |> # nur Ende slow (= Start Wartezeit) und Start fast (= Ende Wartezeit) markieren
+  mutate(find = ifelse(
+      lag(find, 2) == TRUE |
+      lag(find, 3) == TRUE
+      , TRUE, NA))
 
-# zwei Spalten addieren, Nullerspalten weglöschen
-
-# wide format pro event
+event <- drop_na(event) # nur Start & Ende Wartezeit behalten behalten
+event <- event |> 
+  select(-find) # unnötige Spalten entfernen
 
 # Standort des Events bestimmen
+event <- event |>
+  mutate(haltestelle_x = ifelse(
+      velocity_text == "slow"
+      , X, lag(X)))
 
+event <- event |>
+  mutate(haltestelle_y = ifelse(
+      velocity_text == "slow"
+      , Y, lag(Y)))
 
+# Geometrie entfernen?
+
+event <- event |> 
+  select(-X, -Y, -time, -steplength, -velocity, -geometry) # unnötige Spalten entfernen
+
+# pro event eine Spalte (wide format pro event)
+# pivot_wider(Tabelle, names_from = "SpalteLong1", values_from = "SpalteLong2")
 ```
 
 # Evente validieren
