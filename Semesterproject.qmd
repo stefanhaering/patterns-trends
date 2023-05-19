@@ -126,14 +126,14 @@ posmo$velocity_text[posmo$time >= 1800] <- "stay"
 # Vorgehen 1: Alle Punkte welche plötzlich einen Geschwindigkeitsunterschied von 30 km/h als benachbarte Punkte aufweisen, werden gelöscht
 # posmo$ausreisser[
   # sqrt((posmo$velocity-lag(posmo$velocity))^2) > 30 & 
-  # sqrt((posmo$velocity-lead(posmo$velocity))^2) > 30
+  # sqrt((posmo$velocity-lag(posmo$velocity))^2) > 30
   # ] <- "NA"
 # Fazit: nun gibt es bei jeder Beschleunigung einen Ausreisser, also nicht geeignet
 
 # Vorgehen 2: Alle Punkte, welche in velocity_text von den direkten Nachbarn abweichen werden als Ausreisser markiert, stay ist davon ausgenommen
 # posmo$ausreisser[
   # posmo$velocity_text != lag(posmo$velocity_text) & 
-  # posmo$velocity_text != lead(posmo$velocity_text) &
+  # posmo$velocity_text != lag(posmo$velocity_text) &
   # posmo$velocity_text != "stay"
   # ] <- "NA" 
 # Fazit: hier werden kurze Bahn/Busstrecken weggelöschen, bei welcher die Geschwindigkeit immer um den Schwellenwert slow/fast liegt. Für die Auswertung ist dies etwa gleich Schlimm wie Vorgehen 1 (oder???)
@@ -196,13 +196,43 @@ event <- event |>
       velocity_text == "slow"
       , Y, lag(Y)))
 
-# Geometrie entfernen?
+event <- st_drop_geometry(event) # Alte Geometrie entfernen
 
 event <- event |> 
-  select(-X, -Y, -time, -steplength, -velocity, -geometry) # unnötige Spalten entfernen
+  select(-X, -Y, -time, -steplength, -velocity) # unnötige Spalten entfernen
 
 # pro event eine Spalte (wide format pro event)
-# pivot_wider(Tabelle, names_from = "SpalteLong1", values_from = "SpalteLong2")
+# FEHLER: wide <- pivot_wider(event, names_from = "velocity_text", values_from = "datetime") # Hier funktioniert etwas mit dem Datenformat nicht??? Vielleicht mit Join???
+
+
+slow <- event |> 
+  subset(velocity_text == "slow") # Tabelle slow
+
+fast <- event |> 
+  subset(velocity_text == "fast") # Tabelle fast
+
+
+# FEHLER: join <- left_join(slow, fast, "haltestelle_y", suffix = c("_slow", "_fast")) #Hier funktioniert etwas noch nicht??? Vielleicht ID geben
+
+slow$id <- as.character(1:nrow(slow)) # id
+fast$id <- as.character(1:nrow(slow)) # id
+
+event <- left_join(slow, fast, "id", suffix = c("_slow", "_fast"))
+
+event <- event |> # checken, ob standorte gleich sind (ob id richtig verteilt wurden)
+  mutate(check = ifelse(
+      haltestelle_x_slow == haltestelle_x_fast &
+      haltestelle_y_slow == haltestelle_y_fast
+      , TRUE, NA))
+event[!complete.cases(event), ] # alle id richtig
+
+names(event)
+event <- event |> 
+  select(-velocity_text_slow, -person_fast, -velocity_text_fast, -haltestelle_x_fast,
+         -haltestelle_y_fast, -check) |> # unnötige Spalten entfernen
+  rename(person = person_slow, X = haltestelle_x_slow, Y = haltestelle_y_slow, 
+         start_warten = datetime_slow, ende_warten = datetime_fast) # Spalten umbennenen
+
 ```
 
 # Evente validieren
@@ -218,8 +248,9 @@ event <- event |>
 # Wartezeit berechnen
 
 ```{r}
-# pro Event: difftime(max(Segmentslow), min(segmentfast)
-
+# wartezeit pro Event: difftime(max(Segmentslow), min(segmentfast)
+event |> 
+  mutate(wartezeit = as.numeric(difftime(ende_warten, start_warten, units = "mins"))) # das ist eher unwahrscheinlich... shit... müssten wir für die Geschwindigkeit doch lead nehmen?
 
 ```
 
