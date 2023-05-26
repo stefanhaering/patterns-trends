@@ -111,6 +111,8 @@ movwin <- movwin |>
 # 08.05.2023 14:35:29: 36.0 km/h
 
 # Miriam wie schnell ist dein Bus??? Vielleicht müssen wir meine Velowege wegnehmen, da ich so schnell bin ;-) Bäh, dann wäre aber mein Velo fast und würde alles verfälschen, da ich nie auf mein Velo warte...
+# Bsp. 35 km/h
+# Bsp. Rennen Miriam 17 km/h
 
 # Schwellenwert setzen slow/fast, velocity: slow < 45 km/h <= fast
 # Schwellenwert setzen stay, time: stay >= 1800 (30 min) # Schwellenwert evtl. nach oben setzen, da Stefan mal 40 min auf Zug wartete - Wenn jemand länger als Schwellenwert wartet, wird dies nicht als Reisestart gefunden.
@@ -127,14 +129,14 @@ posmo$velocity_text[posmo$time >= 1800] <- "stay"
 # Vorgehen 1: Alle Punkte welche plötzlich einen Geschwindigkeitsunterschied von 30 km/h als benachbarte Punkte aufweisen, werden gelöscht
 # posmo$ausreisser[
   # sqrt((posmo$velocity-lag(posmo$velocity))^2) > 30 & 
-  # sqrt((posmo$velocity-lag(posmo$velocity))^2) > 30
+  # sqrt((posmo$velocity-lead(posmo$velocity))^2) > 30
   # ] <- "NA"
 # Fazit: nun gibt es bei jeder Beschleunigung einen Ausreisser, also nicht geeignet
 
 # Vorgehen 2: Alle Punkte, welche in velocity_text von den direkten Nachbarn abweichen werden als Ausreisser markiert, stay ist davon ausgenommen
 # posmo$ausreisser[
   # posmo$velocity_text != lag(posmo$velocity_text) & 
-  # posmo$velocity_text != lag(posmo$velocity_text) &
+  # posmo$velocity_text != lead(posmo$velocity_text) &
   # posmo$velocity_text != "stay"
   # ] <- "NA" 
 # Fazit: hier werden kurze Bahn/Busstrecken weggelöschen, bei welcher die Geschwindigkeit immer um den Schwellenwert slow/fast liegt. Für die Auswertung ist dies etwa gleich Schlimm wie Vorgehen 1 (oder???)
