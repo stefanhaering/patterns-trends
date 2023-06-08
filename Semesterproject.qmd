@@ -256,5 +256,6 @@ event <- event |>
   mutate(wartezeit = as.numeric(difftime(ende_warten, start_warten, units = "mins"))) # ich glaube, die Daten sind nicht so gut...
 # Wir müssen slow slower machen ;-)... bäh... aber wie ohne, dass das Velo nichts verfälscht?!
 
+
 ```
 
