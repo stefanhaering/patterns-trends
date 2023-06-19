@@ -8,11 +8,11 @@ format: html
 ## Libraries laden
 
 ```{r}
-library(readr)
-library(tidyr) 
-library(ggplot2)
-library(dplyr)
-library(sf)
+library("readr")
+library("tidyr") 
+library("ggplot2")
+library("dplyr")
+library("sf")
 
 ```
 
@@ -20,11 +20,11 @@ library(sf)
 
 ```{r}
 # Daten von Stefan (ab 29.04.2023)
-stefan <- read_delim("posmo_stefan_230516.csv", delim = ",")
+stefan <- read_delim("posmo_stefan_230618.csv", delim = ",")
 stefan$person <- "Stefan"
 
 # Daten von Miriam (ab xx.05.2023)
-miriam <- read_delim("posmo_stefan_230516.csv", delim = ",")
+miriam <- read_delim("posmo_stefan_230525.csv", delim = ",")
 miriam$person <- "Miriam"
 
 # Daten zusammenführen
@@ -166,6 +166,8 @@ event <- drop_na(event)
 event <- event |> 
   select(-find) # unnötige Spalten entfernen
 
+# IDEE: Damit wir auch Events finden, wo wir kein stay von 30 min haben (Spazieren, Kartieren,...), könnten wir über langen slow eine Zeile mit stay einfügen. Wie kann man Zeile einfügen???
+
 # Abfolge stay-slow-slow-fast-fast finden, so werden auch Ausreisser eliminiert
 event <- event |> # Start der Abfolge finden, TRUE
   mutate(find = ifelse(
@@ -234,7 +236,8 @@ event <- event |>
   select(-velocity_text_slow, -person_fast, -velocity_text_fast, -haltestelle_x_fast,
          -haltestelle_y_fast, -check) |> # unnötige Spalten entfernen
   rename(person = person_slow, X = haltestelle_x_slow, Y = haltestelle_y_slow, 
-         start_warten = datetime_slow, ende_warten = datetime_fast) # Spalten umbennenen
+         start_warten = datetime_slow, ende_warten = datetime_fast) |>  # Spalten umbennenen
+  st_as_sf(coords = c("X", "Y"), crs = 2056, remove = FALSE) # Geometrie hinzufügen
 
 ```
 
@@ -242,20 +245,143 @@ event <- event |>
 
 ```{r}
 # Bahnhöfe einlesen
+haltestelle <- read_delim("haltestellen-oev_2056_de.csv/Betriebspunkt.csv", delim = ",") # WArum funktioniert das plötzlich nicht mehr??? File neu herunterladen!
+
+haltestelle <- haltestelle |> 
+  st_as_sf(coords = c("E", "N"), crs = 2056, remove = FALSE) |> # Geometrie hinzufügen
+  subset(Betriebspunkttyp_Bezeichnung == "Haltestelle" |
+           Betriebspunkttyp_Bezeichnung == "Haltestelle und Bedienpunkt") # nur Haltestellen
+
+ggplot(haltestelle)+
+  geom_sf()+
+  geom_sf(data = event, aes(colour = person), size = 2)+
+  theme_void() # Achsen und Raster verschwinden
 
 # Buffer um Bahnhof
+haltestelle_buffer <- st_buffer(haltestelle, 120) # Was ist eine gute Buffer-Grösse???
+
 
 # Intersect Buffer mit Event
+haltestelle_event <- st_intersection(haltestelle_buffer, event)
+
+# nur eine Haltestelle pro Event
+haltestelle_event <- haltestelle_event |> 
+  mutate(check = ifelse(
+      id == lag(id) &
+        id != 1, NA, TRUE)) |> 
+  drop_na(check)
+  
+# Spalten aufräumen
+haltestelle_event <- haltestelle_event |> 
+  select(id, xtf_id, Name, E, N, person, start_warten, ende_warten) |>
+  st_drop_geometry() |> 
+  st_as_sf(coords = c("E", "N"), crs = 2056, remove = FALSE)
+
 ```
 
 # Wartezeit berechnen
 
 ```{r}
 # wartezeit pro Event: difftime(max(Segmentslow), min(segmentfast)
-event <- event |> 
-  mutate(wartezeit = as.numeric(difftime(ende_warten, start_warten, units = "mins"))) # ich glaube, die Daten sind nicht so gut...
-# Wir müssen slow slower machen ;-)... bäh... aber wie ohne, dass das Velo nichts verfälscht?!
+velocity <- haltestelle_event |> 
+  mutate(wartezeit = round(as.numeric(difftime(ende_warten, start_warten, units = "mins")),2)) # ich glaube, die Daten sind nicht so gut...
+
+velocity$wartezeit_cat <- "NA"
+velocity$wartezeit_cat[velocity$wartezeit >= 0 & velocity$wartezeit < 1] <- "0-1"
+velocity$wartezeit_cat[velocity$wartezeit >= 1 & velocity$wartezeit < 2] <- "1-2"
+velocity$wartezeit_cat[velocity$wartezeit >= 2 & velocity$wartezeit < 3] <- "2-3"
+velocity$wartezeit_cat[velocity$wartezeit >= 3 & velocity$wartezeit < 4] <- "3-4"
+velocity$wartezeit_cat[velocity$wartezeit >= 4 & velocity$wartezeit < 5] <- "4-5"
+velocity$wartezeit_cat[velocity$wartezeit >= 5 & velocity$wartezeit < 6] <- "5-6"
+velocity$wartezeit_cat[velocity$wartezeit >= 6 & velocity$wartezeit < 7] <- "6-7"
+velocity$wartezeit_cat[velocity$wartezeit >= 7 & velocity$wartezeit < 8] <- "7-8"
+
+```
+
+# Visualisierung Velocity
+
+```{r}
+# Approach Velocity
+
+# Visualisierung: Wo wurde gewartet
+ggplot(velocity)+
+  geom_sf()+
+  theme_void() # Achsen und Raster verschwinden
+
+# Visualisierung: Wer hat wo wurde gewartet
+ggplot(velocity)+
+  geom_sf(aes(colour = person))+
+  theme_void() # Achsen und Raster verschwinden
+
+# Visualisierung: War die Wartezeit unterschiedlich?
+ggplot(velocity)+
+  geom_sf(aes(size = wartezeit))+
+  theme_void() # Achsen und Raster verschwinden
+
+# Vergleich Miriram & Stefan
+boxplot(wartezeit~person, data = velocity, ylab = "Wartezeit [min]", xlab = "Person")
+
+t.test(wartezeit~person, data = velocity, var.equal = TRUE)# ungepaart, zweiseitig, long-Format
+
+# Barchart, Saeulendiagramm
+ggplot(velocity)+
+  geom_bar(aes(x = wartezeit))
+
+ggplot(velocity)+
+  geom_bar(aes(x = wartezeit, fill=person))
+
+# Boxplot
+ggplot(velocity, aes(wartezeit, person))+
+  geom_boxplot()+ # Warum hat es keine Whiskers???
+  labs( # Beschriftung aendern
+    title = "Wartezeiten beim Vorgehen velocity", 
+    x = "Wartezeit [min]", y = "Person")+ # Legende beschriften
+  coord_flip() +
+  theme_classic() # löscht ggplot-Layout
+
+# violin plot
+ggplot(velocity, aes(wartezeit, person))+
+  geom_violin(scale = "count")+
+  coord_flip() +
+  labs( # Beschriftung aendern
+    title = "Wartezeiten beim Vorgehen velocity", 
+    x = "Wartezeit [min]", y = "Person")+ # Legende beschriften
+  theme_classic() # löscht ggplot-Layout
+
+# Boxplot mit Haltestelle (nur sinnvoll mit viel benutzen haltestellen...)
+ggplot(velocity, aes(wartezeit, Name))+
+  geom_boxplot()+ # Warum hat es keine Whiskers???
+  coord_flip() +
+  labs( # Beschriftung aendern
+    title = "Wartezeiten beim Vorgehen velocity", 
+    x = "Person", y = "Wartezeit [min]")+ # Legende beschriften
+  theme_classic() # löscht ggplot-Layout
+
+boxplot(wartezeit~Name, data = velocity)
+#, ylab = "Wartezeit [min]", xlab = "Haltestelle")
+
+# Farbige Säulen pro Person, Anteil von 0-1 min, 1-2 min,...
+ggplot(velocity, aes(person, fill = wartezeit_cat))+
+  geom_bar(position = position_fill(reverse = TRUE))+
+  theme_classic() # löscht ggplot-Layout
+
+# Idee: Karte mit Boxplots pro Haltestelle für Wartezeit
+
+# Karte mit Punkt pro Haltestelle, Punktgrösse gibt Mean Wartezeit an, evtl noch eine Nummer mit Anzahl Events neben Punkt.
+velocity_sum <- velocity |> 
+  group_by(Name) |> # group_by(Spalte_gruppieren1, Spalte_gruppieren2)
+  summarise(Mean = mean(wartezeit), Anzahl = length(wartezeit))
+
+ggplot(velocity_sum)+
+  geom_sf(aes(size = Mean, colour = Anzahl))+
+  theme_void() # Achsen und Raster verschwinden
+
+
 
 
 ```
 
+
+# Fragen
+
+1. wir könnten als zusätzlich zu stay auch langsame Bewegungen über längere Zeit als "stay" hinzufügen. Also wenn slow >= 30 min ist oder so... vielleicht wird das auch unnötig kompliziert. Ich glaube, dass dann aber noch ein paar Datenpunkte hinzukommen würden (Kartierung, Spaziergang,...)
