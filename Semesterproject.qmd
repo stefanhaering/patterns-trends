@@ -27,6 +27,9 @@ stefan$person <- "Stefan"
 miriam <- read_delim("posmo_stefan_230525.csv", delim = ",")
 miriam$person <- "Miriam"
 
+# Schweizergrenze für Visualisierung
+schweiz <- read_sf("schweiz.gpkg")
+
 # Daten zusammenführen
 posmo <- rbind(stefan, miriam)
 
@@ -53,7 +56,6 @@ posmo <- posmo |>
 
 # Daten anschauen
 ggplot(posmo, aes(X, Y, color = person))+
-  geom_point()+
   geom_path()+
   coord_equal()+
   theme_void()
@@ -117,11 +119,11 @@ movwin <- movwin |>
 # Bsp. Rennen Miriam 17 km/h
 
 # Schwellenwert setzen slow/fast, velocity: slow < 45 km/h <= fast
-# Schwellenwert setzen stay, time: stay >= 1800 (30 min) # Schwellenwert evtl. nach oben setzen, da Stefan mal 40 min auf Zug wartete - Wenn jemand länger als Schwellenwert wartet, wird dies nicht als Reisestart gefunden.
+# Schwellenwert setzen stay, time: stay >= 600 (10 min) # Schwellenwert evtl. nach oben setzen, da Stefan mal 40 min auf Zug wartete - Wenn jemand länger als Schwellenwert wartet, wird dies nicht als Reisestart gefunden.
 
 posmo <- posmo |> 
   mutate(velocity_text = ifelse(velocity < 45, "slow", "fast"))
-posmo$velocity_text[posmo$time >= 1800] <- "stay"
+posmo$velocity_text[posmo$time >= 600] <- "stay"
 
 # Ausreisser entfernen
 # Mir ist nur derjenige vom 2023-04-29 09:43:01 aufgefallen...
@@ -260,7 +262,7 @@ ggplot(haltestelle)+
   theme_void() # Achsen und Raster verschwinden
 
 # Buffer um Bahnhof
-haltestelle_buffer <- st_buffer(haltestelle, 120) # Was ist eine gute Buffer-Grösse???
+haltestelle_buffer <- st_buffer(haltestelle, 100) # Was ist eine gute Buffer-Grösse???
 
 
 # Intersect Buffer mit Event
@@ -307,16 +309,19 @@ velocity$wartezeit_cat[velocity$wartezeit >= 7 & velocity$wartezeit < 8] <- "7-8
 
 # Visualisierung: Wo wurde gewartet
 ggplot(velocity)+
+  geom_sf(data = schweiz)+
   geom_sf()+
   theme_void() # Achsen und Raster verschwinden
 
 # Visualisierung: Wer hat wo wurde gewartet
 ggplot(velocity)+
+  geom_sf(data = schweiz)+
   geom_sf(aes(colour = person))+
   theme_void() # Achsen und Raster verschwinden
 
 # Visualisierung: War die Wartezeit unterschiedlich?
 ggplot(velocity)+
+  geom_sf(data = schweiz)+
   geom_sf(aes(size = wartezeit))+
   theme_void() # Achsen und Raster verschwinden
 
@@ -375,6 +380,7 @@ velocity_sum <- velocity |>
   summarise(Mean = mean(wartezeit), Anzahl = length(wartezeit))
 
 ggplot(velocity_sum)+
+  geom_sf(data = schweiz)+
   geom_sf(aes(size = Mean, colour = Anzahl))+
   theme_void() # Achsen und Raster verschwinden
 
