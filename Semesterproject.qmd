@@ -59,7 +59,9 @@ ggplot(posmo, aes(X, Y, color = person))+
   theme_void()
 ```
 
-# Geschwindigkeit
+# Vorgehen "Geschwindigkeit"
+
+## Geschwindigkeit
 
 ```{r}
 # Geschwindigkeit herausfinden
@@ -80,9 +82,9 @@ posmo <- posmo |>
   )
 ```
 
-# Moving Window
+## Moving Window
 
-Brauchen wir das Moving Window überhaupt??? anfänglich gedacht um Daten zu "glätten" eventuell nützlich, um ausreisser zu finden?
+Brauchen wir das Moving Window überhaupt??? anfänglich gedacht um Daten zu "glätten", eventuell nützlich, um ausreisser zu finden?
 
 ```{r}
 # Geschwindigkeitsunterschied zu 2 Punkte vor und 2 Punkte nach Betrachtung
@@ -101,7 +103,7 @@ movwin <- movwin |>
   ungroup()
 ```
 
-# Einteilung stay/slow/fast
+## Einteilung stay/slow/fast
 
 ```{r}
 # Erfahrungswerte:
@@ -149,7 +151,7 @@ posmo$velocity_text[posmo$time >= 1800] <- "stay"
 
 ```
 
-# Evente finden
+## Evente finden
 
 ```{r}
 # Event finden (stay-slow-fast), event_id
@@ -241,7 +243,7 @@ event <- event |>
 
 ```
 
-# Evente validieren
+## Evente validieren
 
 ```{r}
 # Bahnhöfe einlesen
@@ -279,7 +281,7 @@ haltestelle_event <- haltestelle_event |>
 
 ```
 
-# Wartezeit berechnen
+## Wartezeit berechnen
 
 ```{r}
 # wartezeit pro Event: difftime(max(Segmentslow), min(segmentfast)
@@ -298,7 +300,7 @@ velocity$wartezeit_cat[velocity$wartezeit >= 7 & velocity$wartezeit < 8] <- "7-8
 
 ```
 
-# Visualisierung Velocity
+## Visualisierung
 
 ```{r}
 # Approach Velocity
@@ -381,7 +383,15 @@ ggplot(velocity_sum)+
 
 ```
 
+# Vorgehen "Transportmodus"
+
+```{r}
+
+```
+
+
 
 # Fragen
 
 1. wir könnten als zusätzlich zu stay auch langsame Bewegungen über längere Zeit als "stay" hinzufügen. Also wenn slow >= 30 min ist oder so... vielleicht wird das auch unnötig kompliziert. Ich glaube, dass dann aber noch ein paar Datenpunkte hinzukommen würden (Kartierung, Spaziergang,...)
+
