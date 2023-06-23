@@ -24,7 +24,7 @@ Passagiere empfinden in der Regel das Warten an Haltestellen des Öffentlichen V
 In unserer Projektarbeit möchten wir unsere tägliche Wartezeit an Haltestellen von öffentlichen Verkehrsmitteln (ÖV) untersuchen. Dabei wird ausschliesslich der Beginn einer Reise betrachtet. Folgende Fragen sollen anhand zweier leicht unterschiedlicher Methoden beantwortet werden:
 
 -   Wie oft reisen wir mit den ÖV?
--   Sind die Wartezeiten von Reise zu Reise unterschiedlich lang?
+-   Sind die Wartezeiten pro Person von Reise zu Reise unterschiedlich lang?
 -   Wer verbringt durchschnittlich mehr Wartezeit an den Haltestellen?
 -   Kommen unsere beiden methodischen Herangehensweisen zu den gleichen Resultaten?
 
@@ -572,15 +572,41 @@ Aufgrund der Frequenz der Lokalisierung, können die Wartezeiten nur auf 10 Seku
 
 # 3 Resultate
 
+Die beiden Verfahren haben eine unterschiedliche Anzahl Events ergeben. Gemäss dem Ansat"Geschwindigkeit" haben wir zusammen 60 (Ansatz "Geschwindigkeit"), bzw. 85 (Ansatz "Transportmodus") Reisen mit dem ÖV gemacht. Miriam macht 0.51 (Ansatz "Geschwindigkeit"), bzw 0.67 (Ansatz "Transportmodus") ÖV-Reisen pro Tag. Stefan macht 0.71 (Ansatz "Geschwindigkeit"), bzw 1.06 (Ansatz "Transportmodus") ÖV-Reisen pro Tag.
 
-#### R: G: Visualisierung
+Beim Ansatz "Geschwindigkeit" ergeben sich folgende Resultate: Miriam wartet im Mittel rund 3.1 Minuten, während Stefan im Mittel rund 1.9 Minuten wartet. Die Wartezeiten sind von Reise zu Reise unterschiedlich lange. Bei Miriam beträgt die Standardabweichung 2.9 und bei Stefan 2.2.
 
 ```{r}
+### Resultat
+velocity |> 
+  st_drop_geometry() |> 
+  group_by(person) |> 
+  summarise(Mittelwert = mean(wartezeit), Minimum = min(wartezeit), Maximum = max(wartezeit)
+            , Standardabweichung = sd(wartezeit), Bereich = (max(wartezeit)-min(wartezeit)))
+```
+
+Beim Ansatz "Geschwindigkeit" ergeben sich folgende Resultate: Miriam wartet im Mittel rund 3.3 Minuten, während Stefan im Mittel rund 2.6 Minuten wartet. Die Wartezeiten sind von Reise zu Reise unterschiedlich lange. Bei Miriam beträgt die Standardabweichung 2.8 und bei Stefan 2.7.
+
+```{r}
+### Resultat
+event |> 
+  st_drop_geometry() |> 
+  group_by(person) |> 
+  summarise(Mittelwert = mean(wartezeit_minutes), Minimum = min(wartezeit_minutes), 
+            Maximum = max(wartezeit_minutes), Standardabweichung = sd(wartezeit_minutes),
+            Bereich = (max(wartezeit_minutes)-min(wartezeit_minutes)))
+```
+
+
+
+```{r}
+#### R: G: Visualisierung
+
 # Vergleich Miriram & Stefan
 ggplot(velocity, aes(wartezeit, person, fill = person))+
   geom_boxplot()+ # Warum hat es keine Whiskers???
   labs( # Beschriftung aendern
-    title = "Wartezeiten beim Vorgehen ", 
+    title = "Ansatz 'Geschwindigkeit'", 
     x = "Wartezeit [min]", y = "Person")+
   scale_fill_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
   labs(

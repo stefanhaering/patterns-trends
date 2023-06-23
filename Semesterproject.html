@@ -179,7 +179,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>In unserer Projektarbeit möchten wir unsere tägliche Wartezeit an Haltestellen von öffentlichen Verkehrsmitteln (ÖV) untersuchen. Dabei wird ausschliesslich der Beginn einer Reise betrachtet. Folgende Fragen sollen anhand zweier leicht unterschiedlicher Methoden beantwortet werden:</p>
 <ul>
 <li>Wie oft reisen wir mit den ÖV?</li>
-<li>Sind die Wartezeiten von Reise zu Reise unterschiedlich lang?</li>
+<li>Sind die Wartezeiten pro Person von Reise zu Reise unterschiedlich lang?</li>
 <li>Wer verbringt durchschnittlich mehr Wartezeit an den Haltestellen?</li>
 <li>Kommen unsere beiden methodischen Herangehensweisen zu den gleichen Resultaten?</li>
 </ul>
@@ -369,11 +369,30 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="resultate" class="level1">
 <h1>3 Resultate</h1>
-<section id="r-g-visualisierung" class="level4">
-<h4 class="anchored" data-anchor-id="r-g-visualisierung">R: G: Visualisierung</h4>
+<p>Die beiden Verfahren haben eine unterschiedliche Anzahl Events ergeben. Gemäss dem Ansat”Geschwindigkeit” haben wir zusammen 60 (Ansatz “Geschwindigkeit”), bzw. 85 (Ansatz “Transportmodus”) Reisen mit dem ÖV gemacht. Miriam macht 0.51 (Ansatz “Geschwindigkeit”), bzw 0.67 (Ansatz “Transportmodus”) ÖV-Reisen pro Tag. Stefan macht 0.71 (Ansatz “Geschwindigkeit”), bzw 1.06 (Ansatz “Transportmodus”) ÖV-Reisen pro Tag.</p>
+<p>Beim Ansatz “Geschwindigkeit” ergeben sich folgende Resultate: Miriam wartet im Mittel rund 3.1 Minuten, während Stefan im Mittel rund 1.9 Minuten wartet. Die Wartezeiten sind von Reise zu Reise unterschiedlich lange. Bei Miriam beträgt die Standardabweichung 2.9 und bei Stefan 2.2.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 6
+  person Mittelwert Minimum Maximum Standardabweichung Bereich
+  &lt;chr&gt;       &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;              &lt;dbl&gt;   &lt;dbl&gt;
+1 Miriam       3.01    0.08    9.85               2.88    9.77
+2 Stefan       1.92    0.23    7.52               2.20    7.29</code></pre>
+</div>
+</div>
+<p>Beim Ansatz “Geschwindigkeit” ergeben sich folgende Resultate: Miriam wartet im Mittel rund 3.3 Minuten, während Stefan im Mittel rund 2.6 Minuten wartet. Die Wartezeiten sind von Reise zu Reise unterschiedlich lange. Bei Miriam beträgt die Standardabweichung 2.8 und bei Stefan 2.7.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 6
+  person Mittelwert Minimum Maximum Standardabweichung Bereich
+  &lt;chr&gt;       &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;              &lt;dbl&gt;   &lt;dbl&gt;
+1 Miriam       3.32  0.0167    8.35               2.76    8.33
+2 Stefan       2.61  0.0333    9.65               2.71    9.62</code></pre>
+</div>
+</div>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+<p><img src="Semesterproject_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -389,24 +408,23 @@ mean in group Miriam mean in group Stefan
             3.005200             1.916857 </code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-11-2.png" class="img-fluid" width="672"></p>
+<p><img src="Semesterproject_files/figure-html/unnamed-chunk-13-2.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-11-3.png" class="img-fluid" width="672"></p>
+<p><img src="Semesterproject_files/figure-html/unnamed-chunk-13-3.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-11-4.png" class="img-fluid" width="672"></p>
+<p><img src="Semesterproject_files/figure-html/unnamed-chunk-13-4.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-</section>
 <section id="r-t-visualisierung" class="level4">
 <h4 class="anchored" data-anchor-id="r-t-visualisierung">R: T: Visualisierung</h4>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+<p><img src="Semesterproject_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-12-2.png" class="img-fluid" width="672"></p>
+<p><img src="Semesterproject_files/figure-html/unnamed-chunk-14-2.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 2.881176</code></pre>
@@ -431,27 +449,27 @@ mean in group Miriam mean in group Stefan
 0.01667 0.16667 3.00000 2.88118 5.01667 9.65000 </code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-12-3.png" class="img-fluid" width="672"></p>
+<p><img src="Semesterproject_files/figure-html/unnamed-chunk-14-3.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-12-4.png" class="img-fluid" width="672"></p>
+<p><img src="Semesterproject_files/figure-html/unnamed-chunk-14-4.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-12-5.png" class="img-fluid" width="672"></p>
+<p><img src="Semesterproject_files/figure-html/unnamed-chunk-14-5.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-12-6.png" class="img-fluid" width="672"></p>
+<p><img src="Semesterproject_files/figure-html/unnamed-chunk-14-6.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<div id="htmlwidget-72b1ea7a5db7bf832f81" style="width:100%;height:464px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-72b1ea7a5db7bf832f81">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addProviderTiles","args":["NASAGIBS.ViirsEarthAtNight2012",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]}],"setView":[[48.85,2.34],5,[]]},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-dad6b5b873bed0ee441b" style="width:100%;height:464px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-dad6b5b873bed0ee441b">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addProviderTiles","args":["NASAGIBS.ViirsEarthAtNight2012",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]}],"setView":[[48.85,2.34],5,[]]},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="cell-output-display">
-<div id="htmlwidget-336c51b49f6b8ba08692" style="width:100%;height:464px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-336c51b49f6b8ba08692">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addCircleMarkers","args":[[47.0870540100126,47.2083770100598,46.4079230094403,46.5499110094417,47.2086690100642,47.2083770100598,47.5486750104794,47.4837730104683,47.5268190104561,47.3784470101658,47.2083770100598,47.5483900104775,47.557467010484,47.4838340104684,47.3594770104001,47.4412920104433,47.3780310101662,47.2083770100598,47.5720720104792,47.4838420104683,47.3618410104678,47.2083770100598,46.292121009991,46.3153820099735,47.2083770100598,47.2083770100598,47.3595110104,47.5535870104784,47.4839000104683,47.378531010166,47.2083770100598,47.4838390104685,47.4677450104489,46.9674400097143,46.7937710094069,47.2083770100598,47.1707960102184,47.5513910104789,47.4836230104684,47.3596620104002,47.5328230104576,47.2083770100598,47.0433190101125,47.2083770100598,47.1782460101214,47.1733730101057,47.2083770100598,47.5487520104774,47.4836900104685,47.5513780104789,47.4838130104682,47.492608009926,47.4832580101328,47.2293040100764,47.2293040100764,47.4832780101328,47.2293040100764,47.4874350101325,47.2293040100764,47.2293040100764,47.4833380101328,47.2293040100764,47.4831710101327,47.2293040100764,47.4977620101469,47.4832050101327,47.4832370101328,47.4651760101276,47.4123230101304,47.4831920101327,47.2293040100764,47.401867010169,47.4831730101328,47.4833460101328,47.2293040100764,47.4831890101328,47.2293040100764,47.4833200101328,47.2293040100764,47.4833010101327,47.2183930100719,47.4831300101328,47.4874350101325,47.2293040100764,47.0793800103853],[8.7221260086554,8.70747800860422,9.70148500978508,9.8884660099098,8.69269200858984,8.70747800860422,7.58282300738035,7.54686700736095,7.64751700745304,8.53782700838742,8.70747800860422,7.58976700738759,7.57526200737012,7.5463540073604,7.65582700750758,7.59198600741926,8.53597200838575,8.70747800860422,7.61147100740337,7.54699600736107,7.38926900722876,8.70747800860422,7.53282300763962,7.65181500776294,8.70747800860422,8.70747800860422,7.65603700750779,7.59241300738888,7.54700600736106,8.53720000838678,8.70747800860422,7.54601100736005,7.60307100742352,9.55404100947369,10.2862220101746,8.70747800860422,8.09789000801228,7.58795200738489,7.54624300736034,7.6558960075076,7.64885900745275,8.70747800860422,8.3145570082665,8.70747800860422,8.45750400836943,8.50659600841919,8.70747800860422,7.59072100738848,7.5462140073603,7.58798300738492,7.54717600736126,9.43612400918815,8.76160400856916,8.6752190085666,8.6752190085666,8.76169600856923,8.6752190085666,8.76681200857275,8.6752190085666,8.6752190085666,8.76163400856916,8.6752190085666,8.76166100856925,8.6752190085666,8.7291420085336,8.76167700856924,8.76168300856923,8.76034400857382,8.69581300852919,8.76172300856929,8.6752190085666,8.55262800839451,8.76144400856903,8.76165600856918,8.6752190085666,8.76154900856913,8.6752190085666,8.76165700856919,8.6752190085666,8.76164000856918,8.67770000857236,8.76145700856906,8.76681200857275,8.6752190085666,7.31302000721921],10,null,null,{"interactive":true,"className":"","stroke":true,"color":"#03F","weight":5,"opacity":0.5,"fill":true,"fillColor":"#03F","fillOpacity":0.2},null,null,["Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam"],null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[46.292121009991,47.5720720104792],"lng":[7.31302000721921,10.2862220101746]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-2657b4426420d1ee9719" style="width:100%;height:464px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-2657b4426420d1ee9719">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addCircleMarkers","args":[[47.0870540100126,47.2083770100598,46.4079230094403,46.5499110094417,47.2086690100642,47.2083770100598,47.5486750104794,47.4837730104683,47.5268190104561,47.3784470101658,47.2083770100598,47.5483900104775,47.557467010484,47.4838340104684,47.3594770104001,47.4412920104433,47.3780310101662,47.2083770100598,47.5720720104792,47.4838420104683,47.3618410104678,47.2083770100598,46.292121009991,46.3153820099735,47.2083770100598,47.2083770100598,47.3595110104,47.5535870104784,47.4839000104683,47.378531010166,47.2083770100598,47.4838390104685,47.4677450104489,46.9674400097143,46.7937710094069,47.2083770100598,47.1707960102184,47.5513910104789,47.4836230104684,47.3596620104002,47.5328230104576,47.2083770100598,47.0433190101125,47.2083770100598,47.1782460101214,47.1733730101057,47.2083770100598,47.5487520104774,47.4836900104685,47.5513780104789,47.4838130104682,47.492608009926,47.4832580101328,47.2293040100764,47.2293040100764,47.4832780101328,47.2293040100764,47.4874350101325,47.2293040100764,47.2293040100764,47.4833380101328,47.2293040100764,47.4831710101327,47.2293040100764,47.4977620101469,47.4832050101327,47.4832370101328,47.4651760101276,47.4123230101304,47.4831920101327,47.2293040100764,47.401867010169,47.4831730101328,47.4833460101328,47.2293040100764,47.4831890101328,47.2293040100764,47.4833200101328,47.2293040100764,47.4833010101327,47.2183930100719,47.4831300101328,47.4874350101325,47.2293040100764,47.0793800103853],[8.7221260086554,8.70747800860422,9.70148500978508,9.8884660099098,8.69269200858984,8.70747800860422,7.58282300738035,7.54686700736095,7.64751700745304,8.53782700838742,8.70747800860422,7.58976700738759,7.57526200737012,7.5463540073604,7.65582700750758,7.59198600741926,8.53597200838575,8.70747800860422,7.61147100740337,7.54699600736107,7.38926900722876,8.70747800860422,7.53282300763962,7.65181500776294,8.70747800860422,8.70747800860422,7.65603700750779,7.59241300738888,7.54700600736106,8.53720000838678,8.70747800860422,7.54601100736005,7.60307100742352,9.55404100947369,10.2862220101746,8.70747800860422,8.09789000801228,7.58795200738489,7.54624300736034,7.6558960075076,7.64885900745275,8.70747800860422,8.3145570082665,8.70747800860422,8.45750400836943,8.50659600841919,8.70747800860422,7.59072100738848,7.5462140073603,7.58798300738492,7.54717600736126,9.43612400918815,8.76160400856916,8.6752190085666,8.6752190085666,8.76169600856923,8.6752190085666,8.76681200857275,8.6752190085666,8.6752190085666,8.76163400856916,8.6752190085666,8.76166100856925,8.6752190085666,8.7291420085336,8.76167700856924,8.76168300856923,8.76034400857382,8.69581300852919,8.76172300856929,8.6752190085666,8.55262800839451,8.76144400856903,8.76165600856918,8.6752190085666,8.76154900856913,8.6752190085666,8.76165700856919,8.6752190085666,8.76164000856918,8.67770000857236,8.76145700856906,8.76681200857275,8.6752190085666,7.31302000721921],10,null,null,{"interactive":true,"className":"","stroke":true,"color":"#03F","weight":5,"opacity":0.5,"fill":true,"fillColor":"#03F","fillOpacity":0.2},null,null,["Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam"],null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[46.292121009991,47.5720720104792],"lng":[7.31302000721921,10.2862220101746]}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-12-9.png" class="img-fluid" width="672"></p>
+<p><img src="Semesterproject_files/figure-html/unnamed-chunk-14-9.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
