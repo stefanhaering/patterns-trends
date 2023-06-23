@@ -13,6 +13,8 @@ library("tidyr")
 library("ggplot2")
 library("dplyr")
 library("sf")
+library(treemapify)
+library(ggmosaic)
 
 ```
 
@@ -20,11 +22,11 @@ library("sf")
 
 ```{r}
 # Daten von Stefan (ab 29.04.2023)
-stefan <- read_delim("posmo_stefan_230618.csv", delim = ",")
+stefan <- read_delim("posmo_Stefan_23-05-03_06-21.csv", delim = ",")
 stefan$person <- "Stefan"
 
 # Daten von Miriam (ab xx.05.2023)
-miriam <- read_delim("posmo_stefan_230525.csv", delim = ",")
+miriam <- read_delim("posmo_Miriam_23-05-03_06-21.csv", delim = ",")
 miriam$person <- "Miriam"
 
 # Schweizergrenze für Visualisierung
@@ -35,7 +37,7 @@ posmo <- rbind(stefan, miriam)
 
 # nicht relevante Spalten entfernen
 posmo <- posmo |> 
-  select(-user_id, -weekday, -place_name, -transport_mode)
+  select(-user_id, -weekday, -place_name)
 
 # NA finden & entfernen
 posmo[!complete.cases(posmo), ] # Zeigt Zeilen mit NA an
@@ -58,7 +60,20 @@ posmo <- posmo |>
 ggplot(posmo, aes(X, Y, color = person))+
   geom_path()+
   coord_equal()+
+  scale_color_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
   theme_void()
+
+posmo_filtered <- posmo |>  # nur posmo daten innerhalb Rechteck um schweiz
+  st_crop(st_as_sfc(st_bbox(schweiz)))
+
+# posmo_clipped <- st_intersection(posmo, schweiz) # nur posmo daten innerhalb von schweiz, geht lange...
+
+ggplot()+
+  geom_sf(data = schweiz, fill= NA)+
+  geom_sf(data = posmo_filtered, aes(colour = person))+
+  scale_color_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
+  theme_void() # Achsen und Raster verschwinden
+
 ```
 
 # Vorgehen "Geschwindigkeit"
@@ -67,17 +82,17 @@ ggplot(posmo, aes(X, Y, color = person))+
 
 ```{r}
 # Geschwindigkeit herausfinden
-posmo <- posmo |> # Zeit
+posmo1 <- posmo |> # Zeit
   mutate(
     time = as.numeric(difftime(lead(datetime), datetime, units = "secs")) # secs
   ) # Hier gibt es manchmal 0er, also Datenpunkte zur selben Zeit. Die müssten auch selbe Koordinaten haben und sind für Geschwindigkeitsrechnung nicht zu gebrauchen. Also weg damit... 
 # Hier muss "lead" anstatt "lag" benutzt werden
 
-posmo <- posmo |> # time = 0 entfernen
+posmo1 <- posmo1 |> # time = 0 entfernen
   mutate(time = ifelse(time == 0, NA, time)) |> 
   drop_na()
 
-posmo <- posmo |>
+posmo1 <- posmo1 |>
   mutate(
     steplength = round(sqrt((lead(X,1)-X)^2+(lead(Y,1)-Y)^2),1), # meter
     velocity = round((steplength/1000)/(time/60/60),1) # km/h
@@ -86,23 +101,23 @@ posmo <- posmo |>
 
 ## Moving Window
 
-Brauchen wir das Moving Window überhaupt??? anfänglich gedacht um Daten zu "glätten", eventuell nützlich, um ausreisser zu finden?
+Brauchen wir das Moving Window überhaupt??? anfänglich gedacht um Daten zu "glätten", eventuell nützlich, um ausreisser zu finden? Fazit: Wir brauchen einen klaren Schnitt zwischen slow & fast, also ist das moving window nicht nützlich
 
 ```{r}
 # Geschwindigkeitsunterschied zu 2 Punkte vor und 2 Punkte nach Betrachtung
-movwin <- posmo |> 
-  mutate(
-    n_plus1 = sqrt((lead(velocity,1)-velocity)^2),
-    n_plus2 = sqrt((lead(velocity,2)-velocity)^2),
-    n_minus1 = sqrt((lag(velocity,1)-velocity)^2),
-    n_minus2 = sqrt((lag(velocity,2)-velocity)^2),
-    )
+# movwin <- posmo1 |> 
+# mutate(
+    # n_plus1 = sqrt((lead(velocity,1)-velocity)^2),
+    # n_plus2 = sqrt((lead(velocity,2)-velocity)^2),
+    # n_minus1 = sqrt((lag(velocity,1)-velocity)^2),
+    # n_minus2 = sqrt((lag(velocity,2)-velocity)^2),
+    # )
 
 # velocityMean der 4 Distanzen erstellen
-movwin <- movwin |> 
-  rowwise() |> 
-  mutate(velocityMean = mean(c(n_minus1, n_minus2, n_plus1, n_plus2), na.rm = TRUE)) |> 
-  ungroup()
+# movwin <- movwin |> 
+  # # rowwise() |> 
+  # mutate(velocityMean = mean(c(n_minus1, n_minus2, n_plus1, n_plus2), na.rm = TRUE)) |> 
+  # ungroup()
 ```
 
 ## Einteilung stay/slow/fast
@@ -114,16 +129,18 @@ movwin <- movwin |>
 # 29.04.2023 09:09:40: 43.0 km/h
 # 08.05.2023 14:35:29: 36.0 km/h
 
-# Miriam wie schnell ist dein Bus??? Vielleicht müssen wir meine Velowege wegnehmen, da ich so schnell bin ;-) Bäh, dann wäre aber mein Velo fast und würde alles verfälschen, da ich nie auf mein Velo warte...
+# Miriams Bus:
 # Bsp. 35 km/h
-# Bsp. Rennen Miriam 17 km/h
+
+# Miriam rennt zum Bus
+# Bsp. 17 km/h
 
 # Schwellenwert setzen slow/fast, velocity: slow < 45 km/h <= fast
-# Schwellenwert setzen stay, time: stay >= 600 (10 min) # Schwellenwert evtl. nach oben setzen, da Stefan mal 40 min auf Zug wartete - Wenn jemand länger als Schwellenwert wartet, wird dies nicht als Reisestart gefunden.
+# Schwellenwert setzen stay, time: stay >= 600 (10 min) # ACHTUNG: Wenn jemand länger als Schwellenwert wartet, wird dies nicht als Reisestart gefunden.
 
-posmo <- posmo |> 
+posmo1 <- posmo1 |> 
   mutate(velocity_text = ifelse(velocity < 45, "slow", "fast"))
-posmo$velocity_text[posmo$time >= 600] <- "stay"
+posmo1$velocity_text[posmo1$time >= 600] <- "stay"
 
 # Ausreisser entfernen
 # Mir ist nur derjenige vom 2023-04-29 09:43:01 aufgefallen...
@@ -131,25 +148,23 @@ posmo$velocity_text[posmo$time >= 600] <- "stay"
 # Wie kann ich dieses Problem alternativ angegangen werden???
 
 # Vorgehen 1: Alle Punkte welche plötzlich einen Geschwindigkeitsunterschied von 30 km/h als benachbarte Punkte aufweisen, werden gelöscht
-# posmo$ausreisser[
-  # sqrt((posmo$velocity-lag(posmo$velocity))^2) > 30 & 
-  # sqrt((posmo$velocity-lead(posmo$velocity))^2) > 30
+# posmo1$ausreisser[
+  # sqrt((posmo1$velocity-lag(posmo1$velocity))^2) > 30 & 
+  # sqrt((posmo1$velocity-lead(posmo1$velocity))^2) > 30
   # ] <- "NA"
 # Fazit: nun gibt es bei jeder Beschleunigung einen Ausreisser, also nicht geeignet
 
 # Vorgehen 2: Alle Punkte, welche in velocity_text von den direkten Nachbarn abweichen werden als Ausreisser markiert, stay ist davon ausgenommen
-# posmo$ausreisser[
-  # posmo$velocity_text != lag(posmo$velocity_text) & 
-  # posmo$velocity_text != lead(posmo$velocity_text) &
-  # posmo$velocity_text != "stay"
+# posmo1$ausreisser[
+  # posmo1$velocity_text != lag(posmo1$velocity_text) & 
+  # posmo1$velocity_text != lead(posmo1$velocity_text) &
+  # posmo1$velocity_text != "stay"
   # ] <- "NA" 
 # Fazit: hier werden kurze Bahn/Busstrecken weggelöschen, bei welcher die Geschwindigkeit immer um den Schwellenwert slow/fast liegt. Für die Auswertung ist dies etwa gleich Schlimm wie Vorgehen 1 (oder???)
 
-# Fazit Vorgehen 1&2: durch die Vorgehen gehen mehr korrekte Daten verloren als Ausreisser. Insgesamt habe ich sowieso nur einen Ausreisser gefunden. Vielleicht visuell machen?
+# Fazit Vorgehen 1&2: durch die Vorgehen gehen mehr korrekte Daten verloren als Ausreisser. Insgesamt habe ich nur einen Ausreisser gefunden.
 
-# Vorgehen 3: weiter unten werden durch Suche von Abfolge stay-slow-slow-fast-fast Aussreiser entfernt. Bzw. sie blockieren einige Startpunkte. Annahme: wir haben eine genügend grosse Stichprobengrösse, dass das wegfallen von Reisestartpunkten keine Rolle spielt.
-
-# evtl. Segmente einteilen, segment_id, ist dies hier nötig???
+# Vorgehen 3: weiter unten werden durch die Suche von Abfolge stay-slow-slow-fast-fast Aussreiser entfernt. Bzw. sie würden Startpunkte verbergen. Annahme: wir haben eine genügend grosse Stichprobengrösse, dass das wegfallen von Reisestartpunkten keine Rolle spielt. Somit hat sich die Suche nach Ausreissern erledigt.
 
 ```
 
@@ -159,7 +174,7 @@ posmo$velocity_text[posmo$time >= 600] <- "stay"
 # Event finden (stay-slow-fast), event_id
 
 # Start und Enpunkte von Segment mit TRUE markieren
-event <- posmo |> 
+event <- posmo1 |> 
   mutate(find = ifelse(
       velocity_text != lead(velocity_text) |
       velocity_text != lag(velocity_text)
@@ -169,8 +184,6 @@ event <- posmo |>
 event <- drop_na(event)
 event <- event |> 
   select(-find) # unnötige Spalten entfernen
-
-# IDEE: Damit wir auch Events finden, wo wir kein stay von 30 min haben (Spazieren, Kartieren,...), könnten wir über langen slow eine Zeile mit stay einfügen. Wie kann man Zeile einfügen???
 
 # Abfolge stay-slow-slow-fast-fast finden, so werden auch Ausreisser eliminiert
 event <- event |> # Start der Abfolge finden, TRUE
@@ -183,7 +196,6 @@ event <- event |> # Start der Abfolge finden, TRUE
       , TRUE, NA))
 
 # nur Start Wartezeit und Ende Wartezeit behalten
-
 event <- event |> # nur Ende slow (= Start Wartezeit) und Start fast (= Ende Wartezeit) markieren
   mutate(find = ifelse(
       lag(find, 2) == TRUE |
@@ -212,7 +224,6 @@ event <- event |>
 
 # pro event eine Spalte (wide format pro event)
 # FEHLER: wide <- pivot_wider(event, names_from = "velocity_text", values_from = "datetime") # Hier funktioniert etwas mit dem Datenformat nicht??? Vielleicht mit Join???
-
 
 slow <- event |> 
   subset(velocity_text == "slow") # Tabelle slow
@@ -259,6 +270,7 @@ haltestelle <- haltestelle |>
 ggplot(haltestelle)+
   geom_sf()+
   geom_sf(data = event, aes(colour = person), size = 2)+
+  scale_color_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
   theme_void() # Achsen und Raster verschwinden
 
 # Buffer um Bahnhof
@@ -281,6 +293,16 @@ haltestelle_event <- haltestelle_event |>
   st_drop_geometry() |> 
   st_as_sf(coords = c("E", "N"), crs = 2056, remove = FALSE)
 
+# Umlaute korrigieren
+# haltestelle_event$Name[haltestelle_event$Name == "W\xe4denswil, Bahnhof"] <- "Waedenswil, Bahnhof" # Funktioniert nicht?!
+# haltestelle_event$Name[haltestelle_event$Name == "W�denswil, Bahnhof"] <- "Waedenswil, Bahnhof" # Funktioniert nicht?!
+haltestelle_event$Name[haltestelle_event$E == 2693625 & 
+                       haltestelle_event$N == 1231675  ] <- "Wädenswil, Bahnhof"
+haltestelle_event$Name[haltestelle_event$E == 2794912 & 
+                       haltestelle_event$N == 1165431 ] <- "S-chanf, Chesa cumünela"
+haltestelle_event$Name[haltestelle_event$E == 2684431 & 
+                       haltestelle_event$N == 1240184 ] <- "Rüschlikon"
+
 ```
 
 ## Wartezeit berechnen
@@ -290,6 +312,7 @@ haltestelle_event <- haltestelle_event |>
 velocity <- haltestelle_event |> 
   mutate(wartezeit = round(as.numeric(difftime(ende_warten, start_warten, units = "mins")),2)) # ich glaube, die Daten sind nicht so gut...
 
+# Spalte mit Kategorie der Wartezeit hinzufügen
 velocity$wartezeit_cat <- "NA"
 velocity$wartezeit_cat[velocity$wartezeit >= 0 & velocity$wartezeit < 1] <- "0-1"
 velocity$wartezeit_cat[velocity$wartezeit >= 1 & velocity$wartezeit < 2] <- "1-2"
@@ -299,65 +322,53 @@ velocity$wartezeit_cat[velocity$wartezeit >= 4 & velocity$wartezeit < 5] <- "4-5
 velocity$wartezeit_cat[velocity$wartezeit >= 5 & velocity$wartezeit < 6] <- "5-6"
 velocity$wartezeit_cat[velocity$wartezeit >= 6 & velocity$wartezeit < 7] <- "6-7"
 velocity$wartezeit_cat[velocity$wartezeit >= 7 & velocity$wartezeit < 8] <- "7-8"
+velocity$wartezeit_cat[velocity$wartezeit >= 8 & velocity$wartezeit < 9] <- "8-9"
+velocity$wartezeit_cat[velocity$wartezeit >= 9 & velocity$wartezeit < 10] <- "9-10"
 
 ```
 
 ## Visualisierung
 
 ```{r}
-# Approach Velocity
-
 # Visualisierung: Wo wurde gewartet
 ggplot(velocity)+
   geom_sf(data = schweiz)+
   geom_sf()+
   theme_void() # Achsen und Raster verschwinden
 
-# Visualisierung: Wer hat wo wurde gewartet
+# Visualisierung: Wer hat wo gewartet
 ggplot(velocity)+
   geom_sf(data = schweiz)+
   geom_sf(aes(colour = person))+
-  theme_void() # Achsen und Raster verschwinden
-
-# Visualisierung: War die Wartezeit unterschiedlich?
-ggplot(velocity)+
-  geom_sf(data = schweiz)+
-  geom_sf(aes(size = wartezeit))+
+  scale_color_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
   theme_void() # Achsen und Raster verschwinden
 
 # Vergleich Miriram & Stefan
 boxplot(wartezeit~person, data = velocity, ylab = "Wartezeit [min]", xlab = "Person")
 
-t.test(wartezeit~person, data = velocity, var.equal = TRUE)# ungepaart, zweiseitig, long-Format
-
-# Barchart, Saeulendiagramm
-ggplot(velocity)+
-  geom_bar(aes(x = wartezeit))
-
-ggplot(velocity)+
-  geom_bar(aes(x = wartezeit, fill=person))
-
-# Boxplot
 ggplot(velocity, aes(wartezeit, person))+
   geom_boxplot()+ # Warum hat es keine Whiskers???
   labs( # Beschriftung aendern
-    title = "Wartezeiten beim Vorgehen velocity", 
+    title = "Wartezeiten beim Vorgehen ", 
     x = "Wartezeit [min]", y = "Person")+ # Legende beschriften
   coord_flip() +
   theme_classic() # löscht ggplot-Layout
 
-# violin plot
-ggplot(velocity, aes(wartezeit, person))+
+t.test(wartezeit~person, data = velocity, var.equal = TRUE)# ungepaart, zweiseitig, long-Format
+
+# violin plot (sagt nicht mehr aus als Säulen, oder?)
+ggplot(velocity, aes(wartezeit, person, fill = person))+
   geom_violin(scale = "count")+
   coord_flip() +
   labs( # Beschriftung aendern
-    title = "Wartezeiten beim Vorgehen velocity", 
+    title = "Wartezeiten", 
     x = "Wartezeit [min]", y = "Person")+ # Legende beschriften
+  scale_fill_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
   theme_classic() # löscht ggplot-Layout
 
-# Boxplot mit Haltestelle (nur sinnvoll mit viel benutzen haltestellen...)
+# Boxplot mit Haltestelle (nur sinnvoll mit viel benutzen Haltestellen...)
 ggplot(velocity, aes(wartezeit, Name))+
-  geom_boxplot()+ # Warum hat es keine Whiskers???
+  geom_boxplot()+
   coord_flip() +
   labs( # Beschriftung aendern
     title = "Wartezeiten beim Vorgehen velocity", 
@@ -365,14 +376,7 @@ ggplot(velocity, aes(wartezeit, Name))+
   theme_classic() # löscht ggplot-Layout
 
 boxplot(wartezeit~Name, data = velocity)
-#, ylab = "Wartezeit [min]", xlab = "Haltestelle")
 
-# Farbige Säulen pro Person, Anteil von 0-1 min, 1-2 min,...
-ggplot(velocity, aes(person, fill = wartezeit_cat))+
-  geom_bar(position = position_fill(reverse = TRUE))+
-  theme_classic() # löscht ggplot-Layout
-
-# Idee: Karte mit Boxplots pro Haltestelle für Wartezeit
 
 # Karte mit Punkt pro Haltestelle, Punktgrösse gibt Mean Wartezeit an, evtl noch eine Nummer mit Anzahl Events neben Punkt.
 velocity_sum <- velocity |> 
@@ -384,14 +388,350 @@ ggplot(velocity_sum)+
   geom_sf(aes(size = Mean, colour = Anzahl))+
   theme_void() # Achsen und Raster verschwinden
 
+# Interaktive Karte -> Miriam ist dran
 
+# Farbige Säulen pro Person, Anteil von 0-1 min, 1-2 min,...
+ggplot(velocity, aes(person, fill = wartezeit_cat))+
+  geom_bar(position = position_fill(reverse = TRUE))+
+  scale_fill_manual(values = rev(RColorBrewer::brewer.pal(10, "YlGn")))+
+  labs(
+    title = "Vorgehen Geschwindigkeit", # Titel setzen
+    x = "Person", y = "Anteil der Events", # Achsen beschriften
+    fill = "Wartezeit [Min]")+ # Legende beschriften
+  scale_y_continuous( # y-Achse anpassen,
+    limits = c(0, 1.05),  # Limits setzen
+    breaks = c(0.00, 0.25, 0.50, 0.75, 1.00))+ # Achsenabschnitte festlegen
+  geom_text(x=1, y=1.05, label="n = 25")+
+  geom_text(x=2, y=1.05, label="n = 35")+
+  theme_classic() # löscht ggplot-Layout
 
+# Treemap mit Start-ÖV-Haltestellen
+velocity_treemap <- velocity |> 
+  group_by(Name, person) |> # group_by(Spalte_gruppieren1, Spalte_gruppieren2)
+  summarise(Mean = mean(wartezeit), Anzahl = length(wartezeit))
+
+ggplot(velocity_treemap, aes(area = Anzahl, fill = person, 
+                             subgroup = person, label = Name)) +
+  geom_treemap()+
+  geom_treemap_text(colour = "white", place = "centre", grow = TRUE)+
+  scale_fill_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
+    labs( # Beschriftung aendern
+    title = "Start-ÖV-Haltestellen", # Titel setzen
+    fill = "Person")+ # Legende beschriften
+  theme(legend.position = "bottom")+ # Legende verschieben # Warum funktioniert dies nicht???
+  theme_classic() # löscht ggplot-Layout
+
+# Mosaic plot: Miriam vs. Stefan mit wartezeit_cat
+ggplot() +
+  geom_mosaic(data = velocity, aes(x = product(wartezeit_cat), fill= person),
+              show.legend = FALSE) +
+  theme_mosaic()+
+  scale_fill_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
+  labs(
+    title = "Vergleich der Wartezeiten", # Titel setzen
+    y = "Person", x = "Wartezeit [min]")+ # Achsen beschriften
+  theme_classic() # löscht ggplot-Layout
 
 ```
 
 # Vorgehen "Transportmodus"
 
+## Einteilung stay/slow/public
+
 ```{r}
+# Zeitdauer herausfinden
+posmo2 <- posmo |> # Zeit
+  mutate(
+    time = as.numeric(difftime(lead(datetime), datetime, units = "secs")) # secs
+  ) # Hier gibt es manchmal 0er, also Datenpunkte zur selben Zeit. Die müssten auch selbe Koordinaten haben und sind für Geschwindigkeitsrechnung nicht zu gebrauchen. Also weg damit... 
+# Hier muss "lead" anstatt "lag" benutzt werden
+
+posmo2 <- posmo2 |> # time = 0 entfernen
+  mutate(time = ifelse(time == 0, NA, time)) |> 
+  drop_na()
+
+
+# Schwellenwert setzen stay, time: stay >= 600 (10 min) # Schwellenwert evtl. nach oben setzen, da Stefan mal 40 min auf Zug wartete - Wenn jemand länger als Schwellenwert wartet, wird dies nicht als Reisestart gefunden.
+#neue Spalte "Moving", neuer Wert "Stay", sonst alle anderen Transportmittel beibehalten
+
+posmo2 <- posmo2 |> 
+  mutate(Moving = ifelse(time >= 600, "Stay", transport_mode))
+
+#Umbenennen/einteilen der Transportmittel, Public: Boat, Bus, Train, Tram.Slow: Bike, Walk. Stay: stay. Alles andere: other
+posmo2 <- posmo2 %>%
+  mutate(moving_class = case_when(
+    Moving == "Bus" ~ "public",
+    Moving == "Train" ~ "public",  
+    Moving == "Tram" ~ "public",  
+    Moving == "Boat" ~ "public",
+    Moving == "Walk" ~"slow",
+    Moving == "Bike" ~"slow",
+    Moving == "Stay" ~"stay",
+    TRUE ~ "other"
+  ))
+```
+
+## Evente finden
+
+```{r}
+#Abfolge, Stay, Walk/Bike, Bus/Train/Tram
+# Start und Enpunkte von Segment mit TRUE markieren
+
+event <- posmo2 |> 
+  mutate(find= ifelse(
+    moving_class != lead(moving_class) |
+    moving_class != lag(moving_class)
+    , TRUE, NA))
+
+
+# Nur Start und Enpunkte von Segment behalten
+event <- drop_na(event)
+event <- event |> 
+  select(-find) # unnötige Spalten entfernen
+
+
+
+# Abfolge stay-slow-slow-fast-fast finden, so werden auch Ausreisser eliminiert
+event <- event |> # Start der Abfolge finden, TRUE
+  mutate(find = ifelse(
+    moving_class == "stay" &
+      lead(moving_class, 1) == "slow"&
+      lead(moving_class, 2) == "slow" &
+      lead(moving_class, 3) == "public" &
+      lead(moving_class, 4) == "public"
+    , TRUE, NA))
+
+
+
+
+
+
+
+# nur Start Wartezeit und Ende Wartezeit behalten
+
+event <- event |> # nur Ende slow (= Start Wartezeit) und Start fast (= Ende Wartezeit) markieren
+  mutate(find = ifelse(
+    lag(find, 2) == TRUE |
+      lag(find, 3) == TRUE
+    , TRUE, NA))
+
+event <- drop_na(event) # nur Start & Ende Wartezeit behalten behalten
+event <- event |> 
+  select(-find) # unnötige Spalten entfernen
+
+
+
+
+#vorbereitung für left_join, darf keine versch Geometrien in den zu kombinierenden tables haben
+event <- st_drop_geometry(event) # Alte Geometrie entfernen
+
+
+##separate tables machen, slow und public, dann left_join, unnötige spalten entfernen  (start und endzeiten behalten)
+
+slow <- event |> 
+  subset(moving_class == "slow") # Tabelle slow
+
+public<-event |> 
+  subset(moving_class == "public") #Tabelle public
+
+#left join, via hinzugefügter id
+
+slow$id <- as.character(1:nrow(slow)) # id
+public$id <- as.character(1:nrow(slow)) # id
+
+event <- left_join(slow,public,"id", suffix = c("_slow", "_public"))
+
+
+#unnötige Spalten entfernen, verbleibende umbenennen
+names(event)
+event <- event |> 
+  select(-transport_mode_slow, -Moving_slow, -moving_class_slow,
+         -transport_mode_public, -X_public, -Y_public, -time_public, -Moving_public, -moving_class_public, -person_public) |> # unnötige Spalten entfernen
+  rename(E=X_slow, N=Y_slow, wartezeit_sec=time_slow, start_warten = datetime_slow, ende_warten = datetime_public, person=person_slow) # Spalten umbennenen
+
+
+
+event <- event |> 
+  mutate(wartezeit_minutes = as.numeric(difftime(ende_warten, start_warten, units = "mins")))
+```
+
+## Visualisierung
+
+```{r}
+#Haltestellen abbilden Karte
+
+# Daten anschauen, ausprobieren
+ggplot(event, aes(E, N, color = person))+
+  geom_point()+
+  geom_path()+
+  coord_equal()+
+  theme_void()
+
+
+
+ggplot(event, aes(E, N, color=person))+
+  geom_point()
+
+
+###Abbildungen, Auswertungen
+
+mean(event$wartezeit_minutes) # Mittelwert über beide Perosnen
+
+aggregate(event$wartezeit_minutes, list(event$person), FUN=mean) #Mittelwert pro Person
+aggregate(event$wartezeit_minutes, list(event$person), FUN=max) #Maximalwert pro Person
+aggregate(event$wartezeit_minutes, list(event$person), FUN=min) #Minimalwert pro Person
+
+summary(event$wartezeit_minutes)
+
+hist(event$wartezeit_minutes) #Histogram insgesamt
+
+
+boxplot(event$wartezeit_minutes) #Boxplot insgesamt
+
+ggplot(event, aes(y = wartezeit_minutes, x = person)) + geom_boxplot(fill=c("lightblue", "lightgreen")) # 2 Boxplots nach Personen
+
+
+
+ggplot(event, aes(y = wartezeit_minutes, x = person)) + geom_count() # Häufigkeit der Wartezeit-Werte nach Personen
+
+p <- event |>
+  select(wartezeit_minutes, person) |>
+  ggplot(mapping = aes(x = wartezeit_minutes, fill = person)) +
+  geom_histogram(
+    binwidth =5,
+    position = "dodge"
+  )
+
+
+
+
+
+
+
+
+#################
+#ausprobiert, jedoch noch nicht vollständig
+
+#Hintergrundkarte einfügen, CH 1:500'000
+#?Wie Haltestellen in Rasterkarte???
+
+#library("terra")
+#CH<- terra::rast("swiss-map-raster500_2022_500_komb_25_2056.tif")
+#plot(CH)
+
+
+#Interaktive Karte einfügen
+library(leaflet)
+m <- leaflet() %>% 
+  addTiles() %>% 
+  setView( lng = 2.34, lat = 48.85, zoom = 5 ) %>% 
+  addProviderTiles("NASAGIBS.ViirsEarthAtNight2012")
+m
+
+
+#WGS Koordinaten für leaflet Karte wieder hinzufügen
+# WGS Geometrie hinzufügen
+eventWGS <- event |> 
+  st_as_sf(coords = c("E", "N"), crs = 2056, remove = FALSE) |>  # Geometrie hinzufügen
+  st_transform(4326) # transformieren von CH1903+ LV95 nach WGS: 2056 ->4326
+
+# WGS Koordinaten zu sf-Tabelle hinzufügen
+eventWGS_coordinates <- st_coordinates(eventWGS)
+eventWGS <- cbind(eventWGS, eventWGS_coordinates)
+
+
+#Circles in leafletMap
+leaflet(eventWGS) %>% addTiles() %>%
+  addCircleMarkers(lng = ~X, lat = ~Y, 
+                   popup = ~person)
+
+############noch machen: zb untersch. grosse Bubbles je nach durchschnittlicher Wartezeit an Station 
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Haltestellendatensatz miteinbeziehen, Buffer
+
+oev <- read_delim("haltestellen-oev_2056_de.csv/Betriebspunkt.csv", delim = ",") #Haltestellendaten einlesen
+
+oevtest <- oev |> 
+  st_as_sf(coords = c("E", "N"), crs = 2056, remove = FALSE) |> # Geometrie hinzufügen
+  st_transform(4326) |>
+  subset(Betriebspunkttyp_Bezeichnung == "Haltestelle" |
+           Betriebspunkttyp_Bezeichnung == "Haltestelle und Bedienpunkt") # nur Haltestellen
+
+
+ggplot(oevtest)+
+  geom_sf()+
+  geom_sf(data = eventWGS, aes(colour = person), size = 2)+
+  theme_void() # Achsen und Raster verschwinden
+
+
+# Buffer um Bahnhof
+haltestelle_bufferWGS <- haltestelle_buffer |> 
+  st_transform(4326)
+
+
+# Intersect Buffer mit Event
+haltestelle_eventWGS <- st_intersection(haltestelle_bufferWGS, eventWGS)
+
+# nur eine Haltestelle pro Event
+haltestelle_eventWGS <- haltestelle_eventWGS |> 
+  mutate(check = ifelse(
+    id == lag(id) &
+      id != 1, NA, TRUE)) |> 
+  drop_na(check)
+
+# Spalten aufräumen
+test11 <- haltestelle_eventWGS |> 
+  select(id, xtf_id, Name, E, N, person, start_warten, ende_warten) |>
+  st_drop_geometry() |> 
+  st_as_sf(coords = c("E", "N"), crs = 2056, remove = FALSE)
+
+
+
+
+##Alternatives Vorgehen, ausprobieren, zusätzliche Spalte mit Haltestellenname wenn Koord in bestimmten range ist
+#idee Haltestelllendatensatz, wenn plus minus wert vo Haltestelle dann in event neue zeile mit diesem namen
+
+oev <- read_delim("Betriebspunkt.csv", delim = ",")
+
+
+#Schulhaus Seen 	2'699'699.5, 1'259'990.0
+test <- eventWGS |> 
+  mutate(Halltestellenname = ifelse(E >= 2699599 & E <= 2699799, "Schulhaus Seen", NA))
+
+test5 <- eventWGS |> 
+  mutate(Halltestellenname = ifelse(oev$E >= 2699599 & E <= 2699799, oev$Name, NA))
+#join mit Bedingung??
+
+
+
+
+###########nicht gemacht
+# nur eine Haltestelle pro Event
+haltestelle_event <- haltestelle_event |> 
+  mutate(check = ifelse(
+    id == lag(id) &
+      id != 1, NA, TRUE)) |> 
+  drop_na(check)
+
+# Spalten aufräumen
+haltestelle_event <- haltestelle_event |> 
+  select(id, xtf_id, Name, E, N, person, start_warten, ende_warten) |>
+  st_drop_geometry() |> 
+  st_as_sf(coords = c("E", "N"), crs = 2056, remove = FALSE)
+
+```
 
 ```
 
