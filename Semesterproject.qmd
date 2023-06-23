@@ -1,9 +1,12 @@
 ---
 title: "Wartezeit an ÖV-Haltestelem beim Reisebeginn"
-format: html
+format:
+  html:
+    code-fold: true # Code ist dadurch aufklappbar
 execute: 
-  warning: false
-  messages: false
+  warning: false # keine Warnungen
+  messages: false # keine Nachrichten
+  echo: false # Zeigt kein code, wenn nicht verlangt
 ---
 
 # 1 Hintergrund und Forschungsziele
@@ -12,7 +15,11 @@ execute:
 
 Passagiere empfinden in der Regel das Warten an Haltestellen des Öffentlichen Verkehrs (ÖV) als äusserst lästig (van Hagen 2011). Die Schweizer ÖV sind international bekannt für ihre Pünktlichkeit (Kaindl 2022), wodurch die Länge der Wartezeit zu Beginn einer Reise meist selbstverschuldet ist. Nach Csiskos & Currie (2008) gibt es zwei verschiedene Arten von Fahrgastverhalten: Eine Gruppe kommt zufällig an, während eine andere Gruppe aktiv versucht, ihre Wartezeit zu minimieren, indem sie rechtzeitig zur geplanten Abfahrtszeit bei der Haltestelle ankommt. Evtl. Blabla zu AnalyseWerkzeugen, how fast is a cow und so.. oder erst in Diskussion
 
-In unserer Projektarbeit möchten wir unsere tägliche Wartezeit an Haltestellen von öffentlichen Verkehrsmitteln (ÖV) untersuchen. Dabei wird ausschliesslich der Beginn einer Reise betrachtet. Folgende Fragen sollen anhand zweier leicht unterschiedlicher Methoden beantwortet werden: • Wie oft reisen wir mit den ÖV? • Sind die Wartezeiten von Reise zu Reise unterschiedlich lang? • Wer verbringt durchschnittlich mehr Wartezeit an den Haltestellen? • Kommen unsere beiden methodischen Herangehensweisen zu den gleichen Resultaten?
+In unserer Projektarbeit möchten wir unsere tägliche Wartezeit an Haltestellen von öffentlichen Verkehrsmitteln (ÖV) untersuchen. Dabei wird ausschliesslich der Beginn einer Reise betrachtet. Folgende Fragen sollen anhand zweier leicht unterschiedlicher Methoden beantwortet werden:
+- Wie oft reisen wir mit den ÖV?
+- Sind die Wartezeiten von Reise zu Reise unterschiedlich lang?
+- Wer verbringt durchschnittlich mehr Wartezeit an den Haltestellen?
+- Kommen unsere beiden methodischen Herangehensweisen zu den gleichen Resultaten?
 
 # 2 Methode
 
@@ -20,11 +27,9 @@ In unserer Projektarbeit möchten wir unsere tägliche Wartezeit an Haltestellen
 
 Die Daten bestehen aus eigenen Bewegungsdaten, welche mit der Applikation Posmo Project (Datamap AG, Version 22.01.16, 2023) erfasst wurden. Daten wurden vom 03.05.23 bis 21.06.23 mit einer Frequenz der Lokalisierungsdaten von 10 Sekunden aufgenommen. Fand keine deutliche Bewegung statt, wurden die Datenpunkte durch Posmo automatisch entfernt. Diese Daten liegen als CSV-Datei vor und beinhalten u.a. Datum & Zeit („datetime"), x-Koordinaten („long_x"), y-Koordinaten („lat_y") und Transportmodus („transport_mode"). Zusätzlich wird der Datensatz „Haltestellen des öffentlichen Verkehrs" vom Bundesamt für Verkehr (BAV) verwendet (QUELLE https://data.geo.admin.ch/ch.bav.haltestellen-oev/haltestellen-oev/haltestellen-oev_2056_de.csv.zip).
 
-## R: Vorbereitung
-
+```{r}
 ### R: Libraries laden
 
-```{r}
 library("readr")
 library("tidyr") 
 library("ggplot2")
@@ -35,9 +40,11 @@ library(ggmosaic)
 
 ```
 
+```{r}
+#| echo: true
+
 ### R: Daten einlesen
 
-```{r}
 # Daten von Stefan (ab 29.04.2023)
 stefan <- read_delim("posmo_Stefan_23-05-03_06-21.csv", delim = ",")
 stefan$person <- "Stefan"
