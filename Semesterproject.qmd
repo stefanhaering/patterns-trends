@@ -1,11 +1,28 @@
 ---
-title: "project-work"
+title: "Wartezeit an ÖV-Haltestelem beim Reisebeginn"
 format: html
+execute: 
+  warning: false
+  messages: false
 ---
 
-# Vorbereitung
+# 1 Hintergrund und Forschungsziele
 
-## Libraries laden
+(Zeit ist Geld (Effizienzsteigerung) versus Bewusst und Entspannt durchs Leben gehen -\>Literatur, Öv CH superpünktlich, geringe Wartezeiten bzw Wartezeit selbstverschuldet)
+
+Passagiere empfinden in der Regel das Warten an Haltestellen des Öffentlichen Verkehrs (ÖV) als äusserst lästig (van Hagen 2011). Die Schweizer ÖV sind international bekannt für ihre Pünktlichkeit (Kaindl 2022), wodurch die Länge der Wartezeit zu Beginn einer Reise meist selbstverschuldet ist. Nach Csiskos & Currie (2008) gibt es zwei verschiedene Arten von Fahrgastverhalten: Eine Gruppe kommt zufällig an, während eine andere Gruppe aktiv versucht, ihre Wartezeit zu minimieren, indem sie rechtzeitig zur geplanten Abfahrtszeit bei der Haltestelle ankommt. Evtl. Blabla zu AnalyseWerkzeugen, how fast is a cow und so.. oder erst in Diskussion
+
+In unserer Projektarbeit möchten wir unsere tägliche Wartezeit an Haltestellen von öffentlichen Verkehrsmitteln (ÖV) untersuchen. Dabei wird ausschliesslich der Beginn einer Reise betrachtet. Folgende Fragen sollen anhand zweier leicht unterschiedlicher Methoden beantwortet werden: • Wie oft reisen wir mit den ÖV? • Sind die Wartezeiten von Reise zu Reise unterschiedlich lang? • Wer verbringt durchschnittlich mehr Wartezeit an den Haltestellen? • Kommen unsere beiden methodischen Herangehensweisen zu den gleichen Resultaten?
+
+# 2 Methode
+
+## 2.1 Daten
+
+Die Daten bestehen aus eigenen Bewegungsdaten, welche mit der Applikation Posmo Project (Datamap AG, Version 22.01.16, 2023) erfasst wurden. Daten wurden vom 03.05.23 bis 21.06.23 mit einer Frequenz der Lokalisierungsdaten von 10 Sekunden aufgenommen. Fand keine deutliche Bewegung statt, wurden die Datenpunkte durch Posmo automatisch entfernt. Diese Daten liegen als CSV-Datei vor und beinhalten u.a. Datum & Zeit („datetime"), x-Koordinaten („long_x"), y-Koordinaten („lat_y") und Transportmodus („transport_mode"). Zusätzlich wird der Datensatz „Haltestellen des öffentlichen Verkehrs" vom Bundesamt für Verkehr (BAV) verwendet (QUELLE https://data.geo.admin.ch/ch.bav.haltestellen-oev/haltestellen-oev/haltestellen-oev_2056_de.csv.zip).
+
+## R: Vorbereitung
+
+### R: Libraries laden
 
 ```{r}
 library("readr")
@@ -18,7 +35,7 @@ library(ggmosaic)
 
 ```
 
-## Daten einlesen
+### R: Daten einlesen
 
 ```{r}
 # Daten von Stefan (ab 29.04.2023)
@@ -76,9 +93,17 @@ ggplot()+
 
 ```
 
-# Vorgehen "Geschwindigkeit"
+## 2.2 Datenvorverarbeitung
 
-## Geschwindigkeit
+Die Posmo-App ist noch in der Entwicklung und zeichnet die Transportmodi nicht immer korrekt auf. Die Daten wurden deshalb von uns auf POSMO (datamap.io) überprüft und falls nötig die Transportart von Hand angepasst.
+
+## 2.3 Methods
+
+### 2.3.1 Herangehensweise «Geschwindigkeit»
+
+Um den Start einer Reise zu finden, werden die Daten auf eine bestimmte Abfolge von Bewegungen (Segmente) durchsucht. Zu Beginn darf keine Bewegung stattfinden, man ist zum Beispiel zu Hause oder bei der Arbeit. Dafür muss zwischen zwei Datenpunkten eine Zeitdifferenz über dem gewählten Schwellenwert von zehn Minuten liegen. Die restlichen Datenpunkte werden anhand der Geschwindigkeit in Segmente mit langsamer oder schneller Bewegung eingeteilt. Als langsam werden Bewegungen kleiner als 45 km/h klassifiziert. Bewegungen gleich oder grösser als 45 km/h werden als schnell klassifiziert.
+
+#### R: G: Geschwindigkeit berechnen
 
 ```{r}
 # Geschwindigkeit herausfinden
@@ -99,11 +124,12 @@ posmo1 <- posmo1 |>
   )
 ```
 
-## Moving Window
-
-Brauchen wir das Moving Window überhaupt??? anfänglich gedacht um Daten zu "glätten", eventuell nützlich, um ausreisser zu finden? Fazit: Wir brauchen einen klaren Schnitt zwischen slow & fast, also ist das moving window nicht nützlich
+#### R: G: Moving Window
 
 ```{r}
+
+# Brauchen wir das Moving Window überhaupt??? anfänglich gedacht um Daten zu "glätten", eventuell nützlich, um ausreisser zu finden? Fazit: Wir brauchen einen klaren Schnitt zwischen slow & fast, also ist das moving window nicht nützlich
+
 # Geschwindigkeitsunterschied zu 2 Punkte vor und 2 Punkte nach Betrachtung
 # movwin <- posmo1 |> 
 # mutate(
@@ -120,7 +146,7 @@ Brauchen wir das Moving Window überhaupt??? anfänglich gedacht um Daten zu "gl
   # ungroup()
 ```
 
-## Einteilung stay/slow/fast
+#### R: G: Einteilung stay/slow/fast
 
 ```{r}
 # Erfahrungswerte:
@@ -168,7 +194,15 @@ posmo1$velocity_text[posmo1$time >= 600] <- "stay"
 
 ```
 
-## Evente finden
+Um den Start einer Reise zu finden, muss folgende Abfolge der Segmente vorliegen:
+
+-   keine Bewegung (Person über längere Zeit (difftime \>10 min) am selben Ort)
+-   langsame Bewegung (Gehen/Fahrrad)
+-   schnelle Bewegung (ÖV)
+
+Die Wartezeit kann anschliessend für alle gefundenen Events berechnet werden (difftime (min(Segment schnell), max(Segment langsam))).
+
+#### R: G: Evente finden
 
 ```{r}
 # Event finden (stay-slow-fast), event_id
@@ -256,7 +290,9 @@ event <- event |>
 
 ```
 
-## Evente validieren
+Die räumlichen Startpunkte der Reisen wurden mit den ÖV-Haltestellen aus dem Datensatz „Haltestellen des öffentlichen Verkehrs" validiert, wodurch Reisen mit dem Auto wegfallen. Dafür wurde ein Buffer von 100 Metern um ÖV-Haltestellen mit den Positionsdaten der Wartezeit verschnitten.
+
+#### R: G: Evente validieren
 
 ```{r}
 # Bahnhöfe einlesen
@@ -305,7 +341,7 @@ haltestelle_event$Name[haltestelle_event$E == 2684431 &
 
 ```
 
-## Wartezeit berechnen
+#### R: G: Velocity: Wartezeit berechnen
 
 ```{r}
 # wartezeit pro Event: difftime(max(Segmentslow), min(segmentfast)
@@ -327,7 +363,150 @@ velocity$wartezeit_cat[velocity$wartezeit >= 9 & velocity$wartezeit < 10] <- "9-
 
 ```
 
-## Visualisierung
+###2.3.2 Herangehensweise «Klassifizierung»
+
+Um zu validieren, wie gut unsere geschwindigkeitsabhängige Methode funktioniert, machen wir eine zusätzliche Analyse mit den Angaben der Transportmodi von Posmo.
+
+### R: T: Vorgehen "Transportmodus"
+
+#### R: T: Einteilung stay/slow/public
+
+```{r}
+# Zeitdauer herausfinden
+posmo2 <- posmo |> # Zeit
+  mutate(
+    time = as.numeric(difftime(lead(datetime), datetime, units = "secs")) # secs
+  ) # Hier gibt es manchmal 0er, also Datenpunkte zur selben Zeit. Die müssten auch selbe Koordinaten haben und sind für Geschwindigkeitsrechnung nicht zu gebrauchen. Also weg damit... 
+# Hier muss "lead" anstatt "lag" benutzt werden
+
+posmo2 <- posmo2 |> # time = 0 entfernen
+  mutate(time = ifelse(time == 0, NA, time)) |> 
+  drop_na()
+
+
+# Schwellenwert setzen stay, time: stay >= 600 (10 min) # Schwellenwert evtl. nach oben setzen, da Stefan mal 40 min auf Zug wartete - Wenn jemand länger als Schwellenwert wartet, wird dies nicht als Reisestart gefunden.
+#neue Spalte "Moving", neuer Wert "Stay", sonst alle anderen Transportmittel beibehalten
+
+posmo2 <- posmo2 |> 
+  mutate(Moving = ifelse(time >= 600, "Stay", transport_mode))
+
+#Umbenennen/einteilen der Transportmittel, Public: Boat, Bus, Train, Tram.Slow: Bike, Walk. Stay: stay. Alles andere: other
+posmo2 <- posmo2 %>%
+  mutate(moving_class = case_when(
+    Moving == "Bus" ~ "public",
+    Moving == "Train" ~ "public",  
+    Moving == "Tram" ~ "public",  
+    Moving == "Boat" ~ "public",
+    Moving == "Walk" ~"slow",
+    Moving == "Bike" ~"slow",
+    Moving == "Stay" ~"stay",
+    TRUE ~ "other"
+  ))
+```
+
+Dabei werden die Daten auf eine bestimmte Abfolge anhand des angegebene Transportmodus durchsucht.
+
+-   keine Bewegung (Person über längere Zeit (difftime \>10 min) am selben Ort)
+-   Transportmodus Walk/Bike
+-   Transportmodus Bus/Train/Tram
+
+Die Wartezeit kann anschliessend für alle gefundenen Events berechnet werden (difftime (min(Segment schnell), max(Segment langsam))).
+
+#### R: T: Evente finden
+
+```{r}
+#Abfolge, Stay, Walk/Bike, Bus/Train/Tram
+# Start und Enpunkte von Segment mit TRUE markieren
+
+event <- posmo2 |> 
+  mutate(find= ifelse(
+    moving_class != lead(moving_class) |
+    moving_class != lag(moving_class)
+    , TRUE, NA))
+
+
+# Nur Start und Enpunkte von Segment behalten
+event <- drop_na(event)
+event <- event |> 
+  select(-find) # unnötige Spalten entfernen
+
+
+
+# Abfolge stay-slow-slow-fast-fast finden, so werden auch Ausreisser eliminiert
+event <- event |> # Start der Abfolge finden, TRUE
+  mutate(find = ifelse(
+    moving_class == "stay" &
+      lead(moving_class, 1) == "slow"&
+      lead(moving_class, 2) == "slow" &
+      lead(moving_class, 3) == "public" &
+      lead(moving_class, 4) == "public"
+    , TRUE, NA))
+
+
+
+
+
+
+
+# nur Start Wartezeit und Ende Wartezeit behalten
+
+event <- event |> # nur Ende slow (= Start Wartezeit) und Start fast (= Ende Wartezeit) markieren
+  mutate(find = ifelse(
+    lag(find, 2) == TRUE |
+      lag(find, 3) == TRUE
+    , TRUE, NA))
+
+event <- drop_na(event) # nur Start & Ende Wartezeit behalten behalten
+event <- event |> 
+  select(-find) # unnötige Spalten entfernen
+
+
+
+
+#vorbereitung für left_join, darf keine versch Geometrien in den zu kombinierenden tables haben
+event <- st_drop_geometry(event) # Alte Geometrie entfernen
+
+
+##separate tables machen, slow und public, dann left_join, unnötige spalten entfernen  (start und endzeiten behalten)
+
+slow <- event |> 
+  subset(moving_class == "slow") # Tabelle slow
+
+public<-event |> 
+  subset(moving_class == "public") #Tabelle public
+
+#left join, via hinzugefügter id
+
+slow$id <- as.character(1:nrow(slow)) # id
+public$id <- as.character(1:nrow(slow)) # id
+
+event <- left_join(slow,public,"id", suffix = c("_slow", "_public"))
+
+
+#unnötige Spalten entfernen, verbleibende umbenennen
+names(event)
+event <- event |> 
+  select(-transport_mode_slow, -Moving_slow, -moving_class_slow,
+         -transport_mode_public, -X_public, -Y_public, -time_public, -Moving_public, -moving_class_public, -person_public) |> # unnötige Spalten entfernen
+  rename(E=X_slow, N=Y_slow, wartezeit_sec=time_slow, start_warten = datetime_slow, ende_warten = datetime_public, person=person_slow) # Spalten umbennenen
+
+
+
+event <- event |> 
+  mutate(wartezeit_minutes = as.numeric(difftime(ende_warten, start_warten, units = "mins")))
+```
+
+## 2.4 Probleme und Grenzen
+
+Bei der Herangehensweise «Geschwindigkeit» sich durch das setzen des Schwellenwerts für die Geschwindigkeit ein Problem. Wird der Schwellenwert zu tief gesetzt, können Bewegungen auf dem Weg zu der Haltestelle bereits als schnelle Bewegung eingestuft werden, obwohl wir diese als langsame Bewegungen haben möchten. Ein Beispiel: Stefan geht oft mit dem Fahrrad zur ÖV-Haltestelle und erreicht dabei Geschwindigkeiten über 40 km/h. Deshalb wurde der Schwellenwert auf 45 km/h gesetzt. Nun kann es aber sein, dass das öffentliche Verkehrsmittel beim Start der Reise langsam fährt und diese Bewegung als langsame Bewegung eingestuft wird. Dies hat zur Folge, dass sich die Wartezeit auf 15 Sekunden, also die Zeit zwischen zwei Datenpunkten beschränkt und nicht der Wahrheit entspricht. Die Daten werden verfälscht.
+
+Bei der Herangehensweise «Klassifizierung» sind wir auf die Qualität von Posmo angewiesen. Den Transportmodus können wir manuell anpassen, die Segmente sind aber relativ fix (Erfahrungen haben gezeigt, dass die Funktion «split segment» nicht einwandfrei funktioniert). Es kam einige Male vor, dass langsame und schnelle Bewegungen am Start einer Reise als ein Segment dargestellt wurde. Der Transportmodus war dann entweder Bus, Train oder Tram. Da dadurch eine Segment der Transportmodus Walk oder Bike fehlte, wurde auch kein Start einer Reise erkannt. Dies ist ein Verlust eines Datenpunktes aber keine Verfälschung der Daten.
+
+Aufgrund der Frequenz der Lokalisierung, können die Wartezeiten nur auf 10 Sekunden genau sein.
+
+# 3 Resultate
+
+#### R: G: Visualisierung
 
 ```{r}
 # Visualisierung: Wo wurde gewartet
@@ -434,128 +613,7 @@ ggplot() +
 
 ```
 
-# Vorgehen "Transportmodus"
-
-## Einteilung stay/slow/public
-
-```{r}
-# Zeitdauer herausfinden
-posmo2 <- posmo |> # Zeit
-  mutate(
-    time = as.numeric(difftime(lead(datetime), datetime, units = "secs")) # secs
-  ) # Hier gibt es manchmal 0er, also Datenpunkte zur selben Zeit. Die müssten auch selbe Koordinaten haben und sind für Geschwindigkeitsrechnung nicht zu gebrauchen. Also weg damit... 
-# Hier muss "lead" anstatt "lag" benutzt werden
-
-posmo2 <- posmo2 |> # time = 0 entfernen
-  mutate(time = ifelse(time == 0, NA, time)) |> 
-  drop_na()
-
-
-# Schwellenwert setzen stay, time: stay >= 600 (10 min) # Schwellenwert evtl. nach oben setzen, da Stefan mal 40 min auf Zug wartete - Wenn jemand länger als Schwellenwert wartet, wird dies nicht als Reisestart gefunden.
-#neue Spalte "Moving", neuer Wert "Stay", sonst alle anderen Transportmittel beibehalten
-
-posmo2 <- posmo2 |> 
-  mutate(Moving = ifelse(time >= 600, "Stay", transport_mode))
-
-#Umbenennen/einteilen der Transportmittel, Public: Boat, Bus, Train, Tram.Slow: Bike, Walk. Stay: stay. Alles andere: other
-posmo2 <- posmo2 %>%
-  mutate(moving_class = case_when(
-    Moving == "Bus" ~ "public",
-    Moving == "Train" ~ "public",  
-    Moving == "Tram" ~ "public",  
-    Moving == "Boat" ~ "public",
-    Moving == "Walk" ~"slow",
-    Moving == "Bike" ~"slow",
-    Moving == "Stay" ~"stay",
-    TRUE ~ "other"
-  ))
-```
-
-## Evente finden
-
-```{r}
-#Abfolge, Stay, Walk/Bike, Bus/Train/Tram
-# Start und Enpunkte von Segment mit TRUE markieren
-
-event <- posmo2 |> 
-  mutate(find= ifelse(
-    moving_class != lead(moving_class) |
-    moving_class != lag(moving_class)
-    , TRUE, NA))
-
-
-# Nur Start und Enpunkte von Segment behalten
-event <- drop_na(event)
-event <- event |> 
-  select(-find) # unnötige Spalten entfernen
-
-
-
-# Abfolge stay-slow-slow-fast-fast finden, so werden auch Ausreisser eliminiert
-event <- event |> # Start der Abfolge finden, TRUE
-  mutate(find = ifelse(
-    moving_class == "stay" &
-      lead(moving_class, 1) == "slow"&
-      lead(moving_class, 2) == "slow" &
-      lead(moving_class, 3) == "public" &
-      lead(moving_class, 4) == "public"
-    , TRUE, NA))
-
-
-
-
-
-
-
-# nur Start Wartezeit und Ende Wartezeit behalten
-
-event <- event |> # nur Ende slow (= Start Wartezeit) und Start fast (= Ende Wartezeit) markieren
-  mutate(find = ifelse(
-    lag(find, 2) == TRUE |
-      lag(find, 3) == TRUE
-    , TRUE, NA))
-
-event <- drop_na(event) # nur Start & Ende Wartezeit behalten behalten
-event <- event |> 
-  select(-find) # unnötige Spalten entfernen
-
-
-
-
-#vorbereitung für left_join, darf keine versch Geometrien in den zu kombinierenden tables haben
-event <- st_drop_geometry(event) # Alte Geometrie entfernen
-
-
-##separate tables machen, slow und public, dann left_join, unnötige spalten entfernen  (start und endzeiten behalten)
-
-slow <- event |> 
-  subset(moving_class == "slow") # Tabelle slow
-
-public<-event |> 
-  subset(moving_class == "public") #Tabelle public
-
-#left join, via hinzugefügter id
-
-slow$id <- as.character(1:nrow(slow)) # id
-public$id <- as.character(1:nrow(slow)) # id
-
-event <- left_join(slow,public,"id", suffix = c("_slow", "_public"))
-
-
-#unnötige Spalten entfernen, verbleibende umbenennen
-names(event)
-event <- event |> 
-  select(-transport_mode_slow, -Moving_slow, -moving_class_slow,
-         -transport_mode_public, -X_public, -Y_public, -time_public, -Moving_public, -moving_class_public, -person_public) |> # unnötige Spalten entfernen
-  rename(E=X_slow, N=Y_slow, wartezeit_sec=time_slow, start_warten = datetime_slow, ende_warten = datetime_public, person=person_slow) # Spalten umbennenen
-
-
-
-event <- event |> 
-  mutate(wartezeit_minutes = as.numeric(difftime(ende_warten, start_warten, units = "mins")))
-```
-
-## Visualisierung
+#### R: T: Visualisierung
 
 ```{r}
 #Haltestellen abbilden Karte
@@ -681,63 +739,66 @@ haltestelle_bufferWGS <- haltestelle_buffer |>
   st_transform(4326)
 
 
-# Intersect Buffer mit Event
-haltestelle_eventWGS <- st_intersection(haltestelle_bufferWGS, eventWGS)
-
-# nur eine Haltestelle pro Event
-haltestelle_eventWGS <- haltestelle_eventWGS |> 
-  mutate(check = ifelse(
-    id == lag(id) &
-      id != 1, NA, TRUE)) |> 
-  drop_na(check)
-
-# Spalten aufräumen
-test11 <- haltestelle_eventWGS |> 
-  select(id, xtf_id, Name, E, N, person, start_warten, ende_warten) |>
-  st_drop_geometry() |> 
-  st_as_sf(coords = c("E", "N"), crs = 2056, remove = FALSE)
-
-
-
-
-##Alternatives Vorgehen, ausprobieren, zusätzliche Spalte mit Haltestellenname wenn Koord in bestimmten range ist
-#idee Haltestelllendatensatz, wenn plus minus wert vo Haltestelle dann in event neue zeile mit diesem namen
-
-oev <- read_delim("Betriebspunkt.csv", delim = ",")
-
-
-#Schulhaus Seen 	2'699'699.5, 1'259'990.0
-test <- eventWGS |> 
-  mutate(Halltestellenname = ifelse(E >= 2699599 & E <= 2699799, "Schulhaus Seen", NA))
-
-test5 <- eventWGS |> 
-  mutate(Halltestellenname = ifelse(oev$E >= 2699599 & E <= 2699799, oev$Name, NA))
-#join mit Bedingung??
-
-
-
-
-###########nicht gemacht
-# nur eine Haltestelle pro Event
-haltestelle_event <- haltestelle_event |> 
-  mutate(check = ifelse(
-    id == lag(id) &
-      id != 1, NA, TRUE)) |> 
-  drop_na(check)
-
-# Spalten aufräumen
-haltestelle_event <- haltestelle_event |> 
-  select(id, xtf_id, Name, E, N, person, start_warten, ende_warten) |>
-  st_drop_geometry() |> 
-  st_as_sf(coords = c("E", "N"), crs = 2056, remove = FALSE)
-
-```
+# # Intersect Buffer mit Event
+# haltestelle_eventWGS <- st_intersection(haltestelle_bufferWGS, eventWGS)
+# 
+# # nur eine Haltestelle pro Event
+# haltestelle_eventWGS <- haltestelle_eventWGS |> 
+#   mutate(check = ifelse(
+#     id == lag(id) &
+#       id != 1, NA, TRUE)) |> 
+#   drop_na(check)
+# 
+# # Spalten aufräumen
+# test11 <- haltestelle_eventWGS |> 
+#   select(id, xtf_id, Name, E, N, person, start_warten, ende_warten) |>
+#   st_drop_geometry() |> 
+#   st_as_sf(coords = c("E", "N"), crs = 2056, remove = FALSE)
+# 
+# 
+# 
+# 
+# ##Alternatives Vorgehen, ausprobieren, zusätzliche Spalte mit Haltestellenname wenn Koord in bestimmten range ist
+# #idee Haltestelllendatensatz, wenn plus minus wert vo Haltestelle dann in event neue zeile mit diesem namen
+# 
+# oev <- read_delim("Betriebspunkt.csv", delim = ",")
+# 
+# 
+# #Schulhaus Seen 	2'699'699.5, 1'259'990.0
+# test <- eventWGS |> 
+#   mutate(Halltestellenname = ifelse(E >= 2699599 & E <= 2699799, "Schulhaus Seen", NA))
+# 
+# test5 <- eventWGS |> 
+#   mutate(Halltestellenname = ifelse(oev$E >= 2699599 & E <= 2699799, oev$Name, NA))
+# #join mit Bedingung??
+# 
+# 
+# 
+# 
+# ###########nicht gemacht
+# # nur eine Haltestelle pro Event
+# haltestelle_event <- haltestelle_event |> 
+#   mutate(check = ifelse(
+#     id == lag(id) &
+#       id != 1, NA, TRUE)) |> 
+#   drop_na(check)
+# 
+# # Spalten aufräumen
+# haltestelle_event <- haltestelle_event |> 
+#   select(id, xtf_id, Name, E, N, person, start_warten, ende_warten) |>
+#   st_drop_geometry() |> 
+#   st_as_sf(coords = c("E", "N"), crs = 2056, remove = FALSE)
 
 ```
 
+# 4 Diskussion
 
+Die Herangehensweise «Geschwindigkeit» zeigt auf, dass die Transportmodi nicht einzig aufgrund deren Geschwindigkeit eingeteilt werden können. Die Daten werden verfälscht und können nicht interpretiert werden. Die Herangehensweise «Klassifizierung» ergibt deutlich bessere Daten. Bei diesem Vorgehen waren wir aber darauf angewiesen, dass wir bereits vorgegebene Segmente hatten und diese nur noch klassifizieren oder validieren mussten. Dies ist Zeitintensiv und für grössere Datensätze nicht denkbar. So können auch nur Daten bearbeitet werden, wovon man weiss, welcher Transportmodus verwendet wurde.
 
-# Fragen
+Um die Auswertung auch auf grössere und fremde Datensätze auszuweiten, wäre eine Verbesserung der Erkennung des Transportmodus von Vorteil. Busse und Trams wurden zum Beispiel immer als Autos klassifiziert. Hierfür wäre vielleicht ein Abgleich mit Datensätzen des öffentlichen Verkehrs möglich. Zudem gab es manchmal Segmente, bei welchen der Transportmodus als unbekannt gesetzt wurde. Dennoch würde eine entsprechende Fragestellung, welche sich nur auf den Zugdaten (inkl. Walk und Bike) bezieht bereits mit der jetzigen Erkennung der Transportmodi relativ gut funktionieren.
 
-1. wir könnten als zusätzlich zu stay auch langsame Bewegungen über längere Zeit als "stay" hinzufügen. Also wenn slow >= 30 min ist oder so... vielleicht wird das auch unnötig kompliziert. Ich glaube, dass dann aber noch ein paar Datenpunkte hinzukommen würden (Kartierung, Spaziergang,...)
+# 5 Literatur
 
+Csikos, D., & Currie, G. (2008). Investigating Consistency in Transit Passenger Arrivals: Insights from Longitudinal Automated Fare Collection Data. Transportation Research Record, 2042(1), 12--19. https://doi.org/10.3141/2042-02
+
+Kaindl, F. (2022). Reisen mit der Bahn: In welchen Ländern die Züge besonders pünktlich sind. Merkur.de https://www.merkur.de/reise/zuege-puenktlich-fernverkehr-bahn-europa-schweiz-daenemark-niederlande-zr-91977341.html#:\~:text=In%20der%20Schweiz%20fahren%20Z%C3%BCge%20am%20p%C3%BCnktlichsten%20Am,viele%20Gedanken%20%C3%BCber%20Versp%C3%A4tungen%20innerhalb%20des%20Landes%20machen.
