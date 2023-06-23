@@ -1,8 +1,14 @@
 ---
-title: "Wartezeit an ÖV-Haltestelem beim Reisebeginn"
+title: "Wartezeit an ÖV-Haltestellem beim Reisebeginn"
+date: 07.02.2023
+authors: Stefan Häring & Miriam Jakob
 format:
   html:
     code-fold: true # Code ist dadurch aufklappbar
+    toc: true # Macht Inhaltsverzeichnis
+    toc-title: Inhaltsverzeichnis # Titel des Inhaltsverzeichnisses
+    toc-location: left # Macht inhaltsverzeichnis links
+    toc-expand: 3 # ganzes Verzeichnis wird angezeigt
 execute: 
   warning: false # keine Warnungen
   messages: false # keine Nachrichten
@@ -16,16 +22,17 @@ execute:
 Passagiere empfinden in der Regel das Warten an Haltestellen des Öffentlichen Verkehrs (ÖV) als äusserst lästig (van Hagen 2011). Die Schweizer ÖV sind international bekannt für ihre Pünktlichkeit (Kaindl 2022), wodurch die Länge der Wartezeit zu Beginn einer Reise meist selbstverschuldet ist. Nach Csiskos & Currie (2008) gibt es zwei verschiedene Arten von Fahrgastverhalten: Eine Gruppe kommt zufällig an, während eine andere Gruppe aktiv versucht, ihre Wartezeit zu minimieren, indem sie rechtzeitig zur geplanten Abfahrtszeit bei der Haltestelle ankommt. Evtl. Blabla zu AnalyseWerkzeugen, how fast is a cow und so.. oder erst in Diskussion
 
 In unserer Projektarbeit möchten wir unsere tägliche Wartezeit an Haltestellen von öffentlichen Verkehrsmitteln (ÖV) untersuchen. Dabei wird ausschliesslich der Beginn einer Reise betrachtet. Folgende Fragen sollen anhand zweier leicht unterschiedlicher Methoden beantwortet werden:
-- Wie oft reisen wir mit den ÖV?
-- Sind die Wartezeiten von Reise zu Reise unterschiedlich lang?
-- Wer verbringt durchschnittlich mehr Wartezeit an den Haltestellen?
-- Kommen unsere beiden methodischen Herangehensweisen zu den gleichen Resultaten?
+
+-   Wie oft reisen wir mit den ÖV?
+-   Sind die Wartezeiten von Reise zu Reise unterschiedlich lang?
+-   Wer verbringt durchschnittlich mehr Wartezeit an den Haltestellen?
+-   Kommen unsere beiden methodischen Herangehensweisen zu den gleichen Resultaten?
 
 # 2 Methode
 
 ## 2.1 Daten
 
-Die Daten bestehen aus eigenen Bewegungsdaten, welche mit der Applikation Posmo Project (Datamap AG, Version 22.01.16, 2023) erfasst wurden. Daten wurden vom 03.05.23 bis 21.06.23 mit einer Frequenz der Lokalisierungsdaten von 10 Sekunden aufgenommen. Fand keine deutliche Bewegung statt, wurden die Datenpunkte durch Posmo automatisch entfernt. Diese Daten liegen als CSV-Datei vor und beinhalten u.a. Datum & Zeit („datetime"), x-Koordinaten („long_x"), y-Koordinaten („lat_y") und Transportmodus („transport_mode"). Zusätzlich wird der Datensatz „Haltestellen des öffentlichen Verkehrs" vom Bundesamt für Verkehr (BAV) verwendet (QUELLE https://data.geo.admin.ch/ch.bav.haltestellen-oev/haltestellen-oev/haltestellen-oev_2056_de.csv.zip).
+Die Daten bestehen aus eigenen Bewegungsdaten, welche mit der Applikation Posmo Project (Datamap AG, Version 22.01.16, 2023) erfasst wurden. Daten wurden vom 03.05.23 bis 21.06.23 mit einer Frequenz der Lokalisierungsdaten von 10 Sekunden aufgenommen. Fand keine deutliche Bewegung statt, wurden die Datenpunkte durch Posmo automatisch entfernt. Diese Daten liegen als CSV-Datei vor und beinhalten u.a. Datum & Zeit („datetime"), x-Koordinaten („long_x"), y-Koordinaten („lat_y") und Transportmodus („transport_mode"). 
 
 ```{r}
 ### R: Libraries laden
@@ -37,7 +44,6 @@ library("dplyr")
 library("sf")
 library(treemapify)
 library(ggmosaic)
-
 ```
 
 ```{r}
@@ -47,7 +53,9 @@ library(ggmosaic)
 
 # Daten von Stefan (ab 29.04.2023)
 stefan <- read_delim("posmo_Stefan_23-05-03_06-21.csv", delim = ",")
+head(stefan)
 stefan$person <- "Stefan"
+
 
 # Daten von Miriam (ab xx.05.2023)
 miriam <- read_delim("posmo_Miriam_23-05-03_06-21.csv", delim = ",")
@@ -64,7 +72,7 @@ posmo <- posmo |>
   select(-user_id, -weekday, -place_name)
 
 # NA finden & entfernen
-posmo[!complete.cases(posmo), ] # Zeigt Zeilen mit NA an
+# posmo[!complete.cases(posmo), ] # Zeigt Zeilen mit NA an
 posmo <- drop_na(posmo)# Spalten mit NA entfernen
 
 # Geometrie hinzufügen
@@ -80,39 +88,50 @@ posmo <- cbind(posmo, posmo_coordinates)
 posmo <- posmo |> 
   select(-lon_x, -lat_y)
 
-# Daten anschauen
-ggplot(posmo, aes(X, Y, color = person))+
-  geom_path()+
-  coord_equal()+
-  scale_color_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
-  theme_void()
+# Daten anschauen, Trajectories
+# ggplot(posmo, aes(X, Y, color = person))+
+#   geom_path()+
+#   coord_equal()+
+#   scale_color_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
+#   theme_void()
+```
 
+```{r abbildung1, fig.cap="*Abbildung 1: Alle Datenpunkte aus der Zeitspanne vom 03.05. bis 21.06.2023 von Miriam und Stefan*"}
 posmo_filtered <- posmo |>  # nur posmo daten innerhalb Rechteck um schweiz
   st_crop(st_as_sfc(st_bbox(schweiz)))
-
-# posmo_clipped <- st_intersection(posmo, schweiz) # nur posmo daten innerhalb von schweiz, geht lange...
 
 ggplot()+
   geom_sf(data = schweiz, fill= NA)+
   geom_sf(data = posmo_filtered, aes(colour = person))+
   scale_color_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
+  labs(
+    color = "Person")+ # Legende beschriften
   theme_void() # Achsen und Raster verschwinden
 
+# posmo_clipped <- st_intersection(posmo, schweiz) # nur posmo daten innerhalb von schweiz, geht lange, sollte aber gehen...
+
+# ggplot()+
+#   geom_sf(data = schweiz, fill= NA)+
+#   geom_sf(data = posmo_clipped, aes(colour = person))+
+#   scale_color_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
+#   theme_void() # Achsen und Raster verschwinden
 ```
+
+Zusätzlich wird der Datensatz „Haltestellen des öffentlichen Verkehrs" vom Bundesamt für Verkehr (BAV) verwendet (QUELLE https://data.geo.admin.ch/ch.bav.haltestellen-oev/haltestellen-oev/haltestellen-oev_2056_de.csv.zip), welcher alle ÖV-Haltestellen beinhaltet.
 
 ## 2.2 Datenvorverarbeitung
 
 Die Posmo-App ist noch in der Entwicklung und zeichnet die Transportmodi nicht immer korrekt auf. Die Daten wurden deshalb von uns auf POSMO (datamap.io) überprüft und falls nötig die Transportart von Hand angepasst.
 
-## 2.3 Methods
+## 2.3 Methode
 
-### 2.3.1 Herangehensweise «Geschwindigkeit»
+### 2.3.1 Ansatz «Geschwindigkeit»
 
 Um den Start einer Reise zu finden, werden die Daten auf eine bestimmte Abfolge von Bewegungen (Segmente) durchsucht. Zu Beginn darf keine Bewegung stattfinden, man ist zum Beispiel zu Hause oder bei der Arbeit. Dafür muss zwischen zwei Datenpunkten eine Zeitdifferenz über dem gewählten Schwellenwert von zehn Minuten liegen. Die restlichen Datenpunkte werden anhand der Geschwindigkeit in Segmente mit langsamer oder schneller Bewegung eingeteilt. Als langsam werden Bewegungen kleiner als 45 km/h klassifiziert. Bewegungen gleich oder grösser als 45 km/h werden als schnell klassifiziert.
 
+```{r}
 #### R: G: Geschwindigkeit berechnen
 
-```{r}
 # Geschwindigkeit herausfinden
 posmo1 <- posmo |> # Zeit
   mutate(
@@ -131,9 +150,8 @@ posmo1 <- posmo1 |>
   )
 ```
 
-#### R: G: Moving Window
-
 ```{r}
+#### R: G: Moving Window
 
 # Brauchen wir das Moving Window überhaupt??? anfänglich gedacht um Daten zu "glätten", eventuell nützlich, um ausreisser zu finden? Fazit: Wir brauchen einen klaren Schnitt zwischen slow & fast, also ist das moving window nicht nützlich
 
@@ -153,9 +171,10 @@ posmo1 <- posmo1 |>
   # ungroup()
 ```
 
+```{r}
 #### R: G: Einteilung stay/slow/fast
 
-```{r}
+
 # Erfahrungswerte:
 
 # Stefans Weg zum Bahnhof mit dem Fahrrad, maximale Geschwindigkeit:
@@ -209,9 +228,10 @@ Um den Start einer Reise zu finden, muss folgende Abfolge der Segmente vorliegen
 
 Die Wartezeit kann anschliessend für alle gefundenen Events berechnet werden (difftime (min(Segment schnell), max(Segment langsam))).
 
+```{r}
 #### R: G: Evente finden
 
-```{r}
+
 # Event finden (stay-slow-fast), event_id
 
 # Start und Enpunkte von Segment mit TRUE markieren
@@ -285,9 +305,9 @@ event <- event |> # checken, ob standorte gleich sind (ob id richtig verteilt wu
       haltestelle_x_slow == haltestelle_x_fast &
       haltestelle_y_slow == haltestelle_y_fast
       , TRUE, NA))
-event[!complete.cases(event), ] # alle id richtig
+# event[!complete.cases(event), ] # alle id richtig
 
-names(event)
+# names(event)
 event <- event |> 
   select(-velocity_text_slow, -person_fast, -velocity_text_fast, -haltestelle_x_fast,
          -haltestelle_y_fast, -check) |> # unnötige Spalten entfernen
@@ -297,11 +317,12 @@ event <- event |>
 
 ```
 
-Die räumlichen Startpunkte der Reisen wurden mit den ÖV-Haltestellen aus dem Datensatz „Haltestellen des öffentlichen Verkehrs" validiert, wodurch Reisen mit dem Auto wegfallen. Dafür wurde ein Buffer von 100 Metern um ÖV-Haltestellen mit den Positionsdaten der Wartezeit verschnitten.
-
-#### R: G: Evente validieren
+Die räumlichen Startpunkte der Reisen wurden mit den ÖV-Haltestellen aus dem Datensatz „Haltestellen des öffentlichen Verkehrs" validiert, wodurch Reisen mit dem Auto wegfallen. Dafür wurde ein Buffer von 100 Metern um ÖV-Haltestellen mit den Positionsdaten der Wartezeit verschnitten. Die verbleibenden Datenpunkte geben die für uns relevanten Events an.
 
 ```{r}
+#### R: G: Evente validieren
+
+
 # Bahnhöfe einlesen
 haltestelle <- read_delim("haltestellen-oev_2056_de.csv/Betriebspunkt.csv", delim = ",") # WArum funktioniert das plötzlich nicht mehr??? File neu herunterladen!
 
@@ -310,11 +331,11 @@ haltestelle <- haltestelle |>
   subset(Betriebspunkttyp_Bezeichnung == "Haltestelle" |
            Betriebspunkttyp_Bezeichnung == "Haltestelle und Bedienpunkt") # nur Haltestellen
 
-ggplot(haltestelle)+
-  geom_sf()+
-  geom_sf(data = event, aes(colour = person), size = 2)+
-  scale_color_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
-  theme_void() # Achsen und Raster verschwinden
+# ggplot(haltestelle)+
+#   geom_sf()+
+#   geom_sf(data = event, aes(colour = person), size = 2)+
+#   scale_color_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
+#   theme_void() # Achsen und Raster verschwinden
 
 # Buffer um Bahnhof
 haltestelle_buffer <- st_buffer(haltestelle, 100) # Was ist eine gute Buffer-Grösse???
@@ -346,11 +367,49 @@ haltestelle_event$Name[haltestelle_event$E == 2794912 &
 haltestelle_event$Name[haltestelle_event$E == 2684431 & 
                        haltestelle_event$N == 1240184 ] <- "Rüschlikon"
 
+# Visualisierung: Wo wurde gewartet
+# ggplot(haltestelle_event)+
+#   geom_sf(data = schweiz)+
+#   geom_sf()+
+#   theme_void() # Achsen und Raster verschwinden
+
 ```
 
-#### R: G: Velocity: Wartezeit berechnen
+```{r abbildung2, fig.cap="*Abbildung 2: Alle ÖV-Haltestellen, bei welchen am Start einer Reise gewartet wurde*"}
+
+# Visualisierung: Wer hat wo gewartet
+ggplot(haltestelle_event)+
+  geom_sf(data = schweiz, fill = NA)+
+  geom_sf(aes(colour = person))+
+  scale_color_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
+  labs(
+    color = "Person")+ # Legende beschriften
+  theme_void() # Achsen und Raster verschwinden
+
+```
+
+Einige ÖV-Haltestellen werden dabei öfters benutzt als andere.
+
+```{r abbildung3, fig.cap="*Abbildung 3: Benutzte ÖV-Haltestellen. Die grösse der Kästchen gibt die Anzahl Benutzungen an.*"}
+# Treemap mit Start-ÖV-Haltestellen
+haltestelle_treemap <- haltestelle_event |> 
+  group_by(Name, person) |> # group_by(Spalte_gruppieren1, Spalte_gruppieren2)
+  summarise(Anzahl = length(Name))
+
+ggplot(haltestelle_treemap, aes(area = Anzahl, fill = person, 
+                             subgroup = person, label = Name)) +
+  geom_treemap()+
+  geom_treemap_text(colour = "white", place = "centre", grow = TRUE)+
+  scale_fill_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
+    labs( # Beschriftung aendern
+    fill = "Person")+
+  theme_classic() # löscht ggplot-Layout
+```
 
 ```{r}
+#### R: G: Velocity: Wartezeit berechnen
+
+
 # wartezeit pro Event: difftime(max(Segmentslow), min(segmentfast)
 velocity <- haltestelle_event |> 
   mutate(wartezeit = round(as.numeric(difftime(ende_warten, start_warten, units = "mins")),2)) # ich glaube, die Daten sind nicht so gut...
@@ -370,11 +429,11 @@ velocity$wartezeit_cat[velocity$wartezeit >= 9 & velocity$wartezeit < 10] <- "9-
 
 ```
 
-###2.3.2 Herangehensweise «Klassifizierung»
+### 2.3.2 Ansatz «Transportmodus»
 
 Um zu validieren, wie gut unsere geschwindigkeitsabhängige Methode funktioniert, machen wir eine zusätzliche Analyse mit den Angaben der Transportmodi von Posmo.
 
-### R: T: Vorgehen "Transportmodus"
+### R: T: Ansatz "Transportmodus"
 
 #### R: T: Einteilung stay/slow/public
 
@@ -513,30 +572,19 @@ Aufgrund der Frequenz der Lokalisierung, können die Wartezeiten nur auf 10 Seku
 
 # 3 Resultate
 
+
 #### R: G: Visualisierung
 
 ```{r}
-# Visualisierung: Wo wurde gewartet
-ggplot(velocity)+
-  geom_sf(data = schweiz)+
-  geom_sf()+
-  theme_void() # Achsen und Raster verschwinden
-
-# Visualisierung: Wer hat wo gewartet
-ggplot(velocity)+
-  geom_sf(data = schweiz)+
-  geom_sf(aes(colour = person))+
-  scale_color_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
-  theme_void() # Achsen und Raster verschwinden
-
 # Vergleich Miriram & Stefan
-boxplot(wartezeit~person, data = velocity, ylab = "Wartezeit [min]", xlab = "Person")
-
-ggplot(velocity, aes(wartezeit, person))+
+ggplot(velocity, aes(wartezeit, person, fill = person))+
   geom_boxplot()+ # Warum hat es keine Whiskers???
   labs( # Beschriftung aendern
     title = "Wartezeiten beim Vorgehen ", 
-    x = "Wartezeit [min]", y = "Person")+ # Legende beschriften
+    x = "Wartezeit [min]", y = "Person")+
+  scale_fill_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
+  labs(
+    fill = "Person")+ # Legende beschriften
   coord_flip() +
   theme_classic() # löscht ggplot-Layout
 
@@ -548,42 +596,38 @@ ggplot(velocity, aes(wartezeit, person, fill = person))+
   coord_flip() +
   labs( # Beschriftung aendern
     title = "Wartezeiten", 
-    x = "Wartezeit [min]", y = "Person")+ # Legende beschriften
+    x = "Wartezeit [min]", y = "Person", fill = "Person")+
   scale_fill_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
   theme_classic() # löscht ggplot-Layout
 
 # Boxplot mit Haltestelle (nur sinnvoll mit viel benutzen Haltestellen...)
-ggplot(velocity, aes(wartezeit, Name))+
-  geom_boxplot()+
-  coord_flip() +
-  labs( # Beschriftung aendern
-    title = "Wartezeiten beim Vorgehen velocity", 
-    x = "Person", y = "Wartezeit [min]")+ # Legende beschriften
-  theme_classic() # löscht ggplot-Layout
+# ggplot(velocity, aes(wartezeit, Name))+
+#   geom_boxplot()+
+#   coord_flip() +
+#   labs( # Beschriftung aendern
+#     title = "Wartezeiten beim Vorgehen velocity", 
+#     x = "Person", y = "Wartezeit [min]")+
+#   theme(axis.text.x = element_text(angle = 90, hjust = 1))+ # Text vertikal
+#   theme_classic() # löscht ggplot-Layout
 
-boxplot(wartezeit~Name, data = velocity)
-
-
-# Karte mit Punkt pro Haltestelle, Punktgrösse gibt Mean Wartezeit an, evtl noch eine Nummer mit Anzahl Events neben Punkt.
-velocity_sum <- velocity |> 
-  group_by(Name) |> # group_by(Spalte_gruppieren1, Spalte_gruppieren2)
-  summarise(Mean = mean(wartezeit), Anzahl = length(wartezeit))
-
-ggplot(velocity_sum)+
-  geom_sf(data = schweiz)+
-  geom_sf(aes(size = Mean, colour = Anzahl))+
-  theme_void() # Achsen und Raster verschwinden
-
-# Interaktive Karte -> Miriam ist dran
+# Karte mit Punkt pro Haltestelle, Punktgrösse gibt Mean Wartezeit an, evtl noch eine Nummer mit Anzahl Events neben Punkt. # Interaktive Karte -> Miriam ist dran
+# velocity_sum <- velocity |> 
+#   group_by(Name) |> # group_by(Spalte_gruppieren1, Spalte_gruppieren2)
+#   summarise(Mean = mean(wartezeit), Anzahl = length(wartezeit))
+# 
+# ggplot(velocity_sum)+
+#   geom_sf(data = schweiz)+
+#   geom_sf(aes(size = Mean, colour = Anzahl))+
+#   theme_void() # Achsen und Raster verschwinden
 
 # Farbige Säulen pro Person, Anteil von 0-1 min, 1-2 min,...
 ggplot(velocity, aes(person, fill = wartezeit_cat))+
   geom_bar(position = position_fill(reverse = TRUE))+
   scale_fill_manual(values = rev(RColorBrewer::brewer.pal(10, "YlGn")))+
   labs(
-    title = "Vorgehen Geschwindigkeit", # Titel setzen
+    title = "Ansatz Geschwindigkeit", # Titel setzen
     x = "Person", y = "Anteil der Events", # Achsen beschriften
-    fill = "Wartezeit [Min]")+ # Legende beschriften
+    fill = "Wartezeit [min]")+ # Legende beschriften
   scale_y_continuous( # y-Achse anpassen,
     limits = c(0, 1.05),  # Limits setzen
     breaks = c(0.00, 0.25, 0.50, 0.75, 1.00))+ # Achsenabschnitte festlegen
@@ -591,23 +635,7 @@ ggplot(velocity, aes(person, fill = wartezeit_cat))+
   geom_text(x=2, y=1.05, label="n = 35")+
   theme_classic() # löscht ggplot-Layout
 
-# Treemap mit Start-ÖV-Haltestellen
-velocity_treemap <- velocity |> 
-  group_by(Name, person) |> # group_by(Spalte_gruppieren1, Spalte_gruppieren2)
-  summarise(Mean = mean(wartezeit), Anzahl = length(wartezeit))
-
-ggplot(velocity_treemap, aes(area = Anzahl, fill = person, 
-                             subgroup = person, label = Name)) +
-  geom_treemap()+
-  geom_treemap_text(colour = "white", place = "centre", grow = TRUE)+
-  scale_fill_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
-    labs( # Beschriftung aendern
-    title = "Start-ÖV-Haltestellen", # Titel setzen
-    fill = "Person")+ # Legende beschriften
-  theme(legend.position = "bottom")+ # Legende verschieben # Warum funktioniert dies nicht???
-  theme_classic() # löscht ggplot-Layout
-
-# Mosaic plot: Miriam vs. Stefan mit wartezeit_cat
+# Mosaic plot: Miriam vs. Stefan mit wartezeit_cat, sagt auch nicht so viel aus?
 ggplot() +
   geom_mosaic(data = velocity, aes(x = product(wartezeit_cat), fill= person),
               show.legend = FALSE) +

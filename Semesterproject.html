@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2023-07-02">
 
-<title>Wartezeit an ÖV-Haltestelem beim Reisebeginn</title>
+<title>Wartezeit an ÖV-Haltestellem beim Reisebeginn</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -111,22 +112,59 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </head>
 
-<body class="fullcontent">
+<body>
 
-<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Inhaltsverzeichnis</h2>
+   
+  <ul>
+  <li><a href="#hintergrund-und-forschungsziele" id="toc-hintergrund-und-forschungsziele" class="nav-link active" data-scroll-target="#hintergrund-und-forschungsziele">1 Hintergrund und Forschungsziele</a></li>
+  <li><a href="#methode" id="toc-methode" class="nav-link" data-scroll-target="#methode">2 Methode</a>
+  <ul class="collapse">
+  <li><a href="#daten" id="toc-daten" class="nav-link" data-scroll-target="#daten">2.1 Daten</a></li>
+  <li><a href="#datenvorverarbeitung" id="toc-datenvorverarbeitung" class="nav-link" data-scroll-target="#datenvorverarbeitung">2.2 Datenvorverarbeitung</a></li>
+  <li><a href="#methode-1" id="toc-methode-1" class="nav-link" data-scroll-target="#methode-1">2.3 Methode</a>
+  <ul class="collapse">
+  <li><a href="#ansatz-geschwindigkeit" id="toc-ansatz-geschwindigkeit" class="nav-link" data-scroll-target="#ansatz-geschwindigkeit">2.3.1 Ansatz «Geschwindigkeit»</a></li>
+  <li><a href="#ansatz-transportmodus" id="toc-ansatz-transportmodus" class="nav-link" data-scroll-target="#ansatz-transportmodus">2.3.2 Ansatz «Transportmodus»</a></li>
+  <li><a href="#r-t-ansatz-transportmodus" id="toc-r-t-ansatz-transportmodus" class="nav-link" data-scroll-target="#r-t-ansatz-transportmodus">R: T: Ansatz “Transportmodus”</a></li>
+  </ul></li>
+  <li><a href="#probleme-und-grenzen" id="toc-probleme-und-grenzen" class="nav-link" data-scroll-target="#probleme-und-grenzen">2.4 Probleme und Grenzen</a></li>
+  </ul></li>
+  <li><a href="#resultate" id="toc-resultate" class="nav-link" data-scroll-target="#resultate">3 Resultate</a></li>
+  <li><a href="#diskussion" id="toc-diskussion" class="nav-link" data-scroll-target="#diskussion">4 Diskussion</a></li>
+  <li><a href="#literatur" id="toc-literatur" class="nav-link" data-scroll-target="#literatur">5 Literatur</a></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+</div>
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Wartezeit an ÖV-Haltestelem beim Reisebeginn</h1>
+<h1 class="title">Wartezeit an ÖV-Haltestellem beim Reisebeginn</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Stefan Häring &amp; Miriam Jakob </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 2, 2023</p>
+    </div>
+  </div>
   
     
   </div>
@@ -138,133 +176,114 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1>1 Hintergrund und Forschungsziele</h1>
 <p>(Zeit ist Geld (Effizienzsteigerung) versus Bewusst und Entspannt durchs Leben gehen -&gt;Literatur, Öv CH superpünktlich, geringe Wartezeiten bzw Wartezeit selbstverschuldet)</p>
 <p>Passagiere empfinden in der Regel das Warten an Haltestellen des Öffentlichen Verkehrs (ÖV) als äusserst lästig (van Hagen 2011). Die Schweizer ÖV sind international bekannt für ihre Pünktlichkeit (Kaindl 2022), wodurch die Länge der Wartezeit zu Beginn einer Reise meist selbstverschuldet ist. Nach Csiskos &amp; Currie (2008) gibt es zwei verschiedene Arten von Fahrgastverhalten: Eine Gruppe kommt zufällig an, während eine andere Gruppe aktiv versucht, ihre Wartezeit zu minimieren, indem sie rechtzeitig zur geplanten Abfahrtszeit bei der Haltestelle ankommt. Evtl. Blabla zu AnalyseWerkzeugen, how fast is a cow und so.. oder erst in Diskussion</p>
-<p>In unserer Projektarbeit möchten wir unsere tägliche Wartezeit an Haltestellen von öffentlichen Verkehrsmitteln (ÖV) untersuchen. Dabei wird ausschliesslich der Beginn einer Reise betrachtet. Folgende Fragen sollen anhand zweier leicht unterschiedlicher Methoden beantwortet werden: • Wie oft reisen wir mit den ÖV? • Sind die Wartezeiten von Reise zu Reise unterschiedlich lang? • Wer verbringt durchschnittlich mehr Wartezeit an den Haltestellen? • Kommen unsere beiden methodischen Herangehensweisen zu den gleichen Resultaten?</p>
+<p>In unserer Projektarbeit möchten wir unsere tägliche Wartezeit an Haltestellen von öffentlichen Verkehrsmitteln (ÖV) untersuchen. Dabei wird ausschliesslich der Beginn einer Reise betrachtet. Folgende Fragen sollen anhand zweier leicht unterschiedlicher Methoden beantwortet werden:</p>
+<ul>
+<li>Wie oft reisen wir mit den ÖV?</li>
+<li>Sind die Wartezeiten von Reise zu Reise unterschiedlich lang?</li>
+<li>Wer verbringt durchschnittlich mehr Wartezeit an den Haltestellen?</li>
+<li>Kommen unsere beiden methodischen Herangehensweisen zu den gleichen Resultaten?</li>
+</ul>
 </section>
 <section id="methode" class="level1">
 <h1>2 Methode</h1>
 <section id="daten" class="level2">
 <h2 class="anchored" data-anchor-id="daten">2.1 Daten</h2>
-<p>Die Daten bestehen aus eigenen Bewegungsdaten, welche mit der Applikation Posmo Project (Datamap AG, Version 22.01.16, 2023) erfasst wurden. Daten wurden vom 03.05.23 bis 21.06.23 mit einer Frequenz der Lokalisierungsdaten von 10 Sekunden aufgenommen. Fand keine deutliche Bewegung statt, wurden die Datenpunkte durch Posmo automatisch entfernt. Diese Daten liegen als CSV-Datei vor und beinhalten u.a. Datum &amp; Zeit („datetime”), x-Koordinaten („long_x”), y-Koordinaten („lat_y”) und Transportmodus („transport_mode”). Zusätzlich wird der Datensatz „Haltestellen des öffentlichen Verkehrs” vom Bundesamt für Verkehr (BAV) verwendet (QUELLE https://data.geo.admin.ch/ch.bav.haltestellen-oev/haltestellen-oev/haltestellen-oev_2056_de.csv.zip).</p>
-</section>
-<section id="r-vorbereitung" class="level2">
-<h2 class="anchored" data-anchor-id="r-vorbereitung">R: Vorbereitung</h2>
-<section id="r-libraries-laden" class="level3">
-<h3 class="anchored" data-anchor-id="r-libraries-laden">R: Libraries laden</h3>
+<p>Die Daten bestehen aus eigenen Bewegungsdaten, welche mit der Applikation Posmo Project (Datamap AG, Version 22.01.16, 2023) erfasst wurden. Daten wurden vom 03.05.23 bis 21.06.23 mit einer Frequenz der Lokalisierungsdaten von 10 Sekunden aufgenommen. Fand keine deutliche Bewegung statt, wurden die Datenpunkte durch Posmo automatisch entfernt. Diese Daten liegen als CSV-Datei vor und beinhalten u.a. Datum &amp; Zeit („datetime”), x-Koordinaten („long_x”), y-Koordinaten („lat_y”) und Transportmodus („transport_mode”).</p>
 <div class="cell">
 
 </div>
-</section>
-<section id="r-daten-einlesen" class="level3">
-<h3 class="anchored" data-anchor-id="r-daten-einlesen">R: Daten einlesen</h3>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Daten von Stefan (ab 29.04.2023)</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>stefan <span class="ot">&lt;-</span> <span class="fu">read_delim</span>(<span class="st">"posmo_Stefan_23-05-03_06-21.csv"</span>, <span class="at">delim =</span> <span class="st">","</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>stefan<span class="sc">$</span>person <span class="ot">&lt;-</span> <span class="st">"Stefan"</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Daten von Miriam (ab xx.05.2023)</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>miriam <span class="ot">&lt;-</span> <span class="fu">read_delim</span>(<span class="st">"posmo_Miriam_23-05-03_06-21.csv"</span>, <span class="at">delim =</span> <span class="st">","</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>miriam<span class="sc">$</span>person <span class="ot">&lt;-</span> <span class="st">"Miriam"</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Schweizergrenze für Visualisierung</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>schweiz <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="st">"schweiz.gpkg"</span>)</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Daten zusammenführen</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>posmo <span class="ot">&lt;-</span> <span class="fu">rbind</span>(stefan, miriam)</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># nicht relevante Spalten entfernen</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>posmo <span class="ot">&lt;-</span> posmo <span class="sc">|&gt;</span> </span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>user_id, <span class="sc">-</span>weekday, <span class="sc">-</span>place_name)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># NA finden &amp; entfernen</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>posmo[<span class="sc">!</span><span class="fu">complete.cases</span>(posmo), ] <span class="co"># Zeigt Zeilen mit NA an</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="do">### R: Daten einlesen</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Daten von Stefan (ab 29.04.2023)</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>stefan <span class="ot">&lt;-</span> <span class="fu">read_delim</span>(<span class="st">"posmo_Stefan_23-05-03_06-21.csv"</span>, <span class="at">delim =</span> <span class="st">","</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(stefan)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 999 × 5
-   datetime            transport_mode lon_x lat_y person
-   &lt;dttm&gt;              &lt;chr&gt;          &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; 
- 1 2023-05-02 22:00:00 &lt;NA&gt;            8.70  47.1 Stefan
- 2 2023-05-03 03:25:11 &lt;NA&gt;            8.70  47.1 Stefan
- 3 2023-05-03 04:52:23 &lt;NA&gt;            8.70  47.1 Stefan
- 4 2023-05-03 05:47:14 &lt;NA&gt;            8.72  47.1 Stefan
- 5 2023-05-03 06:06:45 &lt;NA&gt;            8.74  47.1 Stefan
- 6 2023-05-03 06:45:46 &lt;NA&gt;            8.69  47.2 Stefan
- 7 2023-05-03 06:49:17 &lt;NA&gt;            8.70  47.2 Stefan
- 8 2023-05-03 11:59:45 &lt;NA&gt;            8.71  47.2 Stefan
- 9 2023-05-03 12:41:15 &lt;NA&gt;            8.67  47.2 Stefan
-10 2023-05-03 13:02:35 &lt;NA&gt;            8.68  47.2 Stefan
-# … with 989 more rows</code></pre>
+<pre><code># A tibble: 6 × 7
+  user_id                datetime            weekday place…¹ trans…² lon_x lat_y
+  &lt;chr&gt;                  &lt;dttm&gt;              &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;
+1 d081d87a-d5b5-42fc-ac… 2023-05-02 22:00:00 Wed     Alpthal &lt;NA&gt;     8.70  47.1
+2 d081d87a-d5b5-42fc-ac… 2023-05-03 03:21:27 Wed     &lt;NA&gt;    Walk     8.70  47.1
+3 d081d87a-d5b5-42fc-ac… 2023-05-03 03:21:27 Wed     &lt;NA&gt;    Walk     8.70  47.1
+4 d081d87a-d5b5-42fc-ac… 2023-05-03 03:21:41 Wed     &lt;NA&gt;    Walk     8.70  47.1
+5 d081d87a-d5b5-42fc-ac… 2023-05-03 03:21:57 Wed     &lt;NA&gt;    Walk     8.70  47.1
+6 d081d87a-d5b5-42fc-ac… 2023-05-03 03:22:11 Wed     &lt;NA&gt;    Walk     8.70  47.1
+# … with abbreviated variable names ¹​place_name, ²​transport_mode</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>posmo <span class="ot">&lt;-</span> <span class="fu">drop_na</span>(posmo)<span class="co"># Spalten mit NA entfernen</span></span>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>stefan<span class="sc">$</span>person <span class="ot">&lt;-</span> <span class="st">"Stefan"</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Geometrie hinzufügen</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>posmo <span class="ot">&lt;-</span> posmo <span class="sc">|&gt;</span> </span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"lon_x"</span>, <span class="st">"lat_y"</span>), <span class="at">crs =</span> <span class="dv">4326</span>, <span class="at">remove =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span>  <span class="co"># Geometrie hinzufügen</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="dv">2056</span>) <span class="co"># transformieren CH1903+ LV95: 2056</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Daten von Miriam (ab xx.05.2023)</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>miriam <span class="ot">&lt;-</span> <span class="fu">read_delim</span>(<span class="st">"posmo_Miriam_23-05-03_06-21.csv"</span>, <span class="at">delim =</span> <span class="st">","</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>miriam<span class="sc">$</span>person <span class="ot">&lt;-</span> <span class="st">"Miriam"</span></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Schweizer Koordinaten zu sf-Tabelle hinzufügen</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>posmo_coordinates <span class="ot">&lt;-</span> <span class="fu">st_coordinates</span>(posmo)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>posmo <span class="ot">&lt;-</span> <span class="fu">cbind</span>(posmo, posmo_coordinates)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># WGS Koordinaten entfernen </span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>posmo <span class="ot">&lt;-</span> posmo <span class="sc">|&gt;</span> </span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>lon_x, <span class="sc">-</span>lat_y)</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Daten anschauen</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(posmo, <span class="fu">aes</span>(X, Y, <span class="at">color =</span> person))<span class="sc">+</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>()<span class="sc">+</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>()<span class="sc">+</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Miriam"</span> <span class="ot">=</span> <span class="st">"#3182bd"</span>, <span class="st">"Stefan"</span> <span class="ot">=</span> <span class="st">"#c51b8a"</span>))<span class="sc">+</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Schweizergrenze für Visualisierung</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>schweiz <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="st">"schweiz.gpkg"</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Daten zusammenführen</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>posmo <span class="ot">&lt;-</span> <span class="fu">rbind</span>(stefan, miriam)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># nicht relevante Spalten entfernen</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>posmo <span class="ot">&lt;-</span> posmo <span class="sc">|&gt;</span> </span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>user_id, <span class="sc">-</span>weekday, <span class="sc">-</span>place_name)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co"># NA finden &amp; entfernen</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co"># posmo[!complete.cases(posmo), ] # Zeigt Zeilen mit NA an</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>posmo <span class="ot">&lt;-</span> <span class="fu">drop_na</span>(posmo)<span class="co"># Spalten mit NA entfernen</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Geometrie hinzufügen</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>posmo <span class="ot">&lt;-</span> posmo <span class="sc">|&gt;</span> </span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"lon_x"</span>, <span class="st">"lat_y"</span>), <span class="at">crs =</span> <span class="dv">4326</span>, <span class="at">remove =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span>  <span class="co"># Geometrie hinzufügen</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="dv">2056</span>) <span class="co"># transformieren CH1903+ LV95: 2056</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Schweizer Koordinaten zu sf-Tabelle hinzufügen</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>posmo_coordinates <span class="ot">&lt;-</span> <span class="fu">st_coordinates</span>(posmo)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>posmo <span class="ot">&lt;-</span> <span class="fu">cbind</span>(posmo, posmo_coordinates)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="co"># WGS Koordinaten entfernen </span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>posmo <span class="ot">&lt;-</span> posmo <span class="sc">|&gt;</span> </span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>lon_x, <span class="sc">-</span>lat_y)</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Daten anschauen, Trajectories</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="co"># ggplot(posmo, aes(X, Y, color = person))+</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="co">#   geom_path()+</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="co">#   coord_equal()+</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="co">#   scale_color_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="co">#   theme_void()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+</div>
+<div class="cell">
 <div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
-</div>
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>posmo_filtered <span class="ot">&lt;-</span> posmo <span class="sc">|&gt;</span>  <span class="co"># nur posmo daten innerhalb Rechteck um schweiz</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_crop</span>(<span class="fu">st_as_sfc</span>(<span class="fu">st_bbox</span>(schweiz)))</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># posmo_clipped &lt;- st_intersection(posmo, schweiz) # nur posmo daten innerhalb von schweiz, geht lange...</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> schweiz, <span class="at">fill=</span> <span class="cn">NA</span>)<span class="sc">+</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> posmo_filtered, <span class="fu">aes</span>(<span class="at">colour =</span> person))<span class="sc">+</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Miriam"</span> <span class="ot">=</span> <span class="st">"#3182bd"</span>, <span class="st">"Stefan"</span> <span class="ot">=</span> <span class="st">"#c51b8a"</span>))<span class="sc">+</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="co"># Achsen und Raster verschwinden</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-2-2.png" class="img-fluid" width="672"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Semesterproject_files/figure-html/abbildung1-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption"><em>Abbildung 1: Alle Datenpunkte aus der Zeitspanne vom 03.05. bis 21.06.2023 von Miriam und Stefan</em></figcaption><p></p>
+</figure>
 </div>
 </div>
-</section>
+</div>
+<p>Zusätzlich wird der Datensatz „Haltestellen des öffentlichen Verkehrs” vom Bundesamt für Verkehr (BAV) verwendet (QUELLE https://data.geo.admin.ch/ch.bav.haltestellen-oev/haltestellen-oev/haltestellen-oev_2056_de.csv.zip), welcher alle ÖV-Haltestellen beinhaltet.</p>
 </section>
 <section id="datenvorverarbeitung" class="level2">
 <h2 class="anchored" data-anchor-id="datenvorverarbeitung">2.2 Datenvorverarbeitung</h2>
 <p>Die Posmo-App ist noch in der Entwicklung und zeichnet die Transportmodi nicht immer korrekt auf. Die Daten wurden deshalb von uns auf POSMO (datamap.io) überprüft und falls nötig die Transportart von Hand angepasst.</p>
 </section>
-<section id="methods" class="level2">
-<h2 class="anchored" data-anchor-id="methods">2.3 Methods</h2>
-<section id="herangehensweise-geschwindigkeit" class="level3">
-<h3 class="anchored" data-anchor-id="herangehensweise-geschwindigkeit">2.3.1 Herangehensweise «Geschwindigkeit»</h3>
+<section id="methode-1" class="level2">
+<h2 class="anchored" data-anchor-id="methode-1">2.3 Methode</h2>
+<section id="ansatz-geschwindigkeit" class="level3">
+<h3 class="anchored" data-anchor-id="ansatz-geschwindigkeit">2.3.1 Ansatz «Geschwindigkeit»</h3>
 <p>Um den Start einer Reise zu finden, werden die Daten auf eine bestimmte Abfolge von Bewegungen (Segmente) durchsucht. Zu Beginn darf keine Bewegung stattfinden, man ist zum Beispiel zu Hause oder bei der Arbeit. Dafür muss zwischen zwei Datenpunkten eine Zeitdifferenz über dem gewählten Schwellenwert von zehn Minuten liegen. Die restlichen Datenpunkte werden anhand der Geschwindigkeit in Segmente mit langsamer oder schneller Bewegung eingeteilt. Als langsam werden Bewegungen kleiner als 45 km/h klassifiziert. Bewegungen gleich oder grösser als 45 km/h werden als schnell klassifiziert.</p>
-<section id="r-g-geschwindigkeit-berechnen" class="level4">
-<h4 class="anchored" data-anchor-id="r-g-geschwindigkeit-berechnen">R: G: Geschwindigkeit berechnen</h4>
 <div class="cell">
 
 </div>
-</section>
-<section id="r-g-moving-window" class="level4">
-<h4 class="anchored" data-anchor-id="r-g-moving-window">R: G: Moving Window</h4>
 <div class="cell">
 
 </div>
-</section>
-<section id="r-g-einteilung-stayslowfast" class="level4">
-<h4 class="anchored" data-anchor-id="r-g-einteilung-stayslowfast">R: G: Einteilung stay/slow/fast</h4>
 <div class="cell">
 
 </div>
@@ -275,47 +294,44 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>schnelle Bewegung (ÖV)</li>
 </ul>
 <p>Die Wartezeit kann anschliessend für alle gefundenen Events berechnet werden (difftime (min(Segment schnell), max(Segment langsam))).</p>
-</section>
-<section id="r-g-evente-finden" class="level4">
-<h4 class="anchored" data-anchor-id="r-g-evente-finden">R: G: Evente finden</h4>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code> [1] datetime_slow       transport_mode_slow person_slow        
- [4] velocity_text_slow  haltestelle_x_slow  haltestelle_y_slow 
- [7] id                  datetime_fast       transport_mode_fast
-[10] person_fast         velocity_text_fast  haltestelle_x_fast 
-[13] haltestelle_y_fast  check              
-&lt;0 Zeilen&gt; (oder row.names mit Länge 0)</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code> [1] "datetime_slow"       "transport_mode_slow" "person_slow"        
- [4] "velocity_text_slow"  "haltestelle_x_slow"  "haltestelle_y_slow" 
- [7] "id"                  "datetime_fast"       "transport_mode_fast"
-[10] "person_fast"         "velocity_text_fast"  "haltestelle_x_fast" 
-[13] "haltestelle_y_fast"  "check"              </code></pre>
-</div>
-</div>
-<p>Die räumlichen Startpunkte der Reisen wurden mit den ÖV-Haltestellen aus dem Datensatz „Haltestellen des öffentlichen Verkehrs” validiert, wodurch Reisen mit dem Auto wegfallen. Dafür wurde ein Buffer von 100 Metern um ÖV-Haltestellen mit den Positionsdaten der Wartezeit verschnitten.</p>
-</section>
-<section id="r-g-evente-validieren" class="level4">
-<h4 class="anchored" data-anchor-id="r-g-evente-validieren">R: G: Evente validieren</h4>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-</section>
-<section id="r-g-velocity-wartezeit-berechnen" class="level4">
-<h4 class="anchored" data-anchor-id="r-g-velocity-wartezeit-berechnen">R: G: Velocity: Wartezeit berechnen</h4>
 <div class="cell">
 
 </div>
-<p>###2.3.2 Herangehensweise «Klassifizierung»</p>
+<p>Die räumlichen Startpunkte der Reisen wurden mit den ÖV-Haltestellen aus dem Datensatz „Haltestellen des öffentlichen Verkehrs” validiert, wodurch Reisen mit dem Auto wegfallen. Dafür wurde ein Buffer von 100 Metern um ÖV-Haltestellen mit den Positionsdaten der Wartezeit verschnitten. Die verbleibenden Datenpunkte geben die für uns relevanten Events an.</p>
+<div class="cell">
+
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Semesterproject_files/figure-html/abbildung2-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption"><em>Abbildung 2: Alle ÖV-Haltestellen, bei welchen am Start einer Reise gewartet wurde</em></figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Einige ÖV-Haltestellen werden dabei öfters benutzt als andere.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Semesterproject_files/figure-html/abbildung3-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption"><em>Abbildung 3: Benutzte ÖV-Haltestellen. Die grösse der Kästchen gibt die Anzahl Benutzungen an.</em></figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+
+</div>
+</section>
+<section id="ansatz-transportmodus" class="level3">
+<h3 class="anchored" data-anchor-id="ansatz-transportmodus">2.3.2 Ansatz «Transportmodus»</h3>
 <p>Um zu validieren, wie gut unsere geschwindigkeitsabhängige Methode funktioniert, machen wir eine zusätzliche Analyse mit den Angaben der Transportmodi von Posmo.</p>
 </section>
-</section>
-<section id="r-t-vorgehen-transportmodus" class="level3">
-<h3 class="anchored" data-anchor-id="r-t-vorgehen-transportmodus">R: T: Vorgehen “Transportmodus”</h3>
+<section id="r-t-ansatz-transportmodus" class="level3">
+<h3 class="anchored" data-anchor-id="r-t-ansatz-transportmodus">R: T: Ansatz “Transportmodus”</h3>
 <section id="r-t-einteilung-stayslowpublic" class="level4">
 <h4 class="anchored" data-anchor-id="r-t-einteilung-stayslowpublic">R: T: Einteilung stay/slow/public</h4>
 <div class="cell">
@@ -359,15 +375,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="cell-output-display">
 <p><img src="Semesterproject_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-11-2.png" class="img-fluid" width="672"></p>
-</div>
-<div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-11-3.png" class="img-fluid" width="672"></p>
-</div>
-<div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-11-4.png" class="img-fluid" width="672"></p>
-</div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Two Sample t-test
@@ -382,25 +389,13 @@ mean in group Miriam mean in group Stefan
             3.005200             1.916857 </code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-11-5.png" class="img-fluid" width="672"></p>
+<p><img src="Semesterproject_files/figure-html/unnamed-chunk-11-2.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-11-6.png" class="img-fluid" width="672"></p>
+<p><img src="Semesterproject_files/figure-html/unnamed-chunk-11-3.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-11-7.png" class="img-fluid" width="672"></p>
-</div>
-<div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-11-8.png" class="img-fluid" width="672"></p>
-</div>
-<div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-11-9.png" class="img-fluid" width="672"></p>
-</div>
-<div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-11-10.png" class="img-fluid" width="672"></p>
-</div>
-<div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-11-11.png" class="img-fluid" width="672"></p>
+<p><img src="Semesterproject_files/figure-html/unnamed-chunk-11-4.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -448,12 +443,12 @@ mean in group Miriam mean in group Stefan
 <p><img src="Semesterproject_files/figure-html/unnamed-chunk-12-6.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<div id="htmlwidget-71dce818cc92ea62f6a7" style="width:100%;height:464px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-71dce818cc92ea62f6a7">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addProviderTiles","args":["NASAGIBS.ViirsEarthAtNight2012",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]}],"setView":[[48.85,2.34],5,[]]},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-72b1ea7a5db7bf832f81" style="width:100%;height:464px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-72b1ea7a5db7bf832f81">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addProviderTiles","args":["NASAGIBS.ViirsEarthAtNight2012",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]}],"setView":[[48.85,2.34],5,[]]},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="cell-output-display">
-<div id="htmlwidget-f1c7dd32db934d29c3c0" style="width:100%;height:464px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-f1c7dd32db934d29c3c0">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addCircleMarkers","args":[[47.0870540100126,47.2083770100598,46.4079230094403,46.5499110094417,47.2086690100642,47.2083770100598,47.5486750104794,47.4837730104683,47.5268190104561,47.3784470101658,47.2083770100598,47.5483900104775,47.557467010484,47.4838340104684,47.3594770104001,47.4412920104433,47.3780310101662,47.2083770100598,47.5720720104792,47.4838420104683,47.3618410104678,47.2083770100598,46.292121009991,46.3153820099735,47.2083770100598,47.2083770100598,47.3595110104,47.5535870104784,47.4839000104683,47.378531010166,47.2083770100598,47.4838390104685,47.4677450104489,46.9674400097143,46.7937710094069,47.2083770100598,47.1707960102184,47.5513910104789,47.4836230104684,47.3596620104002,47.5328230104576,47.2083770100598,47.0433190101125,47.2083770100598,47.1782460101214,47.1733730101057,47.2083770100598,47.5487520104774,47.4836900104685,47.5513780104789,47.4838130104682,47.492608009926,47.4832580101328,47.2293040100764,47.2293040100764,47.4832780101328,47.2293040100764,47.4874350101325,47.2293040100764,47.2293040100764,47.4833380101328,47.2293040100764,47.4831710101327,47.2293040100764,47.4977620101469,47.4832050101327,47.4832370101328,47.4651760101276,47.4123230101304,47.4831920101327,47.2293040100764,47.401867010169,47.4831730101328,47.4833460101328,47.2293040100764,47.4831890101328,47.2293040100764,47.4833200101328,47.2293040100764,47.4833010101327,47.2183930100719,47.4831300101328,47.4874350101325,47.2293040100764,47.0793800103853],[8.7221260086554,8.70747800860422,9.70148500978508,9.8884660099098,8.69269200858984,8.70747800860422,7.58282300738035,7.54686700736095,7.64751700745304,8.53782700838742,8.70747800860422,7.58976700738759,7.57526200737012,7.5463540073604,7.65582700750758,7.59198600741926,8.53597200838575,8.70747800860422,7.61147100740337,7.54699600736107,7.38926900722876,8.70747800860422,7.53282300763962,7.65181500776294,8.70747800860422,8.70747800860422,7.65603700750779,7.59241300738888,7.54700600736106,8.53720000838678,8.70747800860422,7.54601100736005,7.60307100742352,9.55404100947369,10.2862220101746,8.70747800860422,8.09789000801228,7.58795200738489,7.54624300736034,7.6558960075076,7.64885900745275,8.70747800860422,8.3145570082665,8.70747800860422,8.45750400836943,8.50659600841919,8.70747800860422,7.59072100738848,7.5462140073603,7.58798300738492,7.54717600736126,9.43612400918815,8.76160400856916,8.6752190085666,8.6752190085666,8.76169600856923,8.6752190085666,8.76681200857275,8.6752190085666,8.6752190085666,8.76163400856916,8.6752190085666,8.76166100856925,8.6752190085666,8.7291420085336,8.76167700856924,8.76168300856923,8.76034400857382,8.69581300852919,8.76172300856929,8.6752190085666,8.55262800839451,8.76144400856903,8.76165600856918,8.6752190085666,8.76154900856913,8.6752190085666,8.76165700856919,8.6752190085666,8.76164000856918,8.67770000857236,8.76145700856906,8.76681200857275,8.6752190085666,7.31302000721921],10,null,null,{"interactive":true,"className":"","stroke":true,"color":"#03F","weight":5,"opacity":0.5,"fill":true,"fillColor":"#03F","fillOpacity":0.2},null,null,["Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam"],null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[46.292121009991,47.5720720104792],"lng":[7.31302000721921,10.2862220101746]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-336c51b49f6b8ba08692" style="width:100%;height:464px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-336c51b49f6b8ba08692">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addCircleMarkers","args":[[47.0870540100126,47.2083770100598,46.4079230094403,46.5499110094417,47.2086690100642,47.2083770100598,47.5486750104794,47.4837730104683,47.5268190104561,47.3784470101658,47.2083770100598,47.5483900104775,47.557467010484,47.4838340104684,47.3594770104001,47.4412920104433,47.3780310101662,47.2083770100598,47.5720720104792,47.4838420104683,47.3618410104678,47.2083770100598,46.292121009991,46.3153820099735,47.2083770100598,47.2083770100598,47.3595110104,47.5535870104784,47.4839000104683,47.378531010166,47.2083770100598,47.4838390104685,47.4677450104489,46.9674400097143,46.7937710094069,47.2083770100598,47.1707960102184,47.5513910104789,47.4836230104684,47.3596620104002,47.5328230104576,47.2083770100598,47.0433190101125,47.2083770100598,47.1782460101214,47.1733730101057,47.2083770100598,47.5487520104774,47.4836900104685,47.5513780104789,47.4838130104682,47.492608009926,47.4832580101328,47.2293040100764,47.2293040100764,47.4832780101328,47.2293040100764,47.4874350101325,47.2293040100764,47.2293040100764,47.4833380101328,47.2293040100764,47.4831710101327,47.2293040100764,47.4977620101469,47.4832050101327,47.4832370101328,47.4651760101276,47.4123230101304,47.4831920101327,47.2293040100764,47.401867010169,47.4831730101328,47.4833460101328,47.2293040100764,47.4831890101328,47.2293040100764,47.4833200101328,47.2293040100764,47.4833010101327,47.2183930100719,47.4831300101328,47.4874350101325,47.2293040100764,47.0793800103853],[8.7221260086554,8.70747800860422,9.70148500978508,9.8884660099098,8.69269200858984,8.70747800860422,7.58282300738035,7.54686700736095,7.64751700745304,8.53782700838742,8.70747800860422,7.58976700738759,7.57526200737012,7.5463540073604,7.65582700750758,7.59198600741926,8.53597200838575,8.70747800860422,7.61147100740337,7.54699600736107,7.38926900722876,8.70747800860422,7.53282300763962,7.65181500776294,8.70747800860422,8.70747800860422,7.65603700750779,7.59241300738888,7.54700600736106,8.53720000838678,8.70747800860422,7.54601100736005,7.60307100742352,9.55404100947369,10.2862220101746,8.70747800860422,8.09789000801228,7.58795200738489,7.54624300736034,7.6558960075076,7.64885900745275,8.70747800860422,8.3145570082665,8.70747800860422,8.45750400836943,8.50659600841919,8.70747800860422,7.59072100738848,7.5462140073603,7.58798300738492,7.54717600736126,9.43612400918815,8.76160400856916,8.6752190085666,8.6752190085666,8.76169600856923,8.6752190085666,8.76681200857275,8.6752190085666,8.6752190085666,8.76163400856916,8.6752190085666,8.76166100856925,8.6752190085666,8.7291420085336,8.76167700856924,8.76168300856923,8.76034400857382,8.69581300852919,8.76172300856929,8.6752190085666,8.55262800839451,8.76144400856903,8.76165600856918,8.6752190085666,8.76154900856913,8.6752190085666,8.76165700856919,8.6752190085666,8.76164000856918,8.67770000857236,8.76145700856906,8.76681200857275,8.6752190085666,7.31302000721921],10,null,null,{"interactive":true,"className":"","stroke":true,"color":"#03F","weight":5,"opacity":0.5,"fill":true,"fillColor":"#03F","fillOpacity":0.2},null,null,["Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Stefan","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam","Miriam"],null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[46.292121009991,47.5720720104792],"lng":[7.31302000721921,10.2862220101746]}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="cell-output-display">
 <p><img src="Semesterproject_files/figure-html/unnamed-chunk-12-9.png" class="img-fluid" width="672"></p>
