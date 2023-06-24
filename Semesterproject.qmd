@@ -127,7 +127,11 @@ Die Posmo-App ist noch in der Entwicklung und zeichnet die Transportmodi nicht i
 
 ### 2.3.1 Ansatz «Geschwindigkeit»
 
-Um den Start einer Reise zu finden, werden die Daten auf eine bestimmte Abfolge von Bewegungen (Segmente) durchsucht. Zu Beginn darf keine Bewegung stattfinden, man ist zum Beispiel zu Hause oder bei der Arbeit. Dafür muss zwischen zwei Datenpunkten eine Zeitdifferenz über dem gewählten Schwellenwert von zehn Minuten liegen. Die restlichen Datenpunkte werden anhand der Geschwindigkeit in Segmente mit langsamer oder schneller Bewegung eingeteilt. Als langsam werden Bewegungen kleiner als 45 km/h klassifiziert. Bewegungen gleich oder grösser als 45 km/h werden als schnell klassifiziert.
+Um den Start einer Reise zu finden, werden die Daten auf eine bestimmte Abfolge von Bewegungen (Segmente) durchsucht. Zu Beginn darf keine Bewegung stattfinden, man ist zum Beispiel zu Hause oder bei der Arbeit. Dafür muss zwischen zwei Datenpunkten eine Zeitdifferenz über dem gewählten Schwellenwert von zehn Minuten liegen. 
+
+Erklärung: Annahme dass nicht länger als 10 min gewartet wird
+
+Die restlichen Datenpunkte werden anhand der Geschwindigkeit in Segmente mit langsamer oder schneller Bewegung eingeteilt. Als langsam werden Bewegungen kleiner als 45 km/h klassifiziert. Bewegungen gleich oder grösser als 45 km/h werden als schnell klassifiziert.
 
 ```{r}
 #### R: G: Geschwindigkeit berechnen
@@ -148,27 +152,6 @@ posmo1 <- posmo1 |>
     steplength = round(sqrt((lead(X,1)-X)^2+(lead(Y,1)-Y)^2),1), # meter
     velocity = round((steplength/1000)/(time/60/60),1) # km/h
   )
-```
-
-```{r}
-#### R: G: Moving Window
-
-# Brauchen wir das Moving Window überhaupt??? anfänglich gedacht um Daten zu "glätten", eventuell nützlich, um ausreisser zu finden? Fazit: Wir brauchen einen klaren Schnitt zwischen slow & fast, also ist das moving window nicht nützlich
-
-# Geschwindigkeitsunterschied zu 2 Punkte vor und 2 Punkte nach Betrachtung
-# movwin <- posmo1 |> 
-# mutate(
-    # n_plus1 = sqrt((lead(velocity,1)-velocity)^2),
-    # n_plus2 = sqrt((lead(velocity,2)-velocity)^2),
-    # n_minus1 = sqrt((lag(velocity,1)-velocity)^2),
-    # n_minus2 = sqrt((lag(velocity,2)-velocity)^2),
-    # )
-
-# velocityMean der 4 Distanzen erstellen
-# movwin <- movwin |> 
-  # # rowwise() |> 
-  # mutate(velocityMean = mean(c(n_minus1, n_minus2, n_plus1, n_plus2), na.rm = TRUE)) |> 
-  # ungroup()
 ```
 
 ```{r}
@@ -433,6 +416,8 @@ velocity$wartezeit_cat[velocity$wartezeit >= 9 & velocity$wartezeit < 10] <- "9-
 
 Um zu validieren, wie gut unsere geschwindigkeitsabhängige Methode funktioniert, machen wir eine zusätzliche Analyse mit den Angaben der Transportmodi von Posmo.
 
+Erklärung: Annahme dass nicht länger als 10 min gewartet wird
+
 ### R: T: Ansatz "Transportmodus"
 
 #### R: T: Einteilung stay/slow/public
@@ -560,15 +545,72 @@ event <- event |>
 
 event <- event |> 
   mutate(wartezeit_minutes = as.numeric(difftime(ende_warten, start_warten, units = "mins")))
+
+
+
 ```
 
-## 2.4 Probleme und Grenzen
+```{r}
+# Stefan probiert es aus...
 
-Bei der Herangehensweise «Geschwindigkeit» sich durch das setzen des Schwellenwerts für die Geschwindigkeit ein Problem. Wird der Schwellenwert zu tief gesetzt, können Bewegungen auf dem Weg zu der Haltestelle bereits als schnelle Bewegung eingestuft werden, obwohl wir diese als langsame Bewegungen haben möchten. Ein Beispiel: Stefan geht oft mit dem Fahrrad zur ÖV-Haltestelle und erreicht dabei Geschwindigkeiten über 40 km/h. Deshalb wurde der Schwellenwert auf 45 km/h gesetzt. Nun kann es aber sein, dass das öffentliche Verkehrsmittel beim Start der Reise langsam fährt und diese Bewegung als langsame Bewegung eingestuft wird. Dies hat zur Folge, dass sich die Wartezeit auf 15 Sekunden, also die Zeit zwischen zwei Datenpunkten beschränkt und nicht der Wahrheit entspricht. Die Daten werden verfälscht.
+# Bahnhöfe einlesen
+haltestelle <- read_delim("haltestellen-oev_2056_de.csv/Betriebspunkt.csv", delim = ",") # WArum funktioniert das plötzlich nicht mehr??? File neu herunterladen!
 
-Bei der Herangehensweise «Klassifizierung» sind wir auf die Qualität von Posmo angewiesen. Den Transportmodus können wir manuell anpassen, die Segmente sind aber relativ fix (Erfahrungen haben gezeigt, dass die Funktion «split segment» nicht einwandfrei funktioniert). Es kam einige Male vor, dass langsame und schnelle Bewegungen am Start einer Reise als ein Segment dargestellt wurde. Der Transportmodus war dann entweder Bus, Train oder Tram. Da dadurch eine Segment der Transportmodus Walk oder Bike fehlte, wurde auch kein Start einer Reise erkannt. Dies ist ein Verlust eines Datenpunktes aber keine Verfälschung der Daten.
+haltestelle <- haltestelle |> 
+  st_as_sf(coords = c("E", "N"), crs = 2056, remove = FALSE) |> # Geometrie hinzufügen
+  subset(Betriebspunkttyp_Bezeichnung == "Haltestelle" |
+           Betriebspunkttyp_Bezeichnung == "Haltestelle und Bedienpunkt") # nur Haltestellen
 
-Aufgrund der Frequenz der Lokalisierung, können die Wartezeiten nur auf 10 Sekunden genau sein.
+# ggplot(haltestelle)+
+#   geom_sf()+
+#   geom_sf(data = event, aes(colour = person), size = 2)+
+#   scale_color_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
+#   theme_void() # Achsen und Raster verschwinden
+
+# Buffer um Bahnhof
+haltestelle_buffer <- st_buffer(haltestelle, 100) # Was ist eine gute Buffer-Grösse???
+
+
+# Intersect Buffer mit Event
+event <- st_as_sf(event, coords = c("E", "N"), crs = 2056)
+haltestelle_event <- st_intersection(haltestelle_buffer, event)
+
+# nur eine Haltestelle pro Event
+haltestelle_event <- haltestelle_event |> 
+  mutate(check = ifelse(
+      id == lag(id) &
+        id != 1, NA, TRUE)) |> 
+  drop_na(check)
+  
+# Spalten aufräumen
+haltestelle_event <- haltestelle_event |> 
+  select(id, xtf_id, Name, E, N, person, start_warten, ende_warten, wartezeit_minutes) |>
+  st_drop_geometry() |> 
+  st_as_sf(coords = c("E", "N"), crs = 2056, remove = FALSE)
+
+# Umlaute korrigieren
+# haltestelle_event$Name[haltestelle_event$Name == "W\xe4denswil, Bahnhof"] <- "Waedenswil, Bahnhof" # Funktioniert nicht?!
+# haltestelle_event$Name[haltestelle_event$Name == "W�denswil, Bahnhof"] <- "Waedenswil, Bahnhof" # Funktioniert nicht?!
+haltestelle_event$Name[haltestelle_event$E == 2693625 & 
+                       haltestelle_event$N == 1231675  ] <- "Wädenswil, Bahnhof"
+haltestelle_event$Name[haltestelle_event$E == 2794912 & 
+                       haltestelle_event$N == 1165431 ] <- "S-chanf, Chesa cumünela"
+haltestelle_event$Name[haltestelle_event$E == 2684431 & 
+                       haltestelle_event$N == 1240184 ] <- "Rüschlikon"
+haltestelle_event$Name[haltestelle_event$E == 2750509 & 
+                       haltestelle_event$N == 1262128 ] <- "Steinach, Obersteinach Käserei"
+haltestelle_event$Name[haltestelle_event$E == 2684027 & 
+                       haltestelle_event$N == 1250716 ] <- "Zürich, Tierspital"
+haltestelle_event$Name[haltestelle_event$E == 2693841 & 
+                       haltestelle_event$N == 1230467 ] <- "Wädenswil, Campus Grüental"
+
+# Visualisierung: Wo wurde gewartet
+# ggplot(haltestelle_event)+
+#   geom_sf(data = schweiz)+
+#   geom_sf()+
+#   theme_void() # Achsen und Raster verschwinden
+```
+
 
 # 3 Resultate
 
@@ -597,12 +639,12 @@ event |>
             Bereich = (max(wartezeit_minutes)-min(wartezeit_minutes)))
 ```
 
-
+Text: wer wartet länger
 
 ```{r}
 #### R: G: Visualisierung
 
-# Vergleich Miriram & Stefan
+# Vergleich Miriram & Stefan, Boxplot, beide ansätze nebeneinander...
 ggplot(velocity, aes(wartezeit, person, fill = person))+
   geom_boxplot()+ # Warum hat es keine Whiskers???
   labs( # Beschriftung aendern
@@ -613,39 +655,22 @@ ggplot(velocity, aes(wartezeit, person, fill = person))+
     fill = "Person")+ # Legende beschriften
   coord_flip() +
   theme_classic() # löscht ggplot-Layout
+```
 
+T-Test für Ansatz "Geschwindigkeit"
+```{r}
 t.test(wartezeit~person, data = velocity, var.equal = TRUE)# ungepaart, zweiseitig, long-Format
+```
 
-# violin plot (sagt nicht mehr aus als Säulen, oder?)
-ggplot(velocity, aes(wartezeit, person, fill = person))+
-  geom_violin(scale = "count")+
-  coord_flip() +
-  labs( # Beschriftung aendern
-    title = "Wartezeiten", 
-    x = "Wartezeit [min]", y = "Person", fill = "Person")+
-  scale_fill_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
-  theme_classic() # löscht ggplot-Layout
+T-Test für Ansatz "Geschwindigkeit"
 
-# Boxplot mit Haltestelle (nur sinnvoll mit viel benutzen Haltestellen...)
-# ggplot(velocity, aes(wartezeit, Name))+
-#   geom_boxplot()+
-#   coord_flip() +
-#   labs( # Beschriftung aendern
-#     title = "Wartezeiten beim Vorgehen velocity", 
-#     x = "Person", y = "Wartezeit [min]")+
-#   theme(axis.text.x = element_text(angle = 90, hjust = 1))+ # Text vertikal
-#   theme_classic() # löscht ggplot-Layout
+```{r}
+t.test(wartezeit_minutes~person, data = event, var.equal = TRUE)# ungepaart, zweiseitig, long-Format
+```
 
-# Karte mit Punkt pro Haltestelle, Punktgrösse gibt Mean Wartezeit an, evtl noch eine Nummer mit Anzahl Events neben Punkt. # Interaktive Karte -> Miriam ist dran
-# velocity_sum <- velocity |> 
-#   group_by(Name) |> # group_by(Spalte_gruppieren1, Spalte_gruppieren2)
-#   summarise(Mean = mean(wartezeit), Anzahl = length(wartezeit))
-# 
-# ggplot(velocity_sum)+
-#   geom_sf(data = schweiz)+
-#   geom_sf(aes(size = Mean, colour = Anzahl))+
-#   theme_void() # Achsen und Raster verschwinden
+Text: Wartekategorien
 
+```{r}
 # Farbige Säulen pro Person, Anteil von 0-1 min, 1-2 min,...
 ggplot(velocity, aes(person, fill = wartezeit_cat))+
   geom_bar(position = position_fill(reverse = TRUE))+
@@ -660,36 +685,59 @@ ggplot(velocity, aes(person, fill = wartezeit_cat))+
   geom_text(x=1, y=1.05, label="n = 25")+
   geom_text(x=2, y=1.05, label="n = 35")+
   theme_classic() # löscht ggplot-Layout
+```
+
+Text: Interaktive Karte
+
+```{r}
+### nicht verwendete Grafiken:
+
+# violin plot (sagt nicht mehr aus als Säulen, oder?)
+# ggplot(velocity, aes(wartezeit, person, fill = person))+
+#   geom_violin(scale = "count")+
+#   coord_flip() +
+#   labs( # Beschriftung aendern
+#     title = "Wartezeiten",
+#     x = "Wartezeit [min]", y = "Person", fill = "Person")+
+#   scale_fill_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
+#   theme_classic() # löscht ggplot-Layout
+
+# Boxplot mit Haltestelle (nur sinnvoll mit viel benutzen Haltestellen...)
+# ggplot(velocity, aes(wartezeit, Name))+
+#   geom_boxplot()+
+#   coord_flip() +
+#   labs( # Beschriftung aendern
+#     title = "Wartezeiten beim Vorgehen velocity", 
+#     x = "Person", y = "Wartezeit [min]")+
+#   theme(axis.text.x = element_text(angle = 90, hjust = 1))+ # Text vertikal
+#   theme_classic() # löscht ggplot-Layout
+
+# Karte mit Punkt pro Haltestelle, Punktgrösse gibt Mean Wartezeit an, evtl noch eine Nummer mit Anzahl Events neben Punkt. # Interaktive Karte -> Miriam ist dran
+# velocity_sum <- velocity |>
+#   group_by(Name) |> # group_by(Spalte_gruppieren1, Spalte_gruppieren2)
+#   summarise(Mean = mean(wartezeit), Anzahl = length(wartezeit))
+# 
+# ggplot(velocity_sum)+
+#   geom_sf(data = schweiz)+
+#   geom_sf(aes(size = Mean, colour = Anzahl))+
+#   theme_void() # Achsen und Raster verschwinden
 
 # Mosaic plot: Miriam vs. Stefan mit wartezeit_cat, sagt auch nicht so viel aus?
-ggplot() +
-  geom_mosaic(data = velocity, aes(x = product(wartezeit_cat), fill= person),
-              show.legend = FALSE) +
-  theme_mosaic()+
-  scale_fill_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
-  labs(
-    title = "Vergleich der Wartezeiten", # Titel setzen
-    y = "Person", x = "Wartezeit [min]")+ # Achsen beschriften
-  theme_classic() # löscht ggplot-Layout
-
+# ggplot() +
+#   geom_mosaic(data = velocity, aes(x = product(wartezeit_cat), fill= person),
+#               show.legend = FALSE) +
+#   theme_mosaic()+
+#   scale_fill_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
+#   labs(
+#     title = "Vergleich der Wartezeiten", # Titel setzen
+#     y = "Person", x = "Wartezeit [min]")+ # Achsen beschriften
+#   theme_classic() # löscht ggplot-Layout
 ```
 
 #### R: T: Visualisierung
 
 ```{r}
 #Haltestellen abbilden Karte
-
-# Daten anschauen, ausprobieren
-ggplot(event, aes(E, N, color = person))+
-  geom_point()+
-  geom_path()+
-  coord_equal()+
-  theme_void()
-
-
-
-ggplot(event, aes(E, N, color=person))+
-  geom_point()
 
 
 ###Abbildungen, Auswertungen
@@ -729,14 +777,6 @@ p <- event |>
 
 
 #################
-#ausprobiert, jedoch noch nicht vollständig
-
-#Hintergrundkarte einfügen, CH 1:500'000
-#?Wie Haltestellen in Rasterkarte???
-
-#library("terra")
-#CH<- terra::rast("swiss-map-raster500_2022_500_komb_25_2056.tif")
-#plot(CH)
 
 
 #Interaktive Karte einfügen
@@ -748,9 +788,15 @@ m <- leaflet() %>%
 m
 
 
+# Tabelle summary
+haltestelle_event <- haltestelle_event |>
+   group_by(Name, person) |> # group_by(Spalte_gruppieren1, Spalte_gruppieren2)
+   summarise(Wartezeit = mean(wartezeit_minutes), Anzahl = length(wartezeit_minutes), 
+             Minimum = min(wartezeit_minutes), Maximum = max(wartezeit_minutes))
+
 #WGS Koordinaten für leaflet Karte wieder hinzufügen
 # WGS Geometrie hinzufügen
-eventWGS <- event |> 
+eventWGS <- haltestelle_event |> 
   st_as_sf(coords = c("E", "N"), crs = 2056, remove = FALSE) |>  # Geometrie hinzufügen
   st_transform(4326) # transformieren von CH1903+ LV95 nach WGS: 2056 ->4326
 
@@ -762,7 +808,7 @@ eventWGS <- cbind(eventWGS, eventWGS_coordinates)
 #Circles in leafletMap
 leaflet(eventWGS) %>% addTiles() %>%
   addCircleMarkers(lng = ~X, lat = ~Y, 
-                   popup = ~person)
+                   popup = ~Wartezeit)
 
 ############noch machen: zb untersch. grosse Bubbles je nach durchschnittlicher Wartezeit an Station 
 
@@ -795,64 +841,20 @@ ggplot(oevtest)+
   theme_void() # Achsen und Raster verschwinden
 
 
-# Buffer um Bahnhof
-haltestelle_bufferWGS <- haltestelle_buffer |> 
-  st_transform(4326)
-
-
-# # Intersect Buffer mit Event
-# haltestelle_eventWGS <- st_intersection(haltestelle_bufferWGS, eventWGS)
-# 
-# # nur eine Haltestelle pro Event
-# haltestelle_eventWGS <- haltestelle_eventWGS |> 
-#   mutate(check = ifelse(
-#     id == lag(id) &
-#       id != 1, NA, TRUE)) |> 
-#   drop_na(check)
-# 
-# # Spalten aufräumen
-# test11 <- haltestelle_eventWGS |> 
-#   select(id, xtf_id, Name, E, N, person, start_warten, ende_warten) |>
-#   st_drop_geometry() |> 
-#   st_as_sf(coords = c("E", "N"), crs = 2056, remove = FALSE)
-# 
-# 
-# 
-# 
-# ##Alternatives Vorgehen, ausprobieren, zusätzliche Spalte mit Haltestellenname wenn Koord in bestimmten range ist
-# #idee Haltestelllendatensatz, wenn plus minus wert vo Haltestelle dann in event neue zeile mit diesem namen
-# 
-# oev <- read_delim("Betriebspunkt.csv", delim = ",")
-# 
-# 
-# #Schulhaus Seen 	2'699'699.5, 1'259'990.0
-# test <- eventWGS |> 
-#   mutate(Halltestellenname = ifelse(E >= 2699599 & E <= 2699799, "Schulhaus Seen", NA))
-# 
-# test5 <- eventWGS |> 
-#   mutate(Halltestellenname = ifelse(oev$E >= 2699599 & E <= 2699799, oev$Name, NA))
-# #join mit Bedingung??
-# 
-# 
-# 
-# 
-# ###########nicht gemacht
-# # nur eine Haltestelle pro Event
-# haltestelle_event <- haltestelle_event |> 
-#   mutate(check = ifelse(
-#     id == lag(id) &
-#       id != 1, NA, TRUE)) |> 
-#   drop_na(check)
-# 
-# # Spalten aufräumen
-# haltestelle_event <- haltestelle_event |> 
-#   select(id, xtf_id, Name, E, N, person, start_warten, ende_warten) |>
-#   st_drop_geometry() |> 
-#   st_as_sf(coords = c("E", "N"), crs = 2056, remove = FALSE)
-
 ```
 
 # 4 Diskussion
+
+Probleme und Grenzen:
+
+Bei der Herangehensweise «Geschwindigkeit» sich durch das setzen des Schwellenwerts für die Geschwindigkeit ein Problem. Wird der Schwellenwert zu tief gesetzt, können Bewegungen auf dem Weg zu der Haltestelle bereits als schnelle Bewegung eingestuft werden, obwohl wir diese als langsame Bewegungen haben möchten. Ein Beispiel: Stefan geht oft mit dem Fahrrad zur ÖV-Haltestelle und erreicht dabei Geschwindigkeiten über 40 km/h. Deshalb wurde der Schwellenwert auf 45 km/h gesetzt. Nun kann es aber sein, dass das öffentliche Verkehrsmittel beim Start der Reise langsam fährt und diese Bewegung als langsame Bewegung eingestuft wird. Dies hat zur Folge, dass sich die Wartezeit auf 15 Sekunden, also die Zeit zwischen zwei Datenpunkten beschränkt und nicht der Wahrheit entspricht. Die Daten werden verfälscht.
+
+Bei der Herangehensweise «Klassifizierung» sind wir auf die Qualität von Posmo angewiesen. Den Transportmodus können wir manuell anpassen, die Segmente sind aber relativ fix (Erfahrungen haben gezeigt, dass die Funktion «split segment» nicht einwandfrei funktioniert). Es kam einige Male vor, dass langsame und schnelle Bewegungen am Start einer Reise als ein Segment dargestellt wurde. Der Transportmodus war dann entweder Bus, Train oder Tram. Da dadurch eine Segment der Transportmodus Walk oder Bike fehlte, wurde auch kein Start einer Reise erkannt. Dies ist ein Verlust eines Datenpunktes aber keine Verfälschung der Daten.
+
+Aufgrund der Frequenz der Lokalisierung, können die Wartezeiten nur auf 10 Sekunden genau sein.
+
+
+
 
 Die Herangehensweise «Geschwindigkeit» zeigt auf, dass die Transportmodi nicht einzig aufgrund deren Geschwindigkeit eingeteilt werden können. Die Daten werden verfälscht und können nicht interpretiert werden. Die Herangehensweise «Klassifizierung» ergibt deutlich bessere Daten. Bei diesem Vorgehen waren wir aber darauf angewiesen, dass wir bereits vorgegebene Segmente hatten und diese nur noch klassifizieren oder validieren mussten. Dies ist Zeitintensiv und für grössere Datensätze nicht denkbar. So können auch nur Daten bearbeitet werden, wovon man weiss, welcher Transportmodus verwendet wurde.
 
