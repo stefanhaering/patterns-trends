@@ -861,6 +861,7 @@ Die Herangehensweise «Geschwindigkeit» zeigt auf, dass die Transportmodi nicht
 Um die Auswertung auch auf grössere und fremde Datensätze auszuweiten, wäre eine Verbesserung der Erkennung des Transportmodus von Vorteil. Busse und Trams wurden zum Beispiel immer als Autos klassifiziert. Hierfür wäre vielleicht ein Abgleich mit Datensätzen des öffentlichen Verkehrs möglich. Zudem gab es manchmal Segmente, bei welchen der Transportmodus als unbekannt gesetzt wurde. Dennoch würde eine entsprechende Fragestellung, welche sich nur auf den Zugdaten (inkl. Walk und Bike) bezieht bereits mit der jetzigen Erkennung der Transportmodi relativ gut funktionieren.
 
 # 5 Literatur
+blablablaaaaa
 
 Csikos, D., & Currie, G. (2008). Investigating Consistency in Transit Passenger Arrivals: Insights from Longitudinal Automated Fare Collection Data. Transportation Research Record, 2042(1), 12--19. https://doi.org/10.3141/2042-02
 
