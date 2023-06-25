@@ -963,6 +963,8 @@ BAV Bundesamt für Verkehr (2015). Haltestellen des öffentlichen Verkehrs, aktu
 
 Csikos, D., & Currie, G. (2008). Investigating Consistency in Transit Passenger Arrivals: Insights from Longitudinal Automated Fare Collection Data. Transportation Research Record, 2042(1), 12--19. https://doi.org/10.3141/2042-02
 
+Datamap AG (2023), Posmo Project, Version 22.01.16, 2023 
+
 De Montjoye, Y. A., Hidalgo, C. A., Verleysen, M., & Blondel, V. D. (2013). Unique in the crowd: The privacy bounds of human mobility. Scientific reports, 3(1), 1-5.
 
 Gschwend, C. (2015). Relating movement to geographic context: effects of preprocessing, relation methods and scale (Doctoral dissertation, University of Zurich).
@@ -970,9 +972,8 @@ Gschwend, C. (2015). Relating movement to geographic context: effects of preproc
 Guvensan, M., Dusun, B., Can, B., & Turkmen, H. (2018). A Novel Segment-Based Approach for Improving Classification Performance of Transport Mode Detection. Sensors, 18(1), 87. MDPI AG. http://dx.doi.org/10.3390/s18010087
 
 Kaindl, F. (2022). Reisen mit der Bahn: In welchen Ländern die Züge besonders pünktlich sind. Merkur.de https://www.merkur.de/reise/zuege-puenktlich-fernverkehr-bahn-europa-schweiz-daenemark-niederlande-zr-91977341.html#:\~:text=In%20der%20Schweiz%20fahren%20Z%C3%BCge%20am%20p%C3%BCnktlichsten%20Am,viele%20Gedanken%20%C3%BCber%20Versp%C3%A4tungen%20innerhalb%20des%20Landes%20machen.
-Laube, P. (2017). Representation: Trajectories. In International Encyclopedia of Geography: People, the Earth, Environment and Technology (eds D. Richardson, N. Castree, M.F. Goodchild, A. Kobayashi, W. Liu and R.A. Marston). https://doi.org/10.1002/9781118786352.wbieg0593
 
-Posmo Project (Datamap AG, Version 22.01.16, 2023) 
+Laube, P. (2017). Representation: Trajectories. In International Encyclopedia of Geography: People, the Earth, Environment and Technology (eds D. Richardson, N. Castree, M.F. Goodchild, A. Kobayashi, W. Liu and R.A. Marston). https://doi.org/10.1002/9781118786352.wbieg0593
 
 Van Hagen, M. (2011). Waiting experience at train stations. Eburon Uitgeverij BV.
 
