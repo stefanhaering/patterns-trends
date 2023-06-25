@@ -17,9 +17,7 @@ execute:
 
 # 1 Hintergrund und Forschungsziele
 
-(Zeit ist Geld (Effizienzsteigerung) versus Bewusst und Entspannt durchs Leben gehen -\>Literatur, Öv CH superpünktlich, geringe Wartezeiten bzw Wartezeit selbstverschuldet)
-
-Passagiere empfinden in der Regel das Warten an Haltestellen des Öffentlichen Verkehrs (ÖV) als äusserst lästig (Van Hagen 2011). Die Schweizer ÖV sind international bekannt für ihre Pünktlichkeit (Kaindl 2022), wodurch die Länge der Wartezeit zu Beginn einer Reise meist selbstverschuldet ist. Nach Csiskos & Currie (2008) gibt es zwei verschiedene Arten von Fahrgastverhalten: Eine Gruppe kommt zufällig an, während eine andere Gruppe aktiv versucht, ihre Wartezeit zu minimieren, indem sie rechtzeitig zur geplanten Abfahrtszeit bei der Haltestelle ankommt. Evtl. Blabla zu AnalyseWerkzeugen, how fast is a cow und so.. oder erst in Diskussion
+Passagiere empfinden in der Regel das Warten an Haltestellen des Öffentlichen Verkehrs (ÖV) als äusserst lästig (Van Hagen 2011). Die Schweizer ÖV sind international bekannt für ihre Pünktlichkeit (Kaindl 2022), wodurch die Länge der Wartezeit zu Beginn einer Reise meist selbstverschuldet ist. Nach Csiskos & Currie (2008) gibt es zwei verschiedene Arten von Fahrgastverhalten: Eine Gruppe kommt zufällig an, während eine andere Gruppe aktiv versucht, ihre Wartezeit zu minimieren, indem sie rechtzeitig zur geplanten Abfahrtszeit bei der Haltestelle ankommt.
 
 In unserer Projektarbeit möchten wir unsere tägliche Wartezeit an Haltestellen von öffentlichen Verkehrsmitteln (ÖV) untersuchen. Dabei wird ausschliesslich der Beginn einer Reise betrachtet. Folgende Fragen sollen anhand zweier leicht unterschiedlicher Methoden beantwortet werden:
 
@@ -129,9 +127,7 @@ Die Posmo-App ist noch in der Entwicklung und zeichnet die Transportmodi nicht i
 
 ### 2.3.1 Ansatz «Geschwindigkeit»
 
-Um den Start einer Reise zu finden, werden die Daten auf eine bestimmte Abfolge von Bewegungen (Segmente, siehe auch Laube 2017) durchsucht. Zu Beginn darf keine Bewegung stattfinden, man ist zum Beispiel zu Hause oder bei der Arbeit. Dafür muss zwischen zwei Datenpunkten eine Zeitdifferenz über dem gewählten Schwellenwert von zehn Minuten liegen. 
-
-Erklärung: Annahme dass nicht länger als 10 min gewartet wird
+Um den Start einer Reise zu finden, werden die Daten auf eine bestimmte Abfolge von Bewegungen (Segmente, siehe auch Laube 2017) durchsucht. Zu Beginn darf keine Bewegung stattfinden, man ist zum Beispiel zu Hause oder bei der Arbeit. Dafür muss zwischen zwei Datenpunkten eine Zeitdifferenz über dem gewählten Schwellenwert von zehn Minuten liegen. Wir gehen davon aus, dass wir maximal zehn Minuten an einer Haltestelle auf das Transportmittel warten.
 
 Die restlichen Datenpunkte werden anhand der Geschwindigkeit in Segmente mit langsamer oder schneller Bewegung eingeteilt. Als "langsam" werden Bewegungen kleiner als 45 km/h klassifiziert. Bewegungen gleich oder grösser als 45 km/h werden als "schnell" klassifiziert.
 
