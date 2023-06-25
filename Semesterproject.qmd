@@ -45,6 +45,7 @@ library("sf")
 library(treemapify)
 library(ggmosaic)
 library(cowplot)
+library(leaflet)
 ```
 
 ```{r}
@@ -419,11 +420,11 @@ Um zu validieren, wie gut unsere geschwindigkeitsabhängige Methode funktioniert
 
 Erklärung: Annahme dass nicht länger als 10 min gewartet wird
 
+```{r}
 ### R: T: Ansatz "Transportmodus"
 
 #### R: T: Einteilung stay/slow/public
 
-```{r}
 # Zeitdauer herausfinden
 posmo2 <- posmo |> # Zeit
   mutate(
@@ -464,9 +465,9 @@ Dabei werden die Daten auf eine bestimmte Abfolge anhand des angegebene Transpor
 
 Die Wartezeit kann anschliessend für alle gefundenen Events berechnet werden (difftime (min(Segment schnell), max(Segment langsam))).
 
+```{r}
 #### R: T: Evente finden
 
-```{r}
 #Abfolge, Stay, Walk/Bike, Bus/Train/Tram
 # Start und Enpunkte von Segment mit TRUE markieren
 
@@ -535,8 +536,8 @@ public$id <- as.character(1:nrow(slow)) # id
 event <- left_join(slow,public,"id", suffix = c("_slow", "_public"))
 
 
-#unnötige Spalten entfernen, verbleibende umbenennen
-names(event)
+# unnötige Spalten entfernen, verbleibende umbenennen
+# names(event)
 event <- event |> 
   select(-transport_mode_slow, -Moving_slow, -moving_class_slow,
          -transport_mode_public, -X_public, -Y_public, -time_public, -Moving_public, -moving_class_public, -person_public) |> # unnötige Spalten entfernen
@@ -845,58 +846,54 @@ Text: Interaktive Karte
 #   theme_classic() # löscht ggplot-Layout
 ```
 
-#### R: T: Visualisierung
+
 
 ```{r}
-#Haltestellen abbilden Karte
+# #### R: T: Visualisierung
+# #Haltestellen abbilden Karte
+# 
+# 
+# ###Abbildungen, Auswertungen
+# 
+# mean(event$wartezeit_minutes) # Mittelwert über beide Perosnen
+# 
+# aggregate(event$wartezeit_minutes, list(event$person), FUN=mean) #Mittelwert pro Person
+# aggregate(event$wartezeit_minutes, list(event$person), FUN=max) #Maximalwert pro Person
+# aggregate(event$wartezeit_minutes, list(event$person), FUN=min) #Minimalwert pro Person
+# 
+# summary(event$wartezeit_minutes)
+# 
+# hist(event$wartezeit_minutes) #Histogram insgesamt
+# 
+# 
+# boxplot(event$wartezeit_minutes) #Boxplot insgesamt
+# 
+# ggplot(event, aes(y = wartezeit_minutes, x = person)) + geom_boxplot(fill=c("lightblue", "lightgreen")) # 2 Boxplots nach Personen
+# 
+# 
+# 
+# ggplot(event, aes(y = wartezeit_minutes, x = person)) + geom_count() # Häufigkeit der Wartezeit-Werte nach Personen
+# 
+# p <- event |>
+#   select(wartezeit_minutes, person) |>
+#   ggplot(mapping = aes(x = wartezeit_minutes, fill = person)) +
+#   geom_histogram(
+#     binwidth =5,
+#     position = "dodge"
+#   )
+# 
+
+```
 
 
-###Abbildungen, Auswertungen
-
-mean(event$wartezeit_minutes) # Mittelwert über beide Perosnen
-
-aggregate(event$wartezeit_minutes, list(event$person), FUN=mean) #Mittelwert pro Person
-aggregate(event$wartezeit_minutes, list(event$person), FUN=max) #Maximalwert pro Person
-aggregate(event$wartezeit_minutes, list(event$person), FUN=min) #Minimalwert pro Person
-
-summary(event$wartezeit_minutes)
-
-hist(event$wartezeit_minutes) #Histogram insgesamt
-
-
-boxplot(event$wartezeit_minutes) #Boxplot insgesamt
-
-ggplot(event, aes(y = wartezeit_minutes, x = person)) + geom_boxplot(fill=c("lightblue", "lightgreen")) # 2 Boxplots nach Personen
-
-
-
-ggplot(event, aes(y = wartezeit_minutes, x = person)) + geom_count() # Häufigkeit der Wartezeit-Werte nach Personen
-
-p <- event |>
-  select(wartezeit_minutes, person) |>
-  ggplot(mapping = aes(x = wartezeit_minutes, fill = person)) +
-  geom_histogram(
-    binwidth =5,
-    position = "dodge"
-  )
-
-
-
-
-
-
-
-
-#################
-
-
+```{r abbildung6, fig.cap="*Abbildung 6: Interaktive Karte mit den ÖV-Haltestellen, wo eine Reise begonnen wurde.*"}
 #Interaktive Karte einfügen
-library(leaflet)
+
 #m <- leaflet() %>% 
-  addTiles() %>% 
-  setView( lng = 2.34, lat = 48.85, zoom = 5 ) %>% 
-  addProviderTiles("NASAGIBS.ViirsEarthAtNight2012")
-m
+#   addTiles() %>% 
+#   setView( lng = 2.34, lat = 48.85, zoom = 5 ) %>% 
+#   addProviderTiles("NASAGIBS.ViirsEarthAtNight2012")
+# m
 
 
 # Tabelle summary
@@ -944,28 +941,24 @@ l <- leaflet(eventWGS) %>% addTiles() %>%
   addLegend( pal=mypalette, values=~wartezeit, opacity=0.8, title = "Wartezeit ∅", position = "bottomright" )
 l
 
-
 ```
 
 # 4 Diskussion
 
 Probleme und Grenzen:
 
-Bei der Herangehensweise «Geschwindigkeit» ergibt sich durch das Setzen des Schwellenwerts für die Geschwindigkeit ein Problem. Wird der Schwellenwert zu tief gesetzt, können Bewegungen auf dem Weg zu der Haltestelle bereits als schnelle Bewegung eingestuft werden, obwohl wir diese als langsame Bewegungen haben möchten. Ein Beispiel: Stefan geht oft mit dem Fahrrad zur ÖV-Haltestelle und erreicht dabei Geschwindigkeiten über 40 km/h. Deshalb wurde der Schwellenwert auf 45 km/h gesetzt. Nun kann es aber sein, dass das öffentliche Verkehrsmittel beim Start der Reise langsam fährt und diese Bewegung als langsame Bewegung eingestuft wird. Dies hat zur Folge, dass sich die Wartezeit auf 15 Sekunden, also die Zeit zwischen zwei Datenpunkten beschränkt und nicht der Wahrheit entspricht. Die Daten werden verfälscht. Gschwend (2015) erwähnt solche Probleme bei der Erkennung von Stopps und Bewegungen ebenfalls und stellt in seiner Arbeit eine Bewegungs-Kontext-Relationsmatrix auf der Grundlage von Modellen vor.
+Bei der Herangehensweise «Geschwindigkeit» ergibt sich durch das Setzen des Schwellenwertes für die Geschwindigkeit ein Problem. Wird der Schwellenwert zu tief gesetzt, können Bewegungen auf dem Weg zu der Haltestelle bereits als schnelle Bewegung eingestuft werden, obwohl wir diese als langsame Bewegungen haben möchten. Ein Beispiel: Stefan geht oft mit dem Fahrrad zur ÖV-Haltestelle und erreicht dabei Geschwindigkeiten über 40 km/h. Deshalb wurde der Schwellenwert auf 45 km/h gesetzt. Nun kann es aber sein, dass das öffentliche Verkehrsmittel beim Start der Reise langsam fährt und diese Bewegung als langsame Bewegung eingestuft wird. Dies hat zur Folge, dass sich die Wartezeit auf 15 Sekunden, also die Zeit zwischen zwei Datenpunkten beschränkt und nicht der Wahrheit entspricht. Die Daten werden verfälscht. Gschwend (2015) erwähnt solche Probleme bei der Erkennung von Stopps und Bewegungen ebenfalls und stellt in seiner Arbeit eine Bewegungs-Kontext-Relationsmatrix auf der Grundlage von Modellen vor.
 
 Bei der Herangehensweise «Klassifizierung» sind wir auf die Qualität von Posmo angewiesen. Den Transportmodus können wir manuell anpassen, die Segmente sind aber relativ fix (Erfahrungen haben gezeigt, dass die Funktion «split segment» nicht einwandfrei funktioniert). Es kam einige Male vor, dass langsame und schnelle Bewegungen am Start einer Reise als ein Segment dargestellt wurde. Der Transportmodus war dann entweder Bus, Train oder Tram. Da dadurch eine Segment der Transportmodus Walk oder Bike fehlte, wurde auch kein Start einer Reise erkannt. Dies ist ein Verlust eines Datenpunktes aber keine Verfälschung der Daten.
 
 Aufgrund der Frequenz der Lokalisierung, können die Wartezeiten nur auf 10 Sekunden genau sein.
-
-
-
 
 Die Herangehensweise «Geschwindigkeit» zeigt auf, dass die Transportmodi nicht einzig aufgrund deren Geschwindigkeit eingeteilt werden können. Die Daten werden verfälscht und können nicht interpretiert werden. Die Herangehensweise «Klassifizierung» ergibt deutlich bessere Daten. Bei diesem Vorgehen waren wir aber darauf angewiesen, dass wir bereits vorgegebene Segmente hatten und diese nur noch klassifizieren oder validieren mussten. Dies ist Zeitintensiv und für grössere Datensätze nicht denkbar. So können auch nur Daten bearbeitet werden, wovon man weiss, welcher Transportmodus verwendet wurde.
 
 Um die Auswertung auch auf grössere und fremde Datensätze auszuweiten, wäre eine Verbesserung der Erkennung des Transportmodus von Vorteil. Busse und Trams wurden zum Beispiel immer als Autos klassifiziert. Hierfür wäre vielleicht ein Abgleich mit Datensätzen des öffentlichen Verkehrs möglich. Zudem gab es manchmal Segmente, bei welchen der Transportmodus als unbekannt gesetzt wurde. Dennoch würde eine entsprechende Fragestellung, welche sich nur auf den Zugdaten (inkl. Walk und Bike) bezieht bereits mit der jetzigen Erkennung der Transportmodi relativ gut funktionieren.
 Guvensan et al. (2018) verbesserten die Transportmodus- sowie Aufenthaltserkennung markant durch die Entwicklung eines zusätzlichen Algorithmus. Die Erkennung des Transportmodus von Posmo könnte allenfalls durch einen zusätzlichen Algorithmus verbessert werden.
 
-Abschliesend sollte erwähnt werden, wie sensibel Mobilitätsdaten sind. Selbst in einem anonymen groben Mobilitätsdatensatz sind nur wenige externe Informationen erforderlich, um die Spur einer Zielperson zu reidentifizieren (De Montjoye et al. 2013). Daher sollte unserer Meinung nach die Verwendung von Apps, wleche Mobilitätsdaten aufnehmen, gut überlegt sein.
+Abschliesend sollte erwähnt werden, wie sensibel Mobilitätsdaten sind. Selbst in einem anonymen groben Mobilitätsdatensatz sind nur wenige externe Informationen erforderlich, um die Spur einer Zielperson zu reidentifizieren (De Montjoye et al. 2013). Daher sollte unserer Meinung nach die Verwendung von Apps, welche Mobilitätsdaten aufnehmen, gut überlegt sein.
 
 
 

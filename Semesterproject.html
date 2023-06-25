@@ -106,8 +106,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <script src="Semesterproject_files/libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
 <link href="Semesterproject_files/libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet">
 <script src="Semesterproject_files/libs/leaflet-binding-2.1.1/leaflet.js"></script>
-<script src="Semesterproject_files/libs/leaflet-providers-1.9.0/leaflet-providers_1.9.0.js"></script>
-<script src="Semesterproject_files/libs/leaflet-providers-plugin-2.1.1/leaflet-providers-plugin.js"></script>
 
 
 </head>
@@ -129,7 +127,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul class="collapse">
   <li><a href="#ansatz-geschwindigkeit" id="toc-ansatz-geschwindigkeit" class="nav-link" data-scroll-target="#ansatz-geschwindigkeit">2.3.1 Ansatz «Geschwindigkeit»</a></li>
   <li><a href="#ansatz-transportmodus" id="toc-ansatz-transportmodus" class="nav-link" data-scroll-target="#ansatz-transportmodus">2.3.2 Ansatz «Transportmodus»</a></li>
-  <li><a href="#r-t-ansatz-transportmodus" id="toc-r-t-ansatz-transportmodus" class="nav-link" data-scroll-target="#r-t-ansatz-transportmodus">R: T: Ansatz “Transportmodus”</a></li>
   </ul></li>
   </ul></li>
   <li><a href="#resultate" id="toc-resultate" class="nav-link" data-scroll-target="#resultate">3 Resultate</a></li>
@@ -174,7 +171,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="hintergrund-und-forschungsziele" class="level1">
 <h1>1 Hintergrund und Forschungsziele</h1>
 <p>(Zeit ist Geld (Effizienzsteigerung) versus Bewusst und Entspannt durchs Leben gehen -&gt;Literatur, Öv CH superpünktlich, geringe Wartezeiten bzw Wartezeit selbstverschuldet)</p>
-<p>Passagiere empfinden in der Regel das Warten an Haltestellen des Öffentlichen Verkehrs (ÖV) als äusserst lästig (van Hagen 2011). Die Schweizer ÖV sind international bekannt für ihre Pünktlichkeit (Kaindl 2022), wodurch die Länge der Wartezeit zu Beginn einer Reise meist selbstverschuldet ist. Nach Csiskos &amp; Currie (2008) gibt es zwei verschiedene Arten von Fahrgastverhalten: Eine Gruppe kommt zufällig an, während eine andere Gruppe aktiv versucht, ihre Wartezeit zu minimieren, indem sie rechtzeitig zur geplanten Abfahrtszeit bei der Haltestelle ankommt. Evtl. Blabla zu AnalyseWerkzeugen, how fast is a cow und so.. oder erst in Diskussion</p>
+<p>Passagiere empfinden in der Regel das Warten an Haltestellen des Öffentlichen Verkehrs (ÖV) als äusserst lästig (Van Hagen 2011). Die Schweizer ÖV sind international bekannt für ihre Pünktlichkeit (Kaindl 2022), wodurch die Länge der Wartezeit zu Beginn einer Reise meist selbstverschuldet ist. Nach Csiskos &amp; Currie (2008) gibt es zwei verschiedene Arten von Fahrgastverhalten: Eine Gruppe kommt zufällig an, während eine andere Gruppe aktiv versucht, ihre Wartezeit zu minimieren, indem sie rechtzeitig zur geplanten Abfahrtszeit bei der Haltestelle ankommt. Evtl. Blabla zu AnalyseWerkzeugen, how fast is a cow und so.. oder erst in Diskussion</p>
 <p>In unserer Projektarbeit möchten wir unsere tägliche Wartezeit an Haltestellen von öffentlichen Verkehrsmitteln (ÖV) untersuchen. Dabei wird ausschliesslich der Beginn einer Reise betrachtet. Folgende Fragen sollen anhand zweier leicht unterschiedlicher Methoden beantwortet werden:</p>
 <ul>
 <li>Wie oft reisen wir mit den ÖV?</li>
@@ -266,7 +263,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 </div>
-<p>Zusätzlich wird der Datensatz „Haltestellen des öffentlichen Verkehrs” vom Bundesamt für Verkehr (BAV) verwendet (QUELLE https://data.geo.admin.ch/ch.bav.haltestellen-oev/haltestellen-oev/haltestellen-oev_2056_de.csv.zip), welcher alle ÖV-Haltestellen beinhaltet.</p>
+<p>Zusätzlich wird der Datensatz „Haltestellen des öffentlichen Verkehrs” vom Bundesamt für Verkehr (BAV 2015) verwendet, welcher alle ÖV-Haltestellen beinhaltet.</p>
 </section>
 <section id="datenvorverarbeitung" class="level2">
 <h2 class="anchored" data-anchor-id="datenvorverarbeitung">2.2 Datenvorverarbeitung</h2>
@@ -276,9 +273,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2 class="anchored" data-anchor-id="methode-1">2.3 Methode</h2>
 <section id="ansatz-geschwindigkeit" class="level3">
 <h3 class="anchored" data-anchor-id="ansatz-geschwindigkeit">2.3.1 Ansatz «Geschwindigkeit»</h3>
-<p>Um den Start einer Reise zu finden, werden die Daten auf eine bestimmte Abfolge von Bewegungen (Segmente) durchsucht. Zu Beginn darf keine Bewegung stattfinden, man ist zum Beispiel zu Hause oder bei der Arbeit. Dafür muss zwischen zwei Datenpunkten eine Zeitdifferenz über dem gewählten Schwellenwert von zehn Minuten liegen.</p>
+<p>Um den Start einer Reise zu finden, werden die Daten auf eine bestimmte Abfolge von Bewegungen (Segmente, siehe auch Laube 2017) durchsucht. Zu Beginn darf keine Bewegung stattfinden, man ist zum Beispiel zu Hause oder bei der Arbeit. Dafür muss zwischen zwei Datenpunkten eine Zeitdifferenz über dem gewählten Schwellenwert von zehn Minuten liegen.</p>
 <p>Erklärung: Annahme dass nicht länger als 10 min gewartet wird</p>
-<p>Die restlichen Datenpunkte werden anhand der Geschwindigkeit in Segmente mit langsamer oder schneller Bewegung eingeteilt. Als langsam werden Bewegungen kleiner als 45 km/h klassifiziert. Bewegungen gleich oder grösser als 45 km/h werden als schnell klassifiziert.</p>
+<p>Die restlichen Datenpunkte werden anhand der Geschwindigkeit in Segmente mit langsamer oder schneller Bewegung eingeteilt. Als “langsam” werden Bewegungen kleiner als 45 km/h klassifiziert. Bewegungen gleich oder grösser als 45 km/h werden als “schnell” klassifiziert.</p>
 <div class="cell">
 
 </div>
@@ -328,11 +325,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h3 class="anchored" data-anchor-id="ansatz-transportmodus">2.3.2 Ansatz «Transportmodus»</h3>
 <p>Um zu validieren, wie gut unsere geschwindigkeitsabhängige Methode funktioniert, machen wir eine zusätzliche Analyse mit den Angaben der Transportmodi von Posmo.</p>
 <p>Erklärung: Annahme dass nicht länger als 10 min gewartet wird</p>
-</section>
-<section id="r-t-ansatz-transportmodus" class="level3">
-<h3 class="anchored" data-anchor-id="r-t-ansatz-transportmodus">R: T: Ansatz “Transportmodus”</h3>
-<section id="r-t-einteilung-stayslowpublic" class="level4">
-<h4 class="anchored" data-anchor-id="r-t-einteilung-stayslowpublic">R: T: Einteilung stay/slow/public</h4>
 <div class="cell">
 
 </div>
@@ -343,9 +335,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>Transportmodus Bus/Train/Tram</li>
 </ul>
 <p>Die Wartezeit kann anschliessend für alle gefundenen Events berechnet werden (difftime (min(Segment schnell), max(Segment langsam))).</p>
-</section>
-<section id="r-t-evente-finden" class="level4">
-<h4 class="anchored" data-anchor-id="r-t-evente-finden">R: T: Evente finden</h4>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] "datetime_slow"         "transport_mode_slow"   "person_slow"          
@@ -362,11 +351,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 </section>
 </section>
-</section>
 <section id="resultate" class="level1">
 <h1>3 Resultate</h1>
-<p>Die beiden Verfahren haben eine unterschiedliche Anzahl Events ergeben. Gemäss dem Ansat”Geschwindigkeit” haben wir zusammen 60 (Ansatz “Geschwindigkeit”), bzw. 85 (Ansatz “Transportmodus”) Reisen mit dem ÖV gemacht. Miriam macht 0.51 (Ansatz “Geschwindigkeit”), bzw 0.67 (Ansatz “Transportmodus”) ÖV-Reisen pro Tag. Stefan macht 0.71 (Ansatz “Geschwindigkeit”), bzw 1.06 (Ansatz “Transportmodus”) ÖV-Reisen pro Tag.</p>
-<p>Beim Ansatz “Geschwindigkeit” ergeben sich folgende Resultate: Miriam wartet im Mittel rund 3.1 Minuten, während Stefan im Mittel rund 1.9 Minuten wartet. Die Wartezeiten sind von Reise zu Reise unterschiedlich lange. Bei Miriam beträgt die Standardabweichung 2.9 und bei Stefan 2.2.</p>
+<p>Die beiden Verfahren haben eine unterschiedliche Anzahl Events ergeben. So haben wir zusammen 60 (Ansatz “Geschwindigkeit”), bzw. 85 (Ansatz “Transportmodus”) Reisen mit dem ÖV gemacht. Miriam macht 0.51 (Ansatz “Geschwindigkeit”), bzw 0.67 (Ansatz “Transportmodus”) ÖV-Reisen pro Tag. Stefan macht 0.71 (Ansatz “Geschwindigkeit”), bzw 1.06 (Ansatz “Transportmodus”) ÖV-Reisen pro Tag.</p>
+<p>Beim Ansatz “Geschwindigkeit” ergeben sich folgende Resultate: Miriam wartet im Mittel rund 3.1 Minuten (Standardabweichung SD = 2.9), während Stefan im Mittel rund 1.9 Minuten (SD = 2.2) wartet. Die Wartezeiten sind von Reise zu Reise unterschiedlich lange.</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 6
@@ -376,7 +364,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 2 Stefan       1.92    0.23    7.52               2.20    7.29</code></pre>
 </div>
 </div>
-<p>Beim Ansatz “Geschwindigkeit” ergeben sich folgende Resultate: Miriam wartet im Mittel rund 3.3 Minuten, während Stefan im Mittel rund 2.6 Minuten wartet. Die Wartezeiten sind von Reise zu Reise unterschiedlich lange. Bei Miriam beträgt die Standardabweichung 2.8 und bei Stefan 2.7.</p>
+<p>Beim Ansatz “Geschwindigkeit” ergeben sich folgende Resultate: Miriam wartet im Mittel rund 3.3 Minuten (SD = 2.8), während Stefan im Mittel rund 2.6 Minuten (SD = 2.7) wartet. Die Wartezeiten sind von Reise zu Reise unterschiedlich lange.</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 6
@@ -444,71 +432,37 @@ mean in group Miriam mean in group Stefan
 <div class="cell">
 
 </div>
-<section id="r-t-visualisierung" class="level4">
-<h4 class="anchored" data-anchor-id="r-t-visualisierung">R: T: Visualisierung</h4>
 <div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 2.881176</code></pre>
+
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  Group.1        x
-1  Miriam 3.316162
-2  Stefan 2.605128</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  Group.1    x
-1  Miriam 8.35
-2  Stefan 9.65</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  Group.1          x
-1  Miriam 0.01666667
-2  Stefan 0.03333333</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.01667 0.16667 3.00000 2.88118 5.01667 9.65000 </code></pre>
-</div>
+<div class="cell">
 <div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
-</div>
-<div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-16-2.png" class="img-fluid" width="672"></p>
-</div>
-<div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-16-3.png" class="img-fluid" width="672"></p>
-</div>
-<div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-16-4.png" class="img-fluid" width="672"></p>
-</div>
-<div class="cell-output-display">
-<div id="htmlwidget-e2c8d61ffd6331cce2a2" style="width:100%;height:464px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-e2c8d61ffd6331cce2a2">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addProviderTiles","args":["NASAGIBS.ViirsEarthAtNight2012",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]}],"setView":[[48.85,2.34],5,[]]},"evals":[],"jsHooks":[]}</script>
-</div>
-<div class="cell-output-display">
-<div id="htmlwidget-69b2a721ca27d185645c" style="width:100%;height:464px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-69b2a721ca27d185645c">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addCircleMarkers","args":[[47.4676648657504,47.0870597130452,47.5482850612971,47.55360680266,47.557324431213,47.5512738946296,47.5719273996167,47.5487258080319,46.549906678133,47.4125199288633,47.2086736215163,47.1780251304321,47.3615305587436,47.4837763417767,47.4415069989061,46.9677831397083,46.3153427552789,47.0433692153498,46.4079067507929,47.5331763752413,47.5264228874621,47.3594584870859,47.2079159146471,46.7937667727591,47.4651740513011,46.2921244658579,47.4926708678042,47.170308392589,47.2293671039463,47.2184722911102,47.4874351316997,47.4831158790176,47.497789745997,47.173725645846,47.4019028730843],[7.60280199948821,8.72182867820624,7.59029732047899,7.59225207907121,7.5752165991616,7.58804741292874,7.61124282591672,7.58317833046671,9.88847618960241,8.69541442969802,8.69272145988099,8.45667463775051,7.39004407879905,7.54601224733279,7.59194358293086,9.55490918926917,7.65219112398642,8.31377091231112,9.7012954608818,7.64775750108608,7.64726627979521,7.65597383047554,8.70768678450188,10.2862138998858,8.760343086017,7.53282985613412,9.43609054014792,8.09862335869881,8.67495604039053,8.67755602160545,8.7668150495186,8.76145246066326,8.72933827503576,8.50723688100418,8.55179791126464],10,null,null,{"interactive":true,"className":"","stroke":true,"color":"#03F","weight":5,"opacity":0.5,"fill":true,"fillColor":"#03F","fillOpacity":0.2},null,null,[3.01666666666667,7.51666666666667,4.85,0.166666666666667,0.116666666666667,0.0833333333333333,0.166666666666667,0.2,3.31666666666667,5.33333333333333,5.01666666666667,1.76666666666667,0.1,0.214583333333333,6.43333333333333,9.65,0.0333333333333333,3.78333333333333,7.56666666666667,0.233333333333333,0.15,1.66111111111111,3.62638888888889,6.26666666666667,5.33333333333333,6.06666666666667,5,3.56666666666667,5.64722222222222,4.75,4.38333333333333,0.78974358974359,4.05,4.83333333333333,0.166666666666667],null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[46.2921244658579,47.5719273996167],"lng":[7.39004407879905,10.2862138998858]}},"evals":[],"jsHooks":[]}</script>
-</div>
-<div class="cell-output-display">
-<p><img src="Semesterproject_files/figure-html/unnamed-chunk-16-7.png" class="img-fluid" width="672"></p>
+<div id="htmlwidget-13961b1b5c31e92e65f2" style="width:100%;height:464px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-13961b1b5c31e92e65f2">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addCircleMarkers","args":[[47.4676648657504,47.0870597130452,47.5482850612971,47.55360680266,47.557324431213,47.5512738946296,47.5719273996167,47.5487258080319,46.549906678133,47.4125199288633,47.2086736215163,47.1780251304321,47.3615305587436,47.4837763417767,47.4415069989061,46.9677831397083,46.3153427552789,47.0433692153498,46.4079067507929,47.5331763752413,47.5264228874621,47.3594584870859,47.2079159146471,46.7937667727591,47.4651740513011,46.2921244658579,47.4926708678042,47.170308392589,47.2293671039463,47.2184722911102,47.4874351316997,47.4831158790176,47.497789745997,47.173725645846,47.4019028730843],[7.60280199948821,8.72182867820624,7.59029732047899,7.59225207907121,7.5752165991616,7.58804741292874,7.61124282591672,7.58317833046671,9.88847618960241,8.69541442969802,8.69272145988099,8.45667463775051,7.39004407879905,7.54601224733279,7.59194358293086,9.55490918926917,7.65219112398642,8.31377091231112,9.7012954608818,7.64775750108608,7.64726627979521,7.65597383047554,8.70768678450188,10.2862138998858,8.760343086017,7.53282985613412,9.43609054014792,8.09862335869881,8.67495604039053,8.67755602160545,8.7668150495186,8.76145246066326,8.72933827503576,8.50723688100418,8.55179791126464],10,null,null,{"interactive":true,"className":"","stroke":true,"color":"black","weight":5,"opacity":0.5,"fill":true,"fillColor":["#DEEBF7","#3182BD","#DEEBF7","#DEEBF7","#DEEBF7","#DEEBF7","#DEEBF7","#DEEBF7","#DEEBF7","#3182BD","#3182BD","#DEEBF7","#DEEBF7","#DEEBF7","#3182BD","#3182BD","#DEEBF7","#DEEBF7","#3182BD","#DEEBF7","#DEEBF7","#DEEBF7","#DEEBF7","#3182BD","#3182BD","#3182BD","#3182BD","#DEEBF7","#3182BD","#DEEBF7","#DEEBF7","#DEEBF7","#DEEBF7","#DEEBF7","#DEEBF7"],"fillOpacity":0.8},null,null,null,null,["Haltestelle: Aesch BL, Bahnhof<br/>Person: Stefan<br/>Wartezeit ∅: 3.02, Min.: 3.02,  Max.: 3.02<br/>Anzahl Aufenthalte: 1","Haltestelle: Alpthal, Eigen<br/>Person: Stefan<br/>Wartezeit ∅: 7.52, Min.: 7.52,  Max.: 7.52<br/>Anzahl Aufenthalte: 1","Haltestelle: Basel, Bahnhof SBB<br/>Person: Stefan<br/>Wartezeit ∅: 4.85, Min.: 0.18,  Max.: 9.52<br/>Anzahl Aufenthalte: 2","Haltestelle: Basel, Bankverein<br/>Person: Stefan<br/>Wartezeit ∅: 0.17, Min.: 0.17,  Max.: 0.17<br/>Anzahl Aufenthalte: 1","Haltestelle: Basel, Birmannsgasse<br/>Person: Stefan<br/>Wartezeit ∅: 0.12, Min.: 0.12,  Max.: 0.12<br/>Anzahl Aufenthalte: 1","Haltestelle: Basel, Heuwaage<br/>Person: Stefan<br/>Wartezeit ∅: 0.08, Min.: 0.08,  Max.: 0.08<br/>Anzahl Aufenthalte: 2","Haltestelle: Basel, Schorenweg<br/>Person: Stefan<br/>Wartezeit ∅: 0.17, Min.: 0.17,  Max.: 0.17<br/>Anzahl Aufenthalte: 1","Haltestelle: Basel, Zoo<br/>Person: Stefan<br/>Wartezeit ∅: 0.2, Min.: 0.2,  Max.: 0.2<br/>Anzahl Aufenthalte: 1","Haltestelle: Bever<br/>Person: Stefan<br/>Wartezeit ∅: 3.32, Min.: 3.32,  Max.: 3.32<br/>Anzahl Aufenthalte: 1","Haltestelle: Bisikon, Dorf<br/>Person: Miriam<br/>Wartezeit ∅: 5.33, Min.: 5.33,  Max.: 5.33<br/>Anzahl Aufenthalte: 1","Haltestelle: Burghalden<br/>Person: Stefan<br/>Wartezeit ∅: 5.02, Min.: 5.02,  Max.: 5.02<br/>Anzahl Aufenthalte: 1","Haltestelle: Cham, Bahnhof<br/>Person: Stefan<br/>Wartezeit ∅: 1.77, Min.: 1.77,  Max.: 1.77<br/>Anzahl Aufenthalte: 1","Haltestelle: Courcelon<br/>Person: Stefan<br/>Wartezeit ∅: 0.1, Min.: 0.1,  Max.: 0.1<br/>Anzahl Aufenthalte: 1","Haltestelle: Ettingen, Dorf<br/>Person: Stefan<br/>Wartezeit ∅: 0.21, Min.: 0.12,  Max.: 0.3<br/>Anzahl Aufenthalte: 8","Haltestelle: Grellingen, Bahnhof<br/>Person: Stefan<br/>Wartezeit ∅: 6.43, Min.: 6.43,  Max.: 6.43<br/>Anzahl Aufenthalte: 1","Haltestelle: Landquart, Bahnhof<br/>Person: Stefan<br/>Wartezeit ∅: 9.65, Min.: 9.65,  Max.: 9.65<br/>Anzahl Aufenthalte: 1","Haltestelle: Leuk, Abzw. Erschmatt<br/>Person: Stefan<br/>Wartezeit ∅: 0.03, Min.: 0.03,  Max.: 0.03<br/>Anzahl Aufenthalte: 1","Haltestelle: Luzern, Werkhofstrasse<br/>Person: Stefan<br/>Wartezeit ∅: 3.78, Min.: 3.78,  Max.: 3.78<br/>Anzahl Aufenthalte: 1","Haltestelle: Maloja, Capolago<br/>Person: Stefan<br/>Wartezeit ∅: 7.57, Min.: 7.57,  Max.: 7.57<br/>Anzahl Aufenthalte: 1","Haltestelle: Muttenz, Bahnhof<br/>Person: Stefan<br/>Wartezeit ∅: 0.23, Min.: 0.23,  Max.: 0.23<br/>Anzahl Aufenthalte: 1","Haltestelle: Muttenz, Dorf<br/>Person: Stefan<br/>Wartezeit ∅: 0.15, Min.: 0.15,  Max.: 0.15<br/>Anzahl Aufenthalte: 1","Haltestelle: Passwang<br/>Person: Stefan<br/>Wartezeit ∅: 1.66, Min.: 0.12,  Max.: 4.73<br/>Anzahl Aufenthalte: 3","Haltestelle: Richterswil, Bahnhof<br/>Person: Stefan<br/>Wartezeit ∅: 3.63, Min.: 2.48,  Max.: 5.47<br/>Anzahl Aufenthalte: 12","Haltestelle: Scuol-Tarasp<br/>Person: Stefan<br/>Wartezeit ∅: 6.27, Min.: 6.27,  Max.: 6.27<br/>Anzahl Aufenthalte: 1","Haltestelle: Sennhof-Kyburg<br/>Person: Miriam<br/>Wartezeit ∅: 5.33, Min.: 5.33,  Max.: 5.33<br/>Anzahl Aufenthalte: 1","Haltestelle: Sierre/Siders<br/>Person: Stefan<br/>Wartezeit ∅: 6.07, Min.: 6.07,  Max.: 6.07<br/>Anzahl Aufenthalte: 1","Haltestelle: Steinach, Obersteinach Käserei<br/>Person: Stefan<br/>Wartezeit ∅: 5, Min.: 5,  Max.: 5<br/>Anzahl Aufenthalte: 1","Haltestelle: Sursee, Bahnhof<br/>Person: Stefan<br/>Wartezeit ∅: 3.57, Min.: 3.57,  Max.: 3.57<br/>Anzahl Aufenthalte: 1","Haltestelle: Wädenswil, Bahnhof<br/>Person: Miriam<br/>Wartezeit ∅: 5.65, Min.: 1.83,  Max.: 8.35<br/>Anzahl Aufenthalte: 12","Haltestelle: Wädenswil, Campus Grüental<br/>Person: Miriam<br/>Wartezeit ∅: 4.75, Min.: 4.75,  Max.: 4.75<br/>Anzahl Aufenthalte: 1","Haltestelle: Winterthur Seen<br/>Person: Miriam<br/>Wartezeit ∅: 4.38, Min.: 3.52,  Max.: 5.25<br/>Anzahl Aufenthalte: 2","Haltestelle: Winterthur, Schulhaus Seen<br/>Person: Miriam<br/>Wartezeit ∅: 0.79, Min.: 0.02,  Max.: 5.52<br/>Anzahl Aufenthalte: 13","Haltestelle: Winterthur, Technikum<br/>Person: Miriam<br/>Wartezeit ∅: 4.05, Min.: 4.05,  Max.: 4.05<br/>Anzahl Aufenthalte: 1","Haltestelle: Zug Schutzengel<br/>Person: Stefan<br/>Wartezeit ∅: 4.83, Min.: 4.83,  Max.: 4.83<br/>Anzahl Aufenthalte: 1","Haltestelle: Zürich, Tierspital<br/>Person: Miriam<br/>Wartezeit ∅: 0.17, Min.: 0.17,  Max.: 0.17<br/>Anzahl Aufenthalte: 1"],{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addLegend","args":[{"colors":["#DEEBF7","#3182BD"],"labels":["0 &ndash; 5","5 &ndash; 10"],"na_color":null,"na_label":"NA","opacity":0.8,"position":"bottomright","type":"bin","title":"Wartezeit ∅","extra":null,"layerId":null,"className":"info legend","group":null}]}],"limits":{"lat":[46.2921244658579,47.5719273996167],"lng":[7.39004407879905,10.2862138998858]}},"evals":[],"jsHooks":[]}</script>
+<p><em>Interaktive Karte mit den ÖV-Haltestellen, wo eine Reise begonnen wurde.</em></p>
 </div>
 </div>
-</section>
 </section>
 <section id="diskussion" class="level1">
 <h1>4 Diskussion</h1>
 <p>Probleme und Grenzen:</p>
-<p>Bei der Herangehensweise «Geschwindigkeit» sich durch das setzen des Schwellenwerts für die Geschwindigkeit ein Problem. Wird der Schwellenwert zu tief gesetzt, können Bewegungen auf dem Weg zu der Haltestelle bereits als schnelle Bewegung eingestuft werden, obwohl wir diese als langsame Bewegungen haben möchten. Ein Beispiel: Stefan geht oft mit dem Fahrrad zur ÖV-Haltestelle und erreicht dabei Geschwindigkeiten über 40 km/h. Deshalb wurde der Schwellenwert auf 45 km/h gesetzt. Nun kann es aber sein, dass das öffentliche Verkehrsmittel beim Start der Reise langsam fährt und diese Bewegung als langsame Bewegung eingestuft wird. Dies hat zur Folge, dass sich die Wartezeit auf 15 Sekunden, also die Zeit zwischen zwei Datenpunkten beschränkt und nicht der Wahrheit entspricht. Die Daten werden verfälscht.</p>
+<p>Bei der Herangehensweise «Geschwindigkeit» ergibt sich durch das Setzen des Schwellenwerts für die Geschwindigkeit ein Problem. Wird der Schwellenwert zu tief gesetzt, können Bewegungen auf dem Weg zu der Haltestelle bereits als schnelle Bewegung eingestuft werden, obwohl wir diese als langsame Bewegungen haben möchten. Ein Beispiel: Stefan geht oft mit dem Fahrrad zur ÖV-Haltestelle und erreicht dabei Geschwindigkeiten über 40 km/h. Deshalb wurde der Schwellenwert auf 45 km/h gesetzt. Nun kann es aber sein, dass das öffentliche Verkehrsmittel beim Start der Reise langsam fährt und diese Bewegung als langsame Bewegung eingestuft wird. Dies hat zur Folge, dass sich die Wartezeit auf 15 Sekunden, also die Zeit zwischen zwei Datenpunkten beschränkt und nicht der Wahrheit entspricht. Die Daten werden verfälscht. Gschwend (2015) erwähnt solche Probleme bei der Erkennung von Stopps und Bewegungen ebenfalls und stellt in seiner Arbeit eine Bewegungs-Kontext-Relationsmatrix auf der Grundlage von Modellen vor.</p>
 <p>Bei der Herangehensweise «Klassifizierung» sind wir auf die Qualität von Posmo angewiesen. Den Transportmodus können wir manuell anpassen, die Segmente sind aber relativ fix (Erfahrungen haben gezeigt, dass die Funktion «split segment» nicht einwandfrei funktioniert). Es kam einige Male vor, dass langsame und schnelle Bewegungen am Start einer Reise als ein Segment dargestellt wurde. Der Transportmodus war dann entweder Bus, Train oder Tram. Da dadurch eine Segment der Transportmodus Walk oder Bike fehlte, wurde auch kein Start einer Reise erkannt. Dies ist ein Verlust eines Datenpunktes aber keine Verfälschung der Daten.</p>
 <p>Aufgrund der Frequenz der Lokalisierung, können die Wartezeiten nur auf 10 Sekunden genau sein.</p>
 <p>Die Herangehensweise «Geschwindigkeit» zeigt auf, dass die Transportmodi nicht einzig aufgrund deren Geschwindigkeit eingeteilt werden können. Die Daten werden verfälscht und können nicht interpretiert werden. Die Herangehensweise «Klassifizierung» ergibt deutlich bessere Daten. Bei diesem Vorgehen waren wir aber darauf angewiesen, dass wir bereits vorgegebene Segmente hatten und diese nur noch klassifizieren oder validieren mussten. Dies ist Zeitintensiv und für grössere Datensätze nicht denkbar. So können auch nur Daten bearbeitet werden, wovon man weiss, welcher Transportmodus verwendet wurde.</p>
-<p>Um die Auswertung auch auf grössere und fremde Datensätze auszuweiten, wäre eine Verbesserung der Erkennung des Transportmodus von Vorteil. Busse und Trams wurden zum Beispiel immer als Autos klassifiziert. Hierfür wäre vielleicht ein Abgleich mit Datensätzen des öffentlichen Verkehrs möglich. Zudem gab es manchmal Segmente, bei welchen der Transportmodus als unbekannt gesetzt wurde. Dennoch würde eine entsprechende Fragestellung, welche sich nur auf den Zugdaten (inkl. Walk und Bike) bezieht bereits mit der jetzigen Erkennung der Transportmodi relativ gut funktionieren.</p>
+<p>Um die Auswertung auch auf grössere und fremde Datensätze auszuweiten, wäre eine Verbesserung der Erkennung des Transportmodus von Vorteil. Busse und Trams wurden zum Beispiel immer als Autos klassifiziert. Hierfür wäre vielleicht ein Abgleich mit Datensätzen des öffentlichen Verkehrs möglich. Zudem gab es manchmal Segmente, bei welchen der Transportmodus als unbekannt gesetzt wurde. Dennoch würde eine entsprechende Fragestellung, welche sich nur auf den Zugdaten (inkl. Walk und Bike) bezieht bereits mit der jetzigen Erkennung der Transportmodi relativ gut funktionieren. Guvensan et al.&nbsp;(2018) verbesserten die Transportmodus- sowie Aufenthaltserkennung markant durch die Entwicklung eines zusätzlichen Algorithmus. Die Erkennung des Transportmodus von Posmo könnte allenfalls durch einen zusätzlichen Algorithmus verbessert werden.</p>
+<p>Abschliesend sollte erwähnt werden, wie sensibel Mobilitätsdaten sind. Selbst in einem anonymen groben Mobilitätsdatensatz sind nur wenige externe Informationen erforderlich, um die Spur einer Zielperson zu reidentifizieren (De Montjoye et al.&nbsp;2013). Daher sollte unserer Meinung nach die Verwendung von Apps, welche Mobilitätsdaten aufnehmen, gut überlegt sein.</p>
 </section>
 <section id="literatur" class="level1">
 <h1>5 Literatur</h1>
-<p>blablablaaaaa</p>
+<p>BAV Bundesamt für Verkehr (2015). Haltestellen des öffentlichen Verkehrs, aktualisiert 2015-12-12, https://data.geo.admin.ch/ch.bav.haltestellen-oev/haltestellen-oev/haltestellen-oev_2056_de.csv.zip</p>
 <p>Csikos, D., &amp; Currie, G. (2008). Investigating Consistency in Transit Passenger Arrivals: Insights from Longitudinal Automated Fare Collection Data. Transportation Research Record, 2042(1), 12–19. https://doi.org/10.3141/2042-02</p>
-<p>Kaindl, F. (2022). Reisen mit der Bahn: In welchen Ländern die Züge besonders pünktlich sind. Merkur.de https://www.merkur.de/reise/zuege-puenktlich-fernverkehr-bahn-europa-schweiz-daenemark-niederlande-zr-91977341.html#:~:text=In%20der%20Schweiz%20fahren%20Z%C3%BCge%20am%20p%C3%BCnktlichsten%20Am,viele%20Gedanken%20%C3%BCber%20Versp%C3%A4tungen%20innerhalb%20des%20Landes%20machen.</p>
+<p>De Montjoye, Y. A., Hidalgo, C. A., Verleysen, M., &amp; Blondel, V. D. (2013). Unique in the crowd: The privacy bounds of human mobility. Scientific reports, 3(1), 1-5.</p>
+<p>Gschwend, C. (2015). Relating movement to geographic context: effects of preprocessing, relation methods and scale (Doctoral dissertation, University of Zurich).</p>
+<p>Guvensan, M., Dusun, B., Can, B., &amp; Turkmen, H. (2018). A Novel Segment-Based Approach for Improving Classification Performance of Transport Mode Detection. Sensors, 18(1), 87. MDPI AG. http://dx.doi.org/10.3390/s18010087</p>
+<p>Kaindl, F. (2022). Reisen mit der Bahn: In welchen Ländern die Züge besonders pünktlich sind. Merkur.de https://www.merkur.de/reise/zuege-puenktlich-fernverkehr-bahn-europa-schweiz-daenemark-niederlande-zr-91977341.html#:~:text=In%20der%20Schweiz%20fahren%20Z%C3%BCge%20am%20p%C3%BCnktlichsten%20Am,viele%20Gedanken%20%C3%BCber%20Versp%C3%A4tungen%20innerhalb%20des%20Landes%20machen. Laube, P. (2017). Representation: Trajectories. In International Encyclopedia of Geography: People, the Earth, Environment and Technology (eds D. Richardson, N. Castree, M.F. Goodchild, A. Kobayashi, W. Liu and R.A. Marston). https://doi.org/10.1002/9781118786352.wbieg0593</p>
+<p>Posmo Project (Datamap AG, Version 22.01.16, 2023)</p>
+<p>Van Hagen, M. (2011). Waiting experience at train stations. Eburon Uitgeverij BV.</p>
 </section>
 
 </main>
