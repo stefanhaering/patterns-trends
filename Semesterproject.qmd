@@ -128,7 +128,7 @@ Die Posmo-App ist noch in der Entwicklung und zeichnet die Transportmodi nicht i
 
 ### 2.3.1 Ansatz «Geschwindigkeit»
 
-Um den Start einer Reise zu finden, werden die Daten auf eine bestimmte Abfolge von Bewegungen (Segmente) durchsucht. Zu Beginn darf keine Bewegung stattfinden, man ist zum Beispiel zu Hause oder bei der Arbeit. Dafür muss zwischen zwei Datenpunkten eine Zeitdifferenz über dem gewählten Schwellenwert von zehn Minuten liegen. 
+Um den Start einer Reise zu finden, werden die Daten auf eine bestimmte Abfolge von Bewegungen (Segmente, siehe auch Laube 2017) durchsucht. Zu Beginn darf keine Bewegung stattfinden, man ist zum Beispiel zu Hause oder bei der Arbeit. Dafür muss zwischen zwei Datenpunkten eine Zeitdifferenz über dem gewählten Schwellenwert von zehn Minuten liegen. 
 
 Erklärung: Annahme dass nicht länger als 10 min gewartet wird
 
@@ -976,5 +976,7 @@ Van Hagen, M. (2011). Waiting experience at train stations. Eburon Uitgeverij BV
 Posmo Project (Datamap AG, Version 22.01.16, 2023) 
 
 BAV Bundesamt für Verkehr (2015). Haltestellen des öffentlichen Verkehrs, aktualisiert 2015-12-12, https://data.geo.admin.ch/ch.bav.haltestellen-oev/haltestellen-oev/haltestellen-oev_2056_de.csv.zip
+
+Laube, P. (2017). Representation: Trajectories. In International Encyclopedia of Geography: People, the Earth, Environment and Technology (eds D. Richardson, N. Castree, M.F. Goodchild, A. Kobayashi, W. Liu and R.A. Marston). https://doi.org/10.1002/9781118786352.wbieg0593
 
 TesttestTest 12:04
