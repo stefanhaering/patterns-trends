@@ -964,6 +964,10 @@ Die Herangehensweise «Geschwindigkeit» zeigt auf, dass die Transportmodi nicht
 
 Um die Auswertung auch auf grössere und fremde Datensätze auszuweiten, wäre eine Verbesserung der Erkennung des Transportmodus von Vorteil. Busse und Trams wurden zum Beispiel immer als Autos klassifiziert. Hierfür wäre vielleicht ein Abgleich mit Datensätzen des öffentlichen Verkehrs möglich. Zudem gab es manchmal Segmente, bei welchen der Transportmodus als unbekannt gesetzt wurde. Dennoch würde eine entsprechende Fragestellung, welche sich nur auf den Zugdaten (inkl. Walk und Bike) bezieht bereits mit der jetzigen Erkennung der Transportmodi relativ gut funktionieren.
 
+Abschliesend sollte erwähnt werden, wie sensibel Mobilitätsdaten sind. Selbst in einem groben Mobilitätsdatensatz sind nur wenige externe Informationen erforderlich, um die Spur einer Zielperson zu reidentifizieren (De Montjoye et al. 2013). Daher sollte unserer Meinung nach die Verwendung von Apps, wleche Mobilitätsdaten aufnehmen, gut überlegt sein.
+
+
+
 # 5 Literatur
 blablablaaaaa
 
@@ -981,4 +985,4 @@ Laube, P. (2017). Representation: Trajectories. In International Encyclopedia of
 
 Gschwend, C. (2015). Relating movement to geographic context: effects of preprocessing, relation methods and scale (Doctoral dissertation, University of Zurich).
 
-TesttestTest 12:04
+De Montjoye, Y. A., Hidalgo, C. A., Verleysen, M., & Blondel, V. D. (2013). Unique in the crowd: The privacy bounds of human mobility. Scientific reports, 3(1), 1-5.
