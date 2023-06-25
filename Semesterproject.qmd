@@ -19,7 +19,7 @@ execute:
 
 (Zeit ist Geld (Effizienzsteigerung) versus Bewusst und Entspannt durchs Leben gehen -\>Literatur, Öv CH superpünktlich, geringe Wartezeiten bzw Wartezeit selbstverschuldet)
 
-Passagiere empfinden in der Regel das Warten an Haltestellen des Öffentlichen Verkehrs (ÖV) als äusserst lästig (van Hagen 2011). Die Schweizer ÖV sind international bekannt für ihre Pünktlichkeit (Kaindl 2022), wodurch die Länge der Wartezeit zu Beginn einer Reise meist selbstverschuldet ist. Nach Csiskos & Currie (2008) gibt es zwei verschiedene Arten von Fahrgastverhalten: Eine Gruppe kommt zufällig an, während eine andere Gruppe aktiv versucht, ihre Wartezeit zu minimieren, indem sie rechtzeitig zur geplanten Abfahrtszeit bei der Haltestelle ankommt. Evtl. Blabla zu AnalyseWerkzeugen, how fast is a cow und so.. oder erst in Diskussion
+Passagiere empfinden in der Regel das Warten an Haltestellen des Öffentlichen Verkehrs (ÖV) als äusserst lästig (Van Hagen 2011). Die Schweizer ÖV sind international bekannt für ihre Pünktlichkeit (Kaindl 2022), wodurch die Länge der Wartezeit zu Beginn einer Reise meist selbstverschuldet ist. Nach Csiskos & Currie (2008) gibt es zwei verschiedene Arten von Fahrgastverhalten: Eine Gruppe kommt zufällig an, während eine andere Gruppe aktiv versucht, ihre Wartezeit zu minimieren, indem sie rechtzeitig zur geplanten Abfahrtszeit bei der Haltestelle ankommt. Evtl. Blabla zu AnalyseWerkzeugen, how fast is a cow und so.. oder erst in Diskussion
 
 In unserer Projektarbeit möchten wir unsere tägliche Wartezeit an Haltestellen von öffentlichen Verkehrsmitteln (ÖV) untersuchen. Dabei wird ausschliesslich der Beginn einer Reise betrachtet. Folgende Fragen sollen anhand zweier leicht unterschiedlicher Methoden beantwortet werden:
 
@@ -118,7 +118,7 @@ ggplot()+
 #   theme_void() # Achsen und Raster verschwinden
 ```
 
-Zusätzlich wird der Datensatz „Haltestellen des öffentlichen Verkehrs" vom Bundesamt für Verkehr (BAV) verwendet (QUELLE https://data.geo.admin.ch/ch.bav.haltestellen-oev/haltestellen-oev/haltestellen-oev_2056_de.csv.zip), welcher alle ÖV-Haltestellen beinhaltet.
+Zusätzlich wird der Datensatz „Haltestellen des öffentlichen Verkehrs" vom Bundesamt für Verkehr (BAV 2015) verwendet, welcher alle ÖV-Haltestellen beinhaltet.
 
 ## 2.2 Datenvorverarbeitung
 
@@ -132,7 +132,7 @@ Um den Start einer Reise zu finden, werden die Daten auf eine bestimmte Abfolge 
 
 Erklärung: Annahme dass nicht länger als 10 min gewartet wird
 
-Die restlichen Datenpunkte werden anhand der Geschwindigkeit in Segmente mit langsamer oder schneller Bewegung eingeteilt. Als langsam werden Bewegungen kleiner als 45 km/h klassifiziert. Bewegungen gleich oder grösser als 45 km/h werden als schnell klassifiziert.
+Die restlichen Datenpunkte werden anhand der Geschwindigkeit in Segmente mit langsamer oder schneller Bewegung eingeteilt. Als "langsam" werden Bewegungen kleiner als 45 km/h klassifiziert. Bewegungen gleich oder grösser als 45 km/h werden als "schnell" klassifiziert.
 
 ```{r}
 #### R: G: Geschwindigkeit berechnen
@@ -615,9 +615,9 @@ haltestelle_event$Name[haltestelle_event$E == 2693841 &
 
 # 3 Resultate
 
-Die beiden Verfahren haben eine unterschiedliche Anzahl Events ergeben. Gemäss dem Ansat"Geschwindigkeit" haben wir zusammen 60 (Ansatz "Geschwindigkeit"), bzw. 85 (Ansatz "Transportmodus") Reisen mit dem ÖV gemacht. Miriam macht 0.51 (Ansatz "Geschwindigkeit"), bzw 0.67 (Ansatz "Transportmodus") ÖV-Reisen pro Tag. Stefan macht 0.71 (Ansatz "Geschwindigkeit"), bzw 1.06 (Ansatz "Transportmodus") ÖV-Reisen pro Tag.
+Die beiden Verfahren haben eine unterschiedliche Anzahl Events ergeben. So haben wir zusammen 60 (Ansatz "Geschwindigkeit"), bzw. 85 (Ansatz "Transportmodus") Reisen mit dem ÖV gemacht. Miriam macht 0.51 (Ansatz "Geschwindigkeit"), bzw 0.67 (Ansatz "Transportmodus") ÖV-Reisen pro Tag. Stefan macht 0.71 (Ansatz "Geschwindigkeit"), bzw 1.06 (Ansatz "Transportmodus") ÖV-Reisen pro Tag.
 
-Beim Ansatz "Geschwindigkeit" ergeben sich folgende Resultate: Miriam wartet im Mittel rund 3.1 Minuten, während Stefan im Mittel rund 1.9 Minuten wartet. Die Wartezeiten sind von Reise zu Reise unterschiedlich lange. Bei Miriam beträgt die Standardabweichung 2.9 und bei Stefan 2.2.
+Beim Ansatz "Geschwindigkeit" ergeben sich folgende Resultate: Miriam wartet im Mittel rund 3.1 Minuten (Standardabweichung SD = 2.9), während Stefan im Mittel rund 1.9 Minuten (SD = 2.2) wartet. Die Wartezeiten sind von Reise zu Reise unterschiedlich lange. 
 
 ```{r}
 ### Resultat
@@ -628,7 +628,7 @@ velocity |>
             , Standardabweichung = sd(wartezeit), Bereich = (max(wartezeit)-min(wartezeit)))
 ```
 
-Beim Ansatz "Geschwindigkeit" ergeben sich folgende Resultate: Miriam wartet im Mittel rund 3.3 Minuten, während Stefan im Mittel rund 2.6 Minuten wartet. Die Wartezeiten sind von Reise zu Reise unterschiedlich lange. Bei Miriam beträgt die Standardabweichung 2.8 und bei Stefan 2.7.
+Beim Ansatz "Geschwindigkeit" ergeben sich folgende Resultate: Miriam wartet im Mittel rund 3.3 Minuten (SD = 2.8), während Stefan im Mittel rund 2.6 Minuten (SD = 2.7) wartet. Die Wartezeiten sind von Reise zu Reise unterschiedlich lange. 
 
 ```{r}
 ### Resultat
@@ -892,7 +892,7 @@ p <- event |>
 
 #Interaktive Karte einfügen
 library(leaflet)
-m <- leaflet() %>% 
+#m <- leaflet() %>% 
   addTiles() %>% 
   setView( lng = 2.34, lat = 48.85, zoom = 5 ) %>% 
   addProviderTiles("NASAGIBS.ViirsEarthAtNight2012")
@@ -916,40 +916,33 @@ eventWGS_coordinates <- st_coordinates(eventWGS)
 eventWGS <- cbind(eventWGS, eventWGS_coordinates)
 
 
-#Circles in leafletMap
-leaflet(eventWGS) %>% addTiles() %>%
-  addCircleMarkers(lng = ~X, lat = ~Y, 
-                   popup = ~Wartezeit)
+#gerundete Wartezeiten zu eventWGS hinzufügen
+eventWGS <- eventWGS |>
+  mutate(
+    wartezeit = round(Wartezeit, 2),
+    min = round(Minimum, 2),
+    max = round(Maximum, 2)
+  )
 
-############noch machen: zb untersch. grosse Bubbles je nach durchschnittlicher Wartezeit an Station 
+#Interaktive Karte mit leaflet erstellen
+mytext <- paste(
+   "Haltestelle: ", eventWGS$Name, "<br/>", 
+   "Person: ", eventWGS$person, "<br/>", 
+   "Wartezeit ∅: ", eventWGS$wartezeit, sep="",
+    ", Min.: ", eventWGS$min,
+     ",  Max.: ", eventWGS$max,"<br/>",
+   "Anzahl Aufenthalte: ", eventWGS$Anzahl ) %>%
+  lapply(htmltools::HTML)
 
+mybins <- seq(0, 10, by=5)
+mypalette <- colorBin( palette="Blues", domain=eventWGS$wartezeit, bins=mybins)
 
-
-
-
-
-
-
-
-
-
-
-
-#Haltestellendatensatz miteinbeziehen, Buffer
-
-oev <- read_delim("haltestellen-oev_2056_de.csv/Betriebspunkt.csv", delim = ",") #Haltestellendaten einlesen
-
-oevtest <- oev |> 
-  st_as_sf(coords = c("E", "N"), crs = 2056, remove = FALSE) |> # Geometrie hinzufügen
-  st_transform(4326) |>
-  subset(Betriebspunkttyp_Bezeichnung == "Haltestelle" |
-           Betriebspunkttyp_Bezeichnung == "Haltestelle und Bedienpunkt") # nur Haltestellen
-
-
-ggplot(oevtest)+
-  geom_sf()+
-  geom_sf(data = eventWGS, aes(colour = person), size = 2)+
-  theme_void() # Achsen und Raster verschwinden
+l <- leaflet(eventWGS) %>% addTiles() %>%
+  addCircleMarkers(lng = ~X, lat = ~Y,
+                   fillColor = ~mypalette(wartezeit), fillOpacity = 0.8, color="black", radius=10, stroke=,
+                   label = mytext) %>%
+  addLegend( pal=mypalette, values=~wartezeit, opacity=0.8, title = "Wartezeit ∅", position = "bottomright" )
+l
 
 
 ```
@@ -958,7 +951,7 @@ ggplot(oevtest)+
 
 Probleme und Grenzen:
 
-Bei der Herangehensweise «Geschwindigkeit» sich durch das setzen des Schwellenwerts für die Geschwindigkeit ein Problem. Wird der Schwellenwert zu tief gesetzt, können Bewegungen auf dem Weg zu der Haltestelle bereits als schnelle Bewegung eingestuft werden, obwohl wir diese als langsame Bewegungen haben möchten. Ein Beispiel: Stefan geht oft mit dem Fahrrad zur ÖV-Haltestelle und erreicht dabei Geschwindigkeiten über 40 km/h. Deshalb wurde der Schwellenwert auf 45 km/h gesetzt. Nun kann es aber sein, dass das öffentliche Verkehrsmittel beim Start der Reise langsam fährt und diese Bewegung als langsame Bewegung eingestuft wird. Dies hat zur Folge, dass sich die Wartezeit auf 15 Sekunden, also die Zeit zwischen zwei Datenpunkten beschränkt und nicht der Wahrheit entspricht. Die Daten werden verfälscht.
+Bei der Herangehensweise «Geschwindigkeit» ergibt sich durch das Setzen des Schwellenwerts für die Geschwindigkeit ein Problem. Wird der Schwellenwert zu tief gesetzt, können Bewegungen auf dem Weg zu der Haltestelle bereits als schnelle Bewegung eingestuft werden, obwohl wir diese als langsame Bewegungen haben möchten. Ein Beispiel: Stefan geht oft mit dem Fahrrad zur ÖV-Haltestelle und erreicht dabei Geschwindigkeiten über 40 km/h. Deshalb wurde der Schwellenwert auf 45 km/h gesetzt. Nun kann es aber sein, dass das öffentliche Verkehrsmittel beim Start der Reise langsam fährt und diese Bewegung als langsame Bewegung eingestuft wird. Dies hat zur Folge, dass sich die Wartezeit auf 15 Sekunden, also die Zeit zwischen zwei Datenpunkten beschränkt und nicht der Wahrheit entspricht. Die Daten werden verfälscht.
 
 Bei der Herangehensweise «Klassifizierung» sind wir auf die Qualität von Posmo angewiesen. Den Transportmodus können wir manuell anpassen, die Segmente sind aber relativ fix (Erfahrungen haben gezeigt, dass die Funktion «split segment» nicht einwandfrei funktioniert). Es kam einige Male vor, dass langsame und schnelle Bewegungen am Start einer Reise als ein Segment dargestellt wurde. Der Transportmodus war dann entweder Bus, Train oder Tram. Da dadurch eine Segment der Transportmodus Walk oder Bike fehlte, wurde auch kein Start einer Reise erkannt. Dies ist ein Verlust eines Datenpunktes aber keine Verfälschung der Daten.
 
@@ -977,3 +970,9 @@ blablablaaaaa
 Csikos, D., & Currie, G. (2008). Investigating Consistency in Transit Passenger Arrivals: Insights from Longitudinal Automated Fare Collection Data. Transportation Research Record, 2042(1), 12--19. https://doi.org/10.3141/2042-02
 
 Kaindl, F. (2022). Reisen mit der Bahn: In welchen Ländern die Züge besonders pünktlich sind. Merkur.de https://www.merkur.de/reise/zuege-puenktlich-fernverkehr-bahn-europa-schweiz-daenemark-niederlande-zr-91977341.html#:\~:text=In%20der%20Schweiz%20fahren%20Z%C3%BCge%20am%20p%C3%BCnktlichsten%20Am,viele%20Gedanken%20%C3%BCber%20Versp%C3%A4tungen%20innerhalb%20des%20Landes%20machen.
+
+Van Hagen, M. (2011). Waiting experience at train stations. Eburon Uitgeverij BV.
+
+Posmo Project (Datamap AG, Version 22.01.16, 2023) 
+
+BAV Bundesamt für Verkehr (2015). Haltestellen des öffentlichen Verkehrs, aktualisiert 2015-12-12, https://data.geo.admin.ch/ch.bav.haltestellen-oev/haltestellen-oev/haltestellen-oev_2056_de.csv.zip
