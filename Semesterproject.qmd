@@ -44,6 +44,7 @@ library("dplyr")
 library("sf")
 library(treemapify)
 library(ggmosaic)
+library(cowplot)
 ```
 
 ```{r}
@@ -641,12 +642,14 @@ event |>
 
 Text: wer wartet länger
 
-```{r}
-#### R: G: Visualisierung
-
-# Vergleich Miriram & Stefan, Boxplot, beide ansätze nebeneinander...
-ggplot(velocity, aes(wartezeit, person, fill = person))+
-  geom_boxplot()+ # Warum hat es keine Whiskers???
+```{r abbildung4, fig.cap="*Abbildung 4: Vergleich der Wartezeiten von Miriam und Stefan anhand der unterschiedlichen Ansätze*"}
+# Visualisierung: Vergleich Miriram & Stefan, Boxplot, beide ansätze nebeneinander...
+boxplot_geschwindigkeit <- ggplot(velocity, aes(wartezeit, person, fill = person))+
+  geom_boxplot()+
+  guides(fill="none")+ # Legende entfernen
+  scale_x_continuous( # y-Achse anpassen,
+    limits = c(0, 10.1),  # Limits setzen
+    breaks = c(0, 2, 4, 6, 8, 10))+ # Achsenabschnitte festlegen
   labs( # Beschriftung aendern
     title = "Ansatz 'Geschwindigkeit'", 
     x = "Wartezeit [min]", y = "Person")+
@@ -654,7 +657,54 @@ ggplot(velocity, aes(wartezeit, person, fill = person))+
   labs(
     fill = "Person")+ # Legende beschriften
   coord_flip() +
+  geom_text(x=10.1, y=1, label="n = 25")+
+  geom_text(x=10.1, y=2, label="n = 35")+
   theme_classic() # löscht ggplot-Layout
+
+boxplot_transportmodus <- ggplot(event, aes(wartezeit_minutes, person, fill = person))+
+  geom_boxplot()+
+  guides(fill="none")+ # Legende entfernen
+  scale_x_continuous( # y-Achse anpassen,
+    limits = c(0, 10.1),  # Limits setzen
+    breaks = c(0, 2, 4, 6, 8, 10))+ # Achsenabschnitte festlegen
+  labs( # Beschriftung aendern
+    title = "Ansatz 'Transportmodus'", 
+    x = " ", y = "Person")+
+  scale_fill_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
+  labs(
+    fill = "Person")+ # Legende beschriften
+  coord_flip() +
+  geom_text(x=10.1, y=1, label="n = 33")+
+  geom_text(x=10.1, y=2, label="n = 52")+
+  theme_classic() # löscht ggplot-Layout
+
+boxplot_transportmodus_legende <- ggplot(event, aes(wartezeit_minutes, person, fill = person))+
+  geom_boxplot()+
+  labs( # Beschriftung aendern
+    title = "Ansatz 'Transportmodus'", 
+    x = "Wartezeit [min]", y = "Person")+
+  scale_fill_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
+  labs(
+    fill = "Person")+ # Legende beschriften
+  coord_flip() +
+  theme_classic() # löscht ggplot-Layout
+
+
+# plots in einer Abbildung
+combined_plot <- plot_grid(boxplot_geschwindigkeit, boxplot_transportmodus, ncol = 2)
+
+# plots in einer Abbildung
+combined_plot <- plot_grid(boxplot_geschwindigkeit, boxplot_transportmodus, ncol = 2)
+
+# extract legend from plot1
+legend <- get_legend(
+  boxplot_transportmodus_legende +
+    guides(fill = guide_legend(nrow = 1)) +
+    theme(legend.position = "bottom")
+)
+  
+# Combine combined plot and legend using plot_grid()
+plot_grid(combined_plot, legend,ncol=1,rel_heights = c(1, .1))
 ```
 
 T-Test für Ansatz "Geschwindigkeit"
@@ -670,13 +720,15 @@ t.test(wartezeit_minutes~person, data = event, var.equal = TRUE)# ungepaart, zwe
 
 Text: Wartekategorien
 
-```{r}
+```{r abbildung5, fig.cap="*Abbildung 5: Vergleich der Wartezeiten in Kategorien von Miriam und Stefan anhand der unterschiedlichen Ansätze*"}
 # Farbige Säulen pro Person, Anteil von 0-1 min, 1-2 min,...
-ggplot(velocity, aes(person, fill = wartezeit_cat))+
+saeule_geschwindigkeit <- ggplot(velocity, aes(person, fill = wartezeit_cat))+
   geom_bar(position = position_fill(reverse = TRUE))+
-  scale_fill_manual(values = rev(RColorBrewer::brewer.pal(10, "YlGn")))+
+  scale_fill_manual(values = c("#00441b", "#1b7837", "#5aae61", "#a6dba0", "#d9f0d3",
+                               "#e7d4e8", "#c2a5cf", "#762a83"))+
+  guides(fill="none")+ # Legende
   labs(
-    title = "Ansatz Geschwindigkeit", # Titel setzen
+    title = "Ansatz 'Geschwindigkeit'", # Titel setzen
     x = "Person", y = "Anteil der Events", # Achsen beschriften
     fill = "Wartezeit [min]")+ # Legende beschriften
   scale_y_continuous( # y-Achse anpassen,
@@ -685,6 +737,65 @@ ggplot(velocity, aes(person, fill = wartezeit_cat))+
   geom_text(x=1, y=1.05, label="n = 25")+
   geom_text(x=2, y=1.05, label="n = 35")+
   theme_classic() # löscht ggplot-Layout
+
+
+# Spalte mit Kategorie der Wartezeit hinzufügen
+event$wartezeit_cat <- "NA"
+event$wartezeit_cat[event$wartezeit_minutes >= 0 & event$wartezeit_minutes < 1] <- "0-1"
+event$wartezeit_cat[event$wartezeit_minutes >= 1 & event$wartezeit_minutes < 2] <- "1-2"
+event$wartezeit_cat[event$wartezeit_minutes >= 2 & event$wartezeit_minutes < 3] <- "2-3"
+event$wartezeit_cat[event$wartezeit_minutes >= 3 & event$wartezeit_minutes < 4] <- "3-4"
+event$wartezeit_cat[event$wartezeit_minutes >= 4 & event$wartezeit_minutes < 5] <- "4-5"
+event$wartezeit_cat[event$wartezeit_minutes >= 5 & event$wartezeit_minutes < 6] <- "5-6"
+event$wartezeit_cat[event$wartezeit_minutes >= 6 & event$wartezeit_minutes < 7] <- "6-7"
+event$wartezeit_cat[event$wartezeit_minutes >= 7 & event$wartezeit_minutes < 8] <- "7-8"
+event$wartezeit_cat[event$wartezeit_minutes >= 8 & event$wartezeit_minutes < 9] <- "8-9"
+event$wartezeit_cat[event$wartezeit_minutes >= 9 & event$wartezeit_minutes < 10] <- "9-10"
+
+saeule_transportmodus <- ggplot(event, aes(person, fill = wartezeit_cat))+
+  geom_bar(position = position_fill(reverse = TRUE))+
+  scale_fill_manual(values = c("#00441b", "#1b7837", "#5aae61", "#a6dba0", "#d9f0d3",
+                               "#f7f7f7","#e7d4e8", "#c2a5cf", "#9970ab","#762a83"))+
+  guides(fill="none")+ # Legende
+  labs(
+    title = "Ansatz 'Transportmodus'", # Titel setzen
+    x = "Person", y = " ", # Achsen beschriften
+    fill = "Wartezeit [min]")+ # Legende beschriften
+  scale_y_continuous( # y-Achse anpassen,
+    limits = c(0, 1.05),  # Limits setzen
+    breaks = c(0.00, 0.25, 0.50, 0.75, 1.00))+ # Achsenabschnitte festlegen
+  geom_text(x=1, y=1.05, label="n = 33")+
+  geom_text(x=2, y=1.05, label="n = 52")+
+  theme_classic() # löscht ggplot-Layout
+
+saeule_transportmodus_legende <- ggplot(event, aes(person, fill = wartezeit_cat))+
+  geom_bar(position = position_fill(reverse = TRUE))+
+  scale_fill_manual(values = c("#00441b", "#1b7837", "#5aae61", "#a6dba0", "#d9f0d3",
+                               "#f7f7f7","#e7d4e8", "#c2a5cf", "#9970ab","#762a83"))+
+  labs(
+    title = "Ansatz 'Transportmodus'", # Titel setzen
+    x = "Person", y = "Anteil der Events", # Achsen beschriften
+    fill = "Wartezeit [min]")+ # Legende beschriften
+  scale_y_continuous( # y-Achse anpassen,
+    limits = c(0, 1.05),  # Limits setzen
+    breaks = c(0.00, 0.25, 0.50, 0.75, 1.00))+ # Achsenabschnitte festlegen
+  geom_text(x=1, y=1.05, label="n = 33")+
+  geom_text(x=2, y=1.05, label="n = 52")+
+  theme_classic() # löscht ggplot-Layout
+
+# plots in einer Abbildung
+combined_plot <- plot_grid(saeule_geschwindigkeit, saeule_transportmodus, ncol = 2)
+
+# extract legend from plot1
+legend <- get_legend(
+  saeule_transportmodus_legende +
+    guides(fill = guide_legend(nrow = 1)) +
+    theme(legend.position = "bottom")
+)
+  
+# Combine combined plot and legend using plot_grid()
+plot_grid(combined_plot, legend,ncol=1,rel_heights = c(1, .1))
+
 ```
 
 Text: Interaktive Karte
