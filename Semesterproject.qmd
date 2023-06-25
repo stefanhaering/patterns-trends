@@ -30,7 +30,7 @@ In unserer Projektarbeit möchten wir unsere tägliche Wartezeit an Haltestellen
 
 ## 2.1 Daten
 
-Die Daten bestehen aus eigenen Bewegungsdaten, welche mit der Applikation Posmo Project (Datamap AG, Version 22.01.16, 2023) erfasst wurden. Daten wurden vom 03.05.23 bis 21.06.23 mit einer Frequenz der Lokalisierungsdaten von 10 Sekunden aufgenommen. Fand keine deutliche Bewegung statt, wurden die Datenpunkte durch Posmo automatisch entfernt. Diese Daten liegen als CSV-Datei vor und beinhalten u.a. Datum & Zeit („datetime"), x-Koordinaten („long_x"), y-Koordinaten („lat_y") und Transportmodus („transport_mode"). 
+Die Daten bestehen aus eigenen Bewegungsdaten, welche mit der Applikation Posmo Project (Datamap AG, Version 22.01.16, 2023) erfasst wurden (Abildung 1). Daten wurden vom 03.05.23 bis 21.06.23 mit einer Frequenz der Lokalisierungsdaten von 10 Sekunden aufgenommen. Fand keine deutliche Bewegung statt, wurden die Datenpunkte durch Posmo automatisch entfernt. Diese Daten liegen als CSV-Datei vor und beinhalten u.a. Datum & Zeit („datetime"), x-Koordinaten („long_x"), y-Koordinaten („lat_y") und Transportmodus („transport_mode"). 
 
 ```{r}
 ### R: Libraries laden
@@ -298,7 +298,7 @@ event <- event |>
 
 ```
 
-Die räumlichen Startpunkte der Reisen wurden mit den ÖV-Haltestellen aus dem Datensatz „Haltestellen des öffentlichen Verkehrs" validiert, wodurch Reisen mit dem Auto wegfallen. Dafür wurde ein Buffer von 100 Metern um ÖV-Haltestellen mit den Positionsdaten der Wartezeit verschnitten. Die verbleibenden Datenpunkte geben die für uns relevanten Events an.
+Die räumlichen Startpunkte der Reisen wurden mit den ÖV-Haltestellen aus dem Datensatz „Haltestellen des öffentlichen Verkehrs" validiert, wodurch Reisen mit dem Auto wegfallen. Dafür wurde ein Buffer von 100 Metern um ÖV-Haltestellen mit den Positionsdaten der Wartezeit verschnitten. Die verbleibenden Datenpunkte geben die für uns relevanten Events an (Abbildung 2).
 
 ```{r}
 #### R: G: Evente validieren
@@ -369,7 +369,7 @@ ggplot(haltestelle_event)+
 
 ```
 
-Einige ÖV-Haltestellen werden dabei öfters benutzt als andere.
+Einige ÖV-Haltestellen werden dabei öfters benutzt als andere (Abbildung 3).
 
 ```{r abbildung3, fig.cap="*Abbildung 3: Benutzte ÖV-Haltestellen. Die grösse der Kästchen gibt die Anzahl Benutzungen an.*"}
 # Treemap mit Start-ÖV-Haltestellen
@@ -413,8 +413,7 @@ velocity$wartezeit_cat[velocity$wartezeit >= 9 & velocity$wartezeit < 10] <- "9-
 ### 2.3.2 Ansatz «Transportmodus»
 
 Um zu validieren, wie gut unsere geschwindigkeitsabhängige Methode funktioniert, machen wir eine zusätzliche Analyse mit den Angaben der Transportmodi von Posmo.
-
-Erklärung: Annahme dass nicht länger als 10 min gewartet wird
+Auch hier gehen wir davon aus, dass wir nie länger als zehn Minuten auf das ÖV warten.
 
 ```{r}
 ### R: T: Ansatz "Transportmodus"
@@ -612,7 +611,7 @@ haltestelle_event$Name[haltestelle_event$E == 2693841 &
 
 # 3 Resultate
 
-Die beiden Verfahren haben eine unterschiedliche Anzahl Events ergeben. So haben wir zusammen 60 (Ansatz "Geschwindigkeit"), bzw. 85 (Ansatz "Transportmodus") Reisen mit dem ÖV gemacht. Miriam macht 0.51 (Ansatz "Geschwindigkeit"), bzw 0.67 (Ansatz "Transportmodus") ÖV-Reisen pro Tag. Stefan macht 0.71 (Ansatz "Geschwindigkeit"), bzw 1.06 (Ansatz "Transportmodus") ÖV-Reisen pro Tag.
+Die beiden Verfahren haben eine unterschiedliche Anzahl Events ergeben. So haben wir zusammen 60 (Ansatz "Geschwindigkeit"), bzw. 85 (Ansatz "Transportmodus") Reisen mit dem ÖV gemacht. Miriam macht 0.51 (Ansatz "Geschwindigkeit"), bzw. 0.67 (Ansatz "Transportmodus") ÖV-Reisen pro Tag. Stefan macht 0.71 (Ansatz "Geschwindigkeit"), bzw. 1.06 (Ansatz "Transportmodus") ÖV-Reisen pro Tag.
 
 Beim Ansatz "Geschwindigkeit" ergeben sich folgende Resultate: Miriam wartet im Mittel rund 3.1 Minuten (Standardabweichung SD = 2.9), während Stefan im Mittel rund 1.9 Minuten (SD = 2.2) wartet. Die Wartezeiten sind von Reise zu Reise unterschiedlich lange. 
 
@@ -637,7 +636,7 @@ event |>
             Bereich = (max(wartezeit_minutes)-min(wartezeit_minutes)))
 ```
 
-Text: wer wartet länger
+Miriam wartet durschnittlich länger als Stefan an den Haltestellen (Abbildung 4). Der Unterschied ist jedoch nicht signifikant (T-Test, p=0.10 resp. p=0.25)
 
 ```{r abbildung4, fig.cap="*Abbildung 4: Vergleich der Wartezeiten von Miriam und Stefan anhand der unterschiedlichen Ansätze*"}
 # Visualisierung: Vergleich Miriram & Stefan, Boxplot, beide ansätze nebeneinander...
@@ -715,7 +714,7 @@ T-Test für Ansatz "Geschwindigkeit"
 t.test(wartezeit_minutes~person, data = event, var.equal = TRUE)# ungepaart, zweiseitig, long-Format
 ```
 
-Text: Wartekategorien
+Werden die Wartezeiten in Kategorien eingeteilt, ist ersichtlich, dass diese bei den beiden Ansätzen unterschiedliche Ergebnisse zeigen (Abbildung 5). Die Verteilung der Anteile der Events sieht leicht unterschiedlich aus. Zudem gibt es je nach Ansatz und Person auch Wartezeiten von zehn Minten. 
 
 ```{r abbildung5, fig.cap="*Abbildung 5: Vergleich der Wartezeiten in Kategorien von Miriam und Stefan anhand der unterschiedlichen Ansätze*"}
 # Farbige Säulen pro Person, Anteil von 0-1 min, 1-2 min,...
