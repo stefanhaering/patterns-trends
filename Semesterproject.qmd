@@ -19,18 +19,18 @@ execute:
 
 Passagiere empfinden in der Regel das Warten an Haltestellen des Öffentlichen Verkehrs (ÖV) als äusserst lästig (Van Hagen 2011). Die Schweizer ÖV sind international bekannt für ihre Pünktlichkeit (Kaindl 2022), wodurch die Länge der Wartezeit zu Beginn einer Reise meist selbstverschuldet ist. Nach Csiskos & Currie (2008) gibt es zwei verschiedene Arten von Fahrgastverhalten: Eine Gruppe kommt zufällig an, während eine andere Gruppe aktiv versucht, ihre Wartezeit zu minimieren, indem sie rechtzeitig zur geplanten Abfahrtszeit bei der Haltestelle ankommt.
 
-In unserer Projektarbeit möchten wir unsere tägliche Wartezeit an Haltestellen von öffentlichen Verkehrsmitteln (ÖV) untersuchen. Dabei wird ausschliesslich der Beginn einer Reise betrachtet. Folgende Fragen sollen anhand zweier leicht unterschiedlicher Methoden beantwortet werden:
+In unserer Projektarbeit möchten wir unsere tägliche Wartezeit an ÖV-Haltestellen untersuchen. Dabei wird ausschliesslich der Beginn einer Reise betrachtet. Folgende Fragen sollen anhand zweier leicht unterschiedlicher methodischen Ansätzen beantwortet werden:
 
 -   Wie oft reisen wir mit den ÖV?
 -   Sind die Wartezeiten pro Person von Reise zu Reise unterschiedlich lang?
--   Wer verbringt durchschnittlich mehr Wartezeit an den Haltestellen?
--   Kommen unsere beiden methodischen Herangehensweisen zu den gleichen Resultaten?
+-   Wer verbringt durchschnittlich mehr Wartezeit an den ÖV-Haltestellen?
+-   Kommen unsere beiden methodischen Ansätze zu den gleichen Resultaten?
 
 # 2 Methode
 
 ## 2.1 Daten
 
-Unsere Daten wurden in RStudio (Posit team 2023) analysiert. Die Daten bestehen aus eigenen Bewegungsdaten, welche mit der Applikation Posmo Project (Datamap AG, Version 22.01.16, 2023) erfasst wurden (Abildung 1). Daten wurden vom 03.05.23 bis 21.06.23 mit einer Frequenz der Lokalisierungsdaten von 10 Sekunden aufgenommen. Fand keine deutliche Bewegung statt, wurden die Datenpunkte durch Posmo automatisch entfernt. Diese Daten liegen als CSV-Datei vor und beinhalten u.a. Datum & Zeit („datetime"), x-Koordinaten („long_x"), y-Koordinaten („lat_y") und Transportmodus („transport_mode"). 
+Unsere Daten wurden in RStudio (Posit team 2023) analysiert. Die Daten bestehen aus eigenen Bewegungsdaten, welche mit der Applikation Posmo Project (Datamap AG, Version 22.01.16, 2023) erfasst wurden (Abildung 1). Daten wurden vom 03.05.23 bis 21.06.23 mit einer Frequenz der Lokalisierungsdaten von 10 Sekunden aufgenommen. Fand keine deutliche Bewegung statt, wurden die Datenpunkte durch Posmo automatisch entfernt. Die Daten liegen als CSV-Datei vor und beinhalten u.a. Datum & Zeit („datetime"), x-Koordinaten („long_x"), y-Koordinaten („lat_y") und Transportmodus („transport_mode"). 
 
 ```{r}
 ### R: Libraries laden
@@ -47,8 +47,6 @@ library(leaflet)
 ```
 
 ```{r}
-#| echo: true
-
 ### R: Daten einlesen
 
 # Daten von Stefan (ab 29.04.2023)
@@ -97,39 +95,39 @@ posmo <- posmo |>
 ```
 
 ```{r abbildung1, fig.cap="*Abbildung 1: Alle Datenpunkte aus der Zeitspanne vom 03.05. bis 21.06.2023 von Miriam und Stefan*"}
-posmo_filtered <- posmo |>  # nur posmo daten innerhalb Rechteck um schweiz
-  st_crop(st_as_sfc(st_bbox(schweiz)))
-
-ggplot()+
-  geom_sf(data = schweiz, fill= NA)+
-  geom_sf(data = posmo_filtered, aes(colour = person))+
-  scale_color_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
-  labs(
-    color = "Person")+ # Legende beschriften
-  theme_void() # Achsen und Raster verschwinden
-
-# posmo_clipped <- st_intersection(posmo, schweiz) # nur posmo daten innerhalb von schweiz, geht lange, sollte aber gehen...
-
+# posmo_filtered <- posmo |>  # nur posmo daten innerhalb Rechteck um schweiz
+#   st_crop(st_as_sfc(st_bbox(schweiz)))
+# 
 # ggplot()+
 #   geom_sf(data = schweiz, fill= NA)+
-#   geom_sf(data = posmo_clipped, aes(colour = person))+
+#   geom_sf(data = posmo_filtered, aes(colour = person))+
 #   scale_color_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
+#   labs(
+#     color = "Person")+ # Legende beschriften
 #   theme_void() # Achsen und Raster verschwinden
+
+posmo_clipped <- st_intersection(posmo, schweiz) # nur posmo daten innerhalb von schweiz, geht lange, sollte aber gehen...
+
+ggplot()+
+   geom_sf(data = schweiz, fill= NA)+
+   geom_sf(data = posmo_clipped, aes(colour = person))+
+   scale_color_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
+   theme_void() # Achsen und Raster verschwinden
 ```
 
 Zusätzlich wird der Datensatz „Haltestellen des öffentlichen Verkehrs" vom Bundesamt für Verkehr (BAV 2015) verwendet, welcher alle ÖV-Haltestellen beinhaltet.
 
 ## 2.2 Datenvorverarbeitung
 
-Die Posmo-App ist noch in der Entwicklung und zeichnet die Transportmodi nicht immer korrekt auf. Die Daten wurden deshalb von uns auf POSMO (datamap.io) überprüft und falls nötig die Transportart von Hand angepasst.
+Die Posmo-App ist noch in der Entwicklung und zeichnet die Transportmodi nicht immer korrekt auf. Die Daten wurden deshalb von uns auf POSMO (datamap.io) überprüft und falls nötig der Transportmodus (Bsp. "Train", "Walk", usw.) von Hand angepasst.
 
 ## 2.3 Methode
 
 ### 2.3.1 Ansatz «Geschwindigkeit»
 
-Um den Start einer Reise zu finden, werden die Daten auf eine bestimmte Abfolge von Bewegungen (Segmente, siehe auch Laube 2017) durchsucht. Zu Beginn darf keine Bewegung stattfinden, man ist zum Beispiel zu Hause oder bei der Arbeit. Dafür muss zwischen zwei Datenpunkten eine Zeitdifferenz über dem gewählten Schwellenwert von zehn Minuten liegen. Wir gehen davon aus, dass wir maximal zehn Minuten an einer Haltestelle auf das Transportmittel warten.
+Um den Start einer Reise zu finden, werden die Daten auf eine bestimmte Abfolge von Bewegungen (Segmente, siehe auch Laube 2017) durchsucht. Zu Beginn der Abfolge darf keine Bewegung stattfinden, man ist zum Beispiel zu Hause oder bei der Arbeit. Dafür muss zwischen zwei Datenpunkten eine Zeitdifferenz über einem gewählten Schwellenwert liegen. Hierfür haben wir einen schwellenwert von zehn Minuten gewählt, da wir davon ausgehen, dass wir nie länger als 10 Minuten an einer ÖV-Haltestelle warten. Zudem sollte der Schwellenwert so tief wie Möglich sein, damit auch Ausflüge (Bsp. Spaziergang, Feldarbeit, usw.), bei welchen eine kurze Pause eingelegt wird, in die Datenauswertung einfliessen.
 
-Die restlichen Datenpunkte werden anhand der Geschwindigkeit in Segmente mit langsamer oder schneller Bewegung eingeteilt. Als "langsam" werden Bewegungen kleiner als 45 km/h klassifiziert. Bewegungen gleich oder grösser als 45 km/h werden als "schnell" klassifiziert.
+Die restlichen Datenpunkte werden anhand der Geschwindigkeit in Segmente mit langsamer oder schneller Bewegung eingeteilt. Als "langsam" werden Bewegungen kleiner als 45 km/h klassifiziert. Die langsamen Bewegungen sollten die Bewegungen zu der ÖV-Haltestelle abdecken, welche zu Fuss oder mit dem Fahrrad zurückgelegt werden. Bewegungen gleich oder grösser als 45 km/h werden als "schnell" klassifiziert. Diese Bewegungen sollten die ÖV abdecken. Der Schwellenwert wurde so gewählt, da Stefan auf seinem Weg zur ÖV-Haltestelle Geschwindigkeiten von über 40 km/h erreicht.
 
 ```{r}
 #### R: G: Geschwindigkeit berechnen
@@ -155,7 +153,6 @@ posmo1 <- posmo1 |>
 ```{r}
 #### R: G: Einteilung stay/slow/fast
 
-
 # Erfahrungswerte:
 
 # Stefans Weg zum Bahnhof mit dem Fahrrad, maximale Geschwindigkeit:
@@ -175,7 +172,7 @@ posmo1 <- posmo1 |>
   mutate(velocity_text = ifelse(velocity < 45, "slow", "fast"))
 posmo1$velocity_text[posmo1$time >= 600] <- "stay"
 
-# Ausreisser entfernen
+# ÜBERLEGUNG: Ausreisser entfernen
 # Mir ist nur derjenige vom 2023-04-29 09:43:01 aufgefallen...
 
 # Wie kann ich dieses Problem alternativ angegangen werden???
@@ -203,15 +200,14 @@ posmo1$velocity_text[posmo1$time >= 600] <- "stay"
 
 Um den Start einer Reise zu finden, muss folgende Abfolge der Segmente vorliegen:
 
--   keine Bewegung (Person über längere Zeit (difftime \>10 min) am selben Ort)
--   langsame Bewegung (Gehen/Fahrrad)
--   schnelle Bewegung (ÖV)
+-   keine Bewegung
+-   langsame Bewegung
+-   schnelle Bewegung
 
-Die Wartezeit kann anschliessend für alle gefundenen Events berechnet werden (difftime (min(Segment schnell), max(Segment langsam))).
+Die Wartezeit kann anschliessend für alle gefundenen Events berechnet werden (Wartezeit = difftime (min(Segment schnell), max(Segment langsam))).
 
 ```{r}
 #### R: G: Evente finden
-
 
 # Event finden (stay-slow-fast), event_id
 
@@ -295,17 +291,15 @@ event <- event |>
   rename(person = person_slow, X = haltestelle_x_slow, Y = haltestelle_y_slow, 
          start_warten = datetime_slow, ende_warten = datetime_fast) |>  # Spalten umbennenen
   st_as_sf(coords = c("X", "Y"), crs = 2056, remove = FALSE) # Geometrie hinzufügen
-
 ```
 
-Die räumlichen Startpunkte der Reisen wurden mit den ÖV-Haltestellen aus dem Datensatz „Haltestellen des öffentlichen Verkehrs" validiert, wodurch Reisen mit dem Auto wegfallen. Dafür wurde ein Buffer von 100 Metern um ÖV-Haltestellen mit den Positionsdaten der Wartezeit verschnitten. Die verbleibenden Datenpunkte geben die für uns relevanten Events an (Abbildung 2).
+Die räumlichen Startpunkte der Reisen wurden mit den ÖV-Haltestellen aus dem Datensatz „Haltestellen des öffentlichen Verkehrs" validiert, wodurch Reisen mit dem Auto wegfallen, welche ebenfalls schnelle Segmente darstellen. Dafür wurde ein Buffer von 100 Metern um ÖV-Haltestellen mit den Positionsdaten der Wartezeit verschnitten. Die 100 Meter wurden gewählt, da die Warteposition auf einem Perron stark vom Punkt der ÖV-Haltestelle aus dem verwendeten Datensatz abweichen kann. Einen noch höheren Wert konnte jedoch nicht verwendet werden, da Autoreisen in knapp über 100 Metern Entfernung zu ÖV-Haltestellen gestartet wurden. Die verbleibenden Datenpunkte geben die für uns relevanten Events an (Abbildung 2).
 
 ```{r}
 #### R: G: Evente validieren
 
-
 # Bahnhöfe einlesen
-haltestelle <- read_delim("haltestellen-oev_2056_de.csv/Betriebspunkt.csv", delim = ",") # WArum funktioniert das plötzlich nicht mehr??? File neu herunterladen!
+haltestelle <- read_delim("haltestellen-oev_2056_de.csv/Betriebspunkt.csv", delim = ",")
 
 haltestelle <- haltestelle |> 
   st_as_sf(coords = c("E", "N"), crs = 2056, remove = FALSE) |> # Geometrie hinzufügen
@@ -320,7 +314,6 @@ haltestelle <- haltestelle |>
 
 # Buffer um Bahnhof
 haltestelle_buffer <- st_buffer(haltestelle, 100) # Was ist eine gute Buffer-Grösse???
-
 
 # Intersect Buffer mit Event
 haltestelle_event <- st_intersection(haltestelle_buffer, event)
@@ -353,7 +346,6 @@ haltestelle_event$Name[haltestelle_event$E == 2684431 &
 #   geom_sf(data = schweiz)+
 #   geom_sf()+
 #   theme_void() # Achsen und Raster verschwinden
-
 ```
 
 ```{r abbildung2, fig.cap="*Abbildung 2: Alle ÖV-Haltestellen, bei welchen am Start einer Reise gewartet wurde*"}
@@ -366,7 +358,6 @@ ggplot(haltestelle_event)+
   labs(
     color = "Person")+ # Legende beschriften
   theme_void() # Achsen und Raster verschwinden
-
 ```
 
 Einige ÖV-Haltestellen werden dabei öfters benutzt als andere (Abbildung 3).
@@ -390,7 +381,6 @@ ggplot(haltestelle_treemap, aes(area = Anzahl, fill = person,
 ```{r}
 #### R: G: Velocity: Wartezeit berechnen
 
-
 # wartezeit pro Event: difftime(max(Segmentslow), min(segmentfast)
 velocity <- haltestelle_event |> 
   mutate(wartezeit = round(as.numeric(difftime(ende_warten, start_warten, units = "mins")),2)) # ich glaube, die Daten sind nicht so gut...
@@ -407,13 +397,11 @@ velocity$wartezeit_cat[velocity$wartezeit >= 6 & velocity$wartezeit < 7] <- "6-7
 velocity$wartezeit_cat[velocity$wartezeit >= 7 & velocity$wartezeit < 8] <- "7-8"
 velocity$wartezeit_cat[velocity$wartezeit >= 8 & velocity$wartezeit < 9] <- "8-9"
 velocity$wartezeit_cat[velocity$wartezeit >= 9 & velocity$wartezeit < 10] <- "9-10"
-
 ```
 
 ### 2.3.2 Ansatz «Transportmodus»
 
-Um zu validieren, wie gut unsere geschwindigkeitsabhängige Methode funktioniert, machen wir eine zusätzliche Analyse mit den Angaben der Transportmodi von Posmo.
-Auch hier gehen wir davon aus, dass wir nie länger als zehn Minuten auf das ÖV warten.
+Um zu validieren, wie gut der Ansatz "Geschwindigkeit" funktioniert, machen wir eine zusätzliche Analyse mit den Angaben der Transportmodi. Auch hier gehen wir davon aus, dass wir nie länger als zehn Minuten auf das ÖV warten.
 
 ```{r}
 ### R: T: Ansatz "Transportmodus"
@@ -430,7 +418,6 @@ posmo2 <- posmo |> # Zeit
 posmo2 <- posmo2 |> # time = 0 entfernen
   mutate(time = ifelse(time == 0, NA, time)) |> 
   drop_na()
-
 
 # Schwellenwert setzen stay, time: stay >= 600 (10 min) # Schwellenwert evtl. nach oben setzen, da Stefan mal 40 min auf Zug wartete - Wenn jemand länger als Schwellenwert wartet, wird dies nicht als Reisestart gefunden.
 #neue Spalte "Moving", neuer Wert "Stay", sonst alle anderen Transportmittel beibehalten
@@ -454,11 +441,11 @@ posmo2 <- posmo2 %>%
 
 Dabei werden die Daten auf eine bestimmte Abfolge anhand des angegebene Transportmodus durchsucht.
 
--   keine Bewegung (Person über längere Zeit (difftime \>10 min) am selben Ort)
+-   keine Bewegung
 -   Transportmodus Walk/Bike
 -   Transportmodus Bus/Train/Tram
 
-Die Wartezeit kann anschliessend für alle gefundenen Events berechnet werden (difftime (min(Segment schnell), max(Segment langsam))).
+Die Wartezeit kann anschliessend für alle gefundenen Events berechnet werden (Wartezeit = difftime (min(Segment schnell), max(Segment langsam))).
 
 ```{r}
 #### R: T: Evente finden
@@ -478,8 +465,6 @@ event <- drop_na(event)
 event <- event |> 
   select(-find) # unnötige Spalten entfernen
 
-
-
 # Abfolge stay-slow-slow-fast-fast finden, so werden auch Ausreisser eliminiert
 event <- event |> # Start der Abfolge finden, TRUE
   mutate(find = ifelse(
@@ -489,12 +474,6 @@ event <- event |> # Start der Abfolge finden, TRUE
       lead(moving_class, 3) == "public" &
       lead(moving_class, 4) == "public"
     , TRUE, NA))
-
-
-
-
-
-
 
 # nur Start Wartezeit und Ende Wartezeit behalten
 
@@ -508,12 +487,8 @@ event <- drop_na(event) # nur Start & Ende Wartezeit behalten behalten
 event <- event |> 
   select(-find) # unnötige Spalten entfernen
 
-
-
-
 #vorbereitung für left_join, darf keine versch Geometrien in den zu kombinierenden tables haben
 event <- st_drop_geometry(event) # Alte Geometrie entfernen
-
 
 ##separate tables machen, slow und public, dann left_join, unnötige spalten entfernen  (start und endzeiten behalten)
 
@@ -530,7 +505,6 @@ public$id <- as.character(1:nrow(slow)) # id
 
 event <- left_join(slow,public,"id", suffix = c("_slow", "_public"))
 
-
 # unnötige Spalten entfernen, verbleibende umbenennen
 # names(event)
 event <- event |> 
@@ -538,18 +512,11 @@ event <- event |>
          -transport_mode_public, -X_public, -Y_public, -time_public, -Moving_public, -moving_class_public, -person_public) |> # unnötige Spalten entfernen
   rename(E=X_slow, N=Y_slow, wartezeit_sec=time_slow, start_warten = datetime_slow, ende_warten = datetime_public, person=person_slow) # Spalten umbennenen
 
-
-
 event <- event |> 
   mutate(wartezeit_minutes = as.numeric(difftime(ende_warten, start_warten, units = "mins")))
-
-
-
 ```
 
 ```{r}
-# Stefan probiert es aus...
-
 # Bahnhöfe einlesen
 haltestelle <- read_delim("haltestellen-oev_2056_de.csv/Betriebspunkt.csv", delim = ",") # WArum funktioniert das plötzlich nicht mehr??? File neu herunterladen!
 
@@ -557,12 +524,6 @@ haltestelle <- haltestelle |>
   st_as_sf(coords = c("E", "N"), crs = 2056, remove = FALSE) |> # Geometrie hinzufügen
   subset(Betriebspunkttyp_Bezeichnung == "Haltestelle" |
            Betriebspunkttyp_Bezeichnung == "Haltestelle und Bedienpunkt") # nur Haltestellen
-
-# ggplot(haltestelle)+
-#   geom_sf()+
-#   geom_sf(data = event, aes(colour = person), size = 2)+
-#   scale_color_manual(values = c("Miriam" = "#3182bd", "Stefan" = "#c51b8a"))+
-#   theme_void() # Achsen und Raster verschwinden
 
 # Buffer um Bahnhof
 haltestelle_buffer <- st_buffer(haltestelle, 100) # Was ist eine gute Buffer-Grösse???
@@ -608,12 +569,11 @@ haltestelle_event$Name[haltestelle_event$E == 2693841 &
 #   theme_void() # Achsen und Raster verschwinden
 ```
 
-
 # 3 Resultate
 
-Die beiden Verfahren haben eine unterschiedliche Anzahl Events ergeben. So haben wir zusammen 60 (Ansatz "Geschwindigkeit"), bzw. 85 (Ansatz "Transportmodus") Reisen mit dem ÖV gemacht. Miriam macht 0.51 (Ansatz "Geschwindigkeit"), bzw. 0.67 (Ansatz "Transportmodus") ÖV-Reisen pro Tag. Stefan macht 0.71 (Ansatz "Geschwindigkeit"), bzw. 1.06 (Ansatz "Transportmodus") ÖV-Reisen pro Tag.
+Die beiden Verfahren haben eine unterschiedliche Anzahl Events ergeben. So haben wir zusammen 60 (Ansatz "Geschwindigkeit"), bzw. 85 (Ansatz "Transportmodus") Reisen mit dem ÖV zurückgelegt. Miriam macht 0.51 (Ansatz "Geschwindigkeit"), bzw. 0.67 (Ansatz "Transportmodus") ÖV-Reisen pro Tag. Stefan macht 0.71 (Ansatz "Geschwindigkeit"), bzw. 1.06 (Ansatz "Transportmodus") ÖV-Reisen pro Tag.
 
-Beim Ansatz "Geschwindigkeit" ergeben sich folgende Resultate: Miriam wartet im Mittel rund 3.1 Minuten (Standardabweichung SD = 2.9), während Stefan im Mittel rund 1.9 Minuten (SD = 2.2) wartet. Die Wartezeiten sind von Reise zu Reise unterschiedlich lange. 
+Beim Ansatz "Geschwindigkeit" ergeben sich folgende Resultate: Miriam wartet im Mittel rund 3.1 Minuten (SD = 2.9), während Stefan im Mittel rund 1.9 Minuten (SD = 2.2) wartet. Die Wartezeiten sind von Reise zu Reise unterschiedlich lange.
 
 ```{r}
 ### Resultat
@@ -703,18 +663,18 @@ legend <- get_legend(
 plot_grid(combined_plot, legend,ncol=1,rel_heights = c(1, .1))
 ```
 
-T-Test für Ansatz "Geschwindigkeit"
+T-Test für den Ansatz "Geschwindigkeit":
 ```{r}
 t.test(wartezeit~person, data = velocity, var.equal = TRUE)# ungepaart, zweiseitig, long-Format
 ```
 
-T-Test für Ansatz "Geschwindigkeit"
+T-Test für den Ansatz "Geschwindigkeit":
 
 ```{r}
 t.test(wartezeit_minutes~person, data = event, var.equal = TRUE)# ungepaart, zweiseitig, long-Format
 ```
 
-Werden die Wartezeiten in Kategorien eingeteilt, ist ersichtlich, dass diese bei den beiden Ansätzen unterschiedliche Ergebnisse zeigen (Abbildung 5). Die Verteilung der Anteile der Events sieht leicht unterschiedlich aus. Zudem gibt es je nach Ansatz und Person auch Wartezeiten von zehn Minten. 
+Werden die Wartezeiten in Kategorien eingeteilt, ist ersichtlich, dass diese bei den beiden Ansätzen unterschiedliche Ergebnisse zeigen (Abbildung 5). Die Verteilung der Anteile der Events sieht leicht unterschiedlich aus. Zudem gibt es je nach Ansatz und Person auch Wartezeiten von zehn Minten.
 
 ```{r abbildung5, fig.cap="*Abbildung 5: Vergleich der Wartezeiten in Kategorien von Miriam und Stefan anhand der unterschiedlichen Ansätze*"}
 # Farbige Säulen pro Person, Anteil von 0-1 min, 1-2 min,...
@@ -794,8 +754,6 @@ plot_grid(combined_plot, legend,ncol=1,rel_heights = c(1, .1))
 
 ```
 
-Text: Interaktive Karte
-
 ```{r}
 ### nicht verwendete Grafiken:
 
@@ -841,45 +799,7 @@ Text: Interaktive Karte
 #   theme_classic() # löscht ggplot-Layout
 ```
 
-
-
-```{r}
-# #### R: T: Visualisierung
-# #Haltestellen abbilden Karte
-# 
-# 
-# ###Abbildungen, Auswertungen
-# 
-# mean(event$wartezeit_minutes) # Mittelwert über beide Perosnen
-# 
-# aggregate(event$wartezeit_minutes, list(event$person), FUN=mean) #Mittelwert pro Person
-# aggregate(event$wartezeit_minutes, list(event$person), FUN=max) #Maximalwert pro Person
-# aggregate(event$wartezeit_minutes, list(event$person), FUN=min) #Minimalwert pro Person
-# 
-# summary(event$wartezeit_minutes)
-# 
-# hist(event$wartezeit_minutes) #Histogram insgesamt
-# 
-# 
-# boxplot(event$wartezeit_minutes) #Boxplot insgesamt
-# 
-# ggplot(event, aes(y = wartezeit_minutes, x = person)) + geom_boxplot(fill=c("lightblue", "lightgreen")) # 2 Boxplots nach Personen
-# 
-# 
-# 
-# ggplot(event, aes(y = wartezeit_minutes, x = person)) + geom_count() # Häufigkeit der Wartezeit-Werte nach Personen
-# 
-# p <- event |>
-#   select(wartezeit_minutes, person) |>
-#   ggplot(mapping = aes(x = wartezeit_minutes, fill = person)) +
-#   geom_histogram(
-#     binwidth =5,
-#     position = "dodge"
-#   )
-# 
-
-```
-
+Die folgende interaktive Karte (Abbildung 6) zeigt alle ÖV-Haltestellen mit Angaben zur Wartezeit des Ansatzes "Transportmodus" an.
 
 ```{r abbildung6, fig.cap="*Abbildung 6: Interaktive Karte mit den ÖV-Haltestellen, wo eine Reise begonnen wurde.*"}
 #Interaktive Karte einfügen
@@ -889,7 +809,6 @@ Text: Interaktive Karte
 #   setView( lng = 2.34, lat = 48.85, zoom = 5 ) %>% 
 #   addProviderTiles("NASAGIBS.ViirsEarthAtNight2012")
 # m
-
 
 # Tabelle summary
 haltestelle_event <- haltestelle_event |>
@@ -906,7 +825,6 @@ eventWGS <- haltestelle_event |>
 # WGS Koordinaten zu sf-Tabelle hinzufügen
 eventWGS_coordinates <- st_coordinates(eventWGS)
 eventWGS <- cbind(eventWGS, eventWGS_coordinates)
-
 
 #gerundete Wartezeiten zu eventWGS hinzufügen
 eventWGS <- eventWGS |>
@@ -935,26 +853,22 @@ l <- leaflet(eventWGS) %>% addTiles() %>%
                    label = mytext) %>%
   addLegend( pal=mypalette, values=~wartezeit, opacity=0.8, title = "Wartezeit ∅", position = "bottomright" )
 l
-
 ```
 
 # 4 Diskussion
 
-Probleme und Grenzen:
+Bei der Bearbeitung der Fragestellungen stiessen wir auf einige Probleme und Grenzen. Beim Ansatz «Geschwindigkeit» ergibt sich durch das Setzen des Schwellenwertes für die Geschwindigkeit ein Problem. Wird der Schwellenwert zu tief gesetzt, können Bewegungen auf dem Weg zu der Haltestelle bereits als schnelle Bewegung eingestuft werden, obwohl wir diese als langsame Bewegungen haben möchten. Ein Beispiel: Stefan geht oft mit dem Fahrrad zur ÖV-Haltestelle und erreicht dabei Geschwindigkeiten über 40 km/h. Deshalb wurde der Schwellenwert auf 45 km/h gesetzt. Nun kann es aber sein, dass das öffentliche Verkehrsmittel beim Start der Reise langsam fährt und diese Bewegung als langsame Bewegung eingestuft wird. Dies hat zur Folge, dass sich die Wartezeit auf 15 Sekunden, also die Zeit zwischen zwei Datenpunkten beschränkt und nicht der Wahrheit entspricht. Die Daten werden verfälscht. Gschwend (2015) erwähnt solche Probleme bei der Erkennung von Stopps und Bewegungen ebenfalls und stellt in seiner Arbeit eine Bewegungs-Kontext-Relationsmatrix auf der Grundlage von Modellen vor.
 
-Bei der Herangehensweise «Geschwindigkeit» ergibt sich durch das Setzen des Schwellenwertes für die Geschwindigkeit ein Problem. Wird der Schwellenwert zu tief gesetzt, können Bewegungen auf dem Weg zu der Haltestelle bereits als schnelle Bewegung eingestuft werden, obwohl wir diese als langsame Bewegungen haben möchten. Ein Beispiel: Stefan geht oft mit dem Fahrrad zur ÖV-Haltestelle und erreicht dabei Geschwindigkeiten über 40 km/h. Deshalb wurde der Schwellenwert auf 45 km/h gesetzt. Nun kann es aber sein, dass das öffentliche Verkehrsmittel beim Start der Reise langsam fährt und diese Bewegung als langsame Bewegung eingestuft wird. Dies hat zur Folge, dass sich die Wartezeit auf 15 Sekunden, also die Zeit zwischen zwei Datenpunkten beschränkt und nicht der Wahrheit entspricht. Die Daten werden verfälscht. Gschwend (2015) erwähnt solche Probleme bei der Erkennung von Stopps und Bewegungen ebenfalls und stellt in seiner Arbeit eine Bewegungs-Kontext-Relationsmatrix auf der Grundlage von Modellen vor.
-
-Bei der Herangehensweise «Klassifizierung» sind wir auf die Qualität von Posmo angewiesen. Den Transportmodus können wir manuell anpassen, die Segmente sind aber relativ fix (Erfahrungen haben gezeigt, dass die Funktion «split segment» nicht einwandfrei funktioniert). Es kam einige Male vor, dass langsame und schnelle Bewegungen am Start einer Reise als ein Segment dargestellt wurde. Der Transportmodus war dann entweder Bus, Train oder Tram. Da dadurch eine Segment der Transportmodus Walk oder Bike fehlte, wurde auch kein Start einer Reise erkannt. Dies ist ein Verlust eines Datenpunktes aber keine Verfälschung der Daten.
+Beim Anasatz «Transportmodus» sind wir auf die Qualität von Posmo angewiesen. Den Transportmodus können wir zwar manuell anpassen, die Segmente sind aber relativ fix (Erfahrungen haben gezeigt, dass die Funktion «split segment» nicht einwandfrei funktioniert). Es kam einige Male vor, dass langsame und schnelle Bewegungen am Start einer Reise als ein Segment dargestellt wurde. Der Transportmodus war dann entweder Bus, Train oder Tram. Ein Segment des Transportmodus Walk oder Bike fehlte. Daher wurde auch kein Start einer Reise erkannt. Dies hat Verluste von Datenpunkten zur Folge. Eine Verfälschung von Datenpunkten liegt aber nicht vor..
 
 Aufgrund der Frequenz der Lokalisierung, können die Wartezeiten nur auf 10 Sekunden genau sein.
 
-Die Herangehensweise «Geschwindigkeit» zeigt auf, dass die Transportmodi nicht einzig aufgrund deren Geschwindigkeit eingeteilt werden können. Die Daten werden verfälscht und können nicht interpretiert werden. Die Herangehensweise «Klassifizierung» ergibt deutlich bessere Daten. Bei diesem Vorgehen waren wir aber darauf angewiesen, dass wir bereits vorgegebene Segmente hatten und diese nur noch klassifizieren oder validieren mussten. Dies ist Zeitintensiv und für grössere Datensätze nicht denkbar. So können auch nur Daten bearbeitet werden, wovon man weiss, welcher Transportmodus verwendet wurde.
+Der Ansatz «Geschwindigkeit» zeigt auf, dass die Transportmodi nicht einzig aufgrund der Geschwindigkeit eingeteilt werden können. Die Daten werden verfälscht und können nicht interpretiert werden. Der Ansatz «Transportmodus» ergibt deutlich bessere Daten. Bei diesem Ansatz waren wir aber darauf angewiesen, dass wir bereits vorgegebene Segmente hatten und diese nur noch klassifizieren oder validieren mussten. Dies ist zeitintensiv und für grössere Datensätze nicht denkbar. So können auch nur Daten bearbeitet werden, wovon man selbst weiss, welcher Transportmodus verwendet wurde.
 
-Um die Auswertung auch auf grössere und fremde Datensätze auszuweiten, wäre eine Verbesserung der Erkennung des Transportmodus von Vorteil. Busse und Trams wurden zum Beispiel immer als Autos klassifiziert. Hierfür wäre vielleicht ein Abgleich mit Datensätzen des öffentlichen Verkehrs möglich. Zudem gab es manchmal Segmente, bei welchen der Transportmodus als unbekannt gesetzt wurde. Dennoch würde eine entsprechende Fragestellung, welche sich nur auf den Zugdaten (inkl. Walk und Bike) bezieht bereits mit der jetzigen Erkennung der Transportmodi relativ gut funktionieren.
+Um die Auswertung auch auf grössere und fremde Datensätze auszuweiten, wäre eine Verbesserung der Erkennung des Transportmodus von Vorteil. Busse und Trams wurden zum Beispiel immer als Autos klassifiziert. Hierfür wäre vielleicht ein Abgleich mit Datensätzen des öffentlichen Verkehrs möglich. Zudem gab es manchmal Segmente, bei welchen der Transportmodus als unbekannt gesetzt wurde. Dennoch würde eine entsprechende Fragestellung, welche sich nur auf Zugreisen (inkl. Walk und Bike) bezieht, bereits mit der jetzigen Erkennung der Transportmodi relativ gut funktionieren.
 Guvensan et al. (2018) verbesserten die Transportmodus- sowie Aufenthaltserkennung markant durch die Entwicklung eines zusätzlichen Algorithmus. Die Erkennung des Transportmodus von Posmo könnte allenfalls durch einen zusätzlichen Algorithmus verbessert werden.
 
 Abschliesend sollte erwähnt werden, wie sensibel Mobilitätsdaten sind. Selbst in einem anonymen groben Mobilitätsdatensatz sind nur wenige externe Informationen erforderlich, um die Spur einer Zielperson zu reidentifizieren (De Montjoye et al. 2013). Daher sollte unserer Meinung nach die Verwendung von Apps, welche Mobilitätsdaten aufnehmen, gut überlegt sein.
-
 
 
 # 5 Literatur
