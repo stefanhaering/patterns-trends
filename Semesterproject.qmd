@@ -30,7 +30,7 @@ In unserer Projektarbeit möchten wir unsere tägliche Wartezeit an ÖV-Halteste
 
 ## 2.1 Daten
 
-Unsere Daten wurden in RStudio (Posit team 2023) analysiert. Die Daten bestehen aus eigenen Bewegungsdaten, welche mit der Applikation Posmo Project (Datamap AG, Version 22.01.16, 2023) erfasst wurden (Abildung 1). Daten wurden vom 03.05.23 bis 21.06.23 mit einer Frequenz der Lokalisierungsdaten von 10 Sekunden aufgenommen. Fand keine deutliche Bewegung statt, wurden die Datenpunkte durch Posmo automatisch entfernt. Die Daten liegen als CSV-Datei vor und beinhalten u.a. Datum & Zeit („datetime"), x-Koordinaten („long_x"), y-Koordinaten („lat_y") und Transportmodus („transport_mode"). 
+Unsere Daten wurden in RStudio (Posit team 2023) mit der R Version 4.2.1 (R-Core Team, 2022) analysiert. Die Daten bestehen aus eigenen Bewegungsdaten, welche mit der Applikation Posmo Project (Datamap AG, Version 22.01.16, 2023) erfasst wurden (Abildung 1). Daten wurden vom 03.05.23 bis 21.06.23 mit einer Frequenz der Lokalisierungsdaten von 10 Sekunden aufgenommen. Fand keine deutliche Bewegung statt, wurden die Datenpunkte durch Posmo automatisch entfernt. Die Daten liegen als CSV-Datei vor und beinhalten u.a. Datum & Zeit („datetime"), x-Koordinaten („long_x"), y-Koordinaten („lat_y") und Transportmodus („transport_mode").
 
 ```{r}
 ### R: Libraries laden
@@ -125,7 +125,7 @@ Die Posmo-App ist noch in der Entwicklung und zeichnet die Transportmodi nicht i
 
 ### 2.3.1 Ansatz «Geschwindigkeit»
 
-Um den Start einer Reise zu finden, werden die Daten auf eine bestimmte Abfolge von Bewegungen (Segmente, siehe auch Laube 2017) durchsucht. Zu Beginn der Abfolge darf keine Bewegung stattfinden, man ist zum Beispiel zu Hause oder bei der Arbeit. Dafür muss zwischen zwei Datenpunkten eine Zeitdifferenz über einem gewählten Schwellenwert liegen. Hierfür haben wir einen schwellenwert von zehn Minuten gewählt, da wir davon ausgehen, dass wir nie länger als 10 Minuten an einer ÖV-Haltestelle warten. Zudem sollte der Schwellenwert so tief wie Möglich sein, damit auch Ausflüge (Bsp. Spaziergang, Feldarbeit, usw.), bei welchen eine kurze Pause eingelegt wird, in die Datenauswertung einfliessen.
+Um den Start einer Reise zu finden, werden die Daten auf eine bestimmte Abfolge von Bewegungen (Segmente, siehe auch Laube 2017) durchsucht. Zu Beginn der Abfolge darf keine Bewegung stattfinden, man ist zum Beispiel zu Hause oder bei der Arbeit. Dafür muss zwischen zwei Datenpunkten eine Zeitdifferenz über einem gewählten Schwellenwert liegen. Hierfür haben wir einen schwellenwert von zehn Minuten gewählt, da wir davon ausgehen, dass wir nie länger als 10 Minuten an einer ÖV-Haltestelle warten. Zudem sollte der Schwellenwert so tief wie möglich sein, damit auch Ausflüge (Bsp. Spaziergang, Feldarbeit, usw.), bei welchen eine kurze Pause eingelegt wird, in die Datenauswertung einfliessen.
 
 Die restlichen Datenpunkte werden anhand der Geschwindigkeit in Segmente mit langsamer oder schneller Bewegung eingeteilt. Als "langsam" werden Bewegungen kleiner als 45 km/h klassifiziert. Die langsamen Bewegungen sollten die Bewegungen zu der ÖV-Haltestelle abdecken, welche zu Fuss oder mit dem Fahrrad zurückgelegt werden. Bewegungen gleich oder grösser als 45 km/h werden als "schnell" klassifiziert. Diese Bewegungen sollten die ÖV abdecken. Der Schwellenwert wurde so gewählt, da Stefan auf seinem Weg zur ÖV-Haltestelle Geschwindigkeiten von über 40 km/h erreicht.
 
@@ -584,7 +584,7 @@ velocity |>
             , Standardabweichung = sd(wartezeit), Bereich = (max(wartezeit)-min(wartezeit)))
 ```
 
-Beim Ansatz "Geschwindigkeit" ergeben sich folgende Resultate: Miriam wartet im Mittel rund 3.3 Minuten (SD = 2.8), während Stefan im Mittel rund 2.6 Minuten (SD = 2.7) wartet. Die Wartezeiten sind von Reise zu Reise unterschiedlich lange. 
+Beim Ansatz "Geschwindigkeit" ergeben sich folgende Resultate: Miriam wartet im Mittel rund 3.3 Minuten (SD = 2.8), während Stefan im Mittel rund 2.6 Minuten (SD = 2.7) wartet. Die Wartezeiten sind von Reise zu Reise unterschiedlich lange.
 
 ```{r}
 ### Resultat
@@ -664,6 +664,7 @@ plot_grid(combined_plot, legend,ncol=1,rel_heights = c(1, .1))
 ```
 
 T-Test für den Ansatz "Geschwindigkeit":
+
 ```{r}
 t.test(wartezeit~person, data = velocity, var.equal = TRUE)# ungepaart, zweiseitig, long-Format
 ```
@@ -857,19 +858,17 @@ l
 
 # 4 Diskussion
 
-Bei der Bearbeitung der Fragestellungen stiessen wir auf einige Probleme und Grenzen. Beim Ansatz «Geschwindigkeit» ergibt sich durch das Setzen des Schwellenwertes für die Geschwindigkeit ein Problem. Wird der Schwellenwert zu tief gesetzt, können Bewegungen auf dem Weg zu der Haltestelle bereits als schnelle Bewegung eingestuft werden, obwohl wir diese als langsame Bewegungen haben möchten. Ein Beispiel: Stefan geht oft mit dem Fahrrad zur ÖV-Haltestelle und erreicht dabei Geschwindigkeiten über 40 km/h. Deshalb wurde der Schwellenwert auf 45 km/h gesetzt. Nun kann es aber sein, dass das öffentliche Verkehrsmittel beim Start der Reise langsam fährt und diese Bewegung als langsame Bewegung eingestuft wird. Dies hat zur Folge, dass sich die Wartezeit auf 15 Sekunden, also die Zeit zwischen zwei Datenpunkten beschränkt und nicht der Wahrheit entspricht. Die Daten werden verfälscht. Gschwend (2015) erwähnt solche Probleme bei der Erkennung von Stopps und Bewegungen ebenfalls und stellt in seiner Arbeit eine Bewegungs-Kontext-Relationsmatrix auf der Grundlage von Modellen vor.
+Bei der Bearbeitung der Fragestellungen stiessen wir auf einige Probleme und Grenzen. Beim Ansatz «Geschwindigkeit» ergibt sich durch das Setzen des Schwellenwertes für die Geschwindigkeit ein Problem. Wird der Schwellenwert zu tief gesetzt, können Bewegungen auf dem Weg zu der Haltestelle bereits als schnelle Bewegung eingestuft werden, obwohl wir diese als langsame Bewegungen haben möchten. Ein Beispiel: Stefan geht oft mit dem Fahrrad zur ÖV-Haltestelle und erreicht dabei Geschwindigkeiten über 40 km/h. Deshalb wurde der Schwellenwert auf 45 km/h gesetzt. Nun kann es aber sein, dass das öffentliche Verkehrsmittel beim Start der Reise langsam fährt und diese Bewegung als langsame Bewegung eingestuft wird. Dies hat zur Folge, dass sich die Wartezeit auf 10 Sekunden, also die Zeit zwischen zwei Datenpunkten beschränkt und nicht der Wahrheit entspricht. Die Daten werden verfälscht. Gschwend (2015) erwähnt solche Probleme bei der Erkennung von Stopps und Bewegungen ebenfalls und stellt in seiner Arbeit eine Bewegungs-Kontext-Relationsmatrix auf der Grundlage von Modellen vor.
 
-Beim Anasatz «Transportmodus» sind wir auf die Qualität von Posmo angewiesen. Den Transportmodus können wir zwar manuell anpassen, die Segmente sind aber relativ fix (Erfahrungen haben gezeigt, dass die Funktion «split segment» nicht einwandfrei funktioniert). Es kam einige Male vor, dass langsame und schnelle Bewegungen am Start einer Reise als ein Segment dargestellt wurde. Der Transportmodus war dann entweder Bus, Train oder Tram. Ein Segment des Transportmodus Walk oder Bike fehlte. Daher wurde auch kein Start einer Reise erkannt. Dies hat Verluste von Datenpunkten zur Folge. Eine Verfälschung von Datenpunkten liegt aber nicht vor..
+Beim Ansatz «Transportmodus» sind wir auf die Qualität von Posmo angewiesen. Den Transportmodus können wir zwar manuell anpassen, die Segmente sind aber relativ fix (Erfahrungen haben gezeigt, dass die Funktion «split segment» nicht einwandfrei funktioniert). Es kam einige Male vor, dass langsame und schnelle Bewegungen am Start einer Reise als ein Segment dargestellt wurde. Der Transportmodus war dann entweder Bus, Train oder Tram. Ein Segment des Transportmodus Walk oder Bike fehlte. Daher wurde auch kein Start einer Reise erkannt. Dies hat Verluste von Datenpunkten zur Folge. Eine Verfälschung von Datenpunkten liegt aber nicht vor..
 
 Aufgrund der Frequenz der Lokalisierung, können die Wartezeiten nur auf 10 Sekunden genau sein.
 
 Der Ansatz «Geschwindigkeit» zeigt auf, dass die Transportmodi nicht einzig aufgrund der Geschwindigkeit eingeteilt werden können. Die Daten werden verfälscht und können nicht interpretiert werden. Der Ansatz «Transportmodus» ergibt deutlich bessere Daten. Bei diesem Ansatz waren wir aber darauf angewiesen, dass wir bereits vorgegebene Segmente hatten und diese nur noch klassifizieren oder validieren mussten. Dies ist zeitintensiv und für grössere Datensätze nicht denkbar. So können auch nur Daten bearbeitet werden, wovon man selbst weiss, welcher Transportmodus verwendet wurde.
 
-Um die Auswertung auch auf grössere und fremde Datensätze auszuweiten, wäre eine Verbesserung der Erkennung des Transportmodus von Vorteil. Busse und Trams wurden zum Beispiel immer als Autos klassifiziert. Hierfür wäre vielleicht ein Abgleich mit Datensätzen des öffentlichen Verkehrs möglich. Zudem gab es manchmal Segmente, bei welchen der Transportmodus als unbekannt gesetzt wurde. Dennoch würde eine entsprechende Fragestellung, welche sich nur auf Zugreisen (inkl. Walk und Bike) bezieht, bereits mit der jetzigen Erkennung der Transportmodi relativ gut funktionieren.
-Guvensan et al. (2018) verbesserten die Transportmodus- sowie Aufenthaltserkennung markant durch die Entwicklung eines zusätzlichen Algorithmus. Die Erkennung des Transportmodus von Posmo könnte allenfalls durch einen zusätzlichen Algorithmus verbessert werden.
+Um die Auswertung auch auf grössere und fremde Datensätze auszuweiten, wäre eine Verbesserung der Erkennung des Transportmodus von Vorteil. Busse und Trams wurden zum Beispiel immer als Autos klassifiziert. Hierfür wäre vielleicht ein Abgleich mit Datensätzen des öffentlichen Verkehrs möglich. Zudem gab es manchmal Segmente, bei welchen der Transportmodus als unbekannt gesetzt wurde. Dennoch würde eine entsprechende Fragestellung, welche sich nur auf Zugreisen (inkl. Walk und Bike) bezieht, bereits mit der jetzigen Erkennung der Transportmodi relativ gut funktionieren. Guvensan et al. (2018) verbesserten die Transportmodus- sowie Aufenthaltserkennung markant durch die Entwicklung eines zusätzlichen Algorithmus. Die Erkennung des Transportmodus von Posmo könnte allenfalls durch einen zusätzlichen Algorithmus verbessert werden.
 
 Abschliesend sollte erwähnt werden, wie sensibel Mobilitätsdaten sind. Selbst in einem anonymen groben Mobilitätsdatensatz sind nur wenige externe Informationen erforderlich, um die Spur einer Zielperson zu reidentifizieren (De Montjoye et al. 2013). Daher sollte unserer Meinung nach die Verwendung von Apps, welche Mobilitätsdaten aufnehmen, gut überlegt sein.
-
 
 # 5 Literatur
 
@@ -877,7 +876,7 @@ BAV Bundesamt für Verkehr (2015). Haltestellen des öffentlichen Verkehrs, aktu
 
 Csikos, D., & Currie, G. (2008). Investigating Consistency in Transit Passenger Arrivals: Insights from Longitudinal Automated Fare Collection Data. Transportation Research Record, 2042(1), 12--19. https://doi.org/10.3141/2042-02
 
-Datamap AG (2023), Posmo Project, Version 22.01.16, 2023 
+Datamap AG (2023), Posmo Project, Version 22.01.16, 2023
 
 De Montjoye, Y. A., Hidalgo, C. A., Verleysen, M., & Blondel, V. D. (2013). Unique in the crowd: The privacy bounds of human mobility. Scientific reports, 3(1), 1-5.
 
@@ -892,9 +891,3 @@ Laube, P. (2017). Representation: Trajectories. In International Encyclopedia of
 Posit team (2023). RStudio: Integrated Development Environment for R, Version 2023.03.0 . Posit Software, PBC, Boston, MA. http://www.posit.co/.
 
 Van Hagen, M. (2011). Waiting experience at train stations. Eburon Uitgeverij BV.
-
-
-
-
-
-
