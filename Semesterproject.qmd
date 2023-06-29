@@ -890,4 +890,6 @@ Laube, P. (2017). Representation: Trajectories. In International Encyclopedia of
 
 Posit team (2023). RStudio: Integrated Development Environment for R, Version 2023.03.0 . Posit Software, PBC, Boston, MA. http://www.posit.co/.
 
+R Core Team (2022). R: A language and environment for statistical computing. Version 4.2.1. R Foundation for Satistical Computing, Vienna, Austria. https://www.R-project.org/
+
 Van Hagen, M. (2011). Waiting experience at train stations. Eburon Uitgeverij BV.
